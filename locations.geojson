@@ -1,0 +1,533 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -7.336248,
+          31.172821
+        ]
+      },
+      "properties": {
+        "post_id": "604",
+        "row_index": 164,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Ighrem N'Ougdal إغرم نوڭدال",
+        "state": "Drâa-Tafilalet ⴷⴰⵔⵄⴰ-ⵜⴰⴼⵉⵍⴰⵍⵜ درعة تافيلالت",
+        "country": "Maroc ⵍⵎⵖⵔⵉⴱ المغرب",
+        "country_code": "MA",
+        "display_name": "Ighrem N'Ougdal إغرم نوڭدال, Caïdat de Ighrem N'Ougdal, Cercle d'Amerzgane دائرة أمرزكان, Province d'Ouarzazate ⵜⴰⵙⴳⴰ ⵏ ⵡⴰⵔⵣⴰⵣⴰⵜ إقليم ورززات, Drâa-Tafilalet ⴷⴰⵔⵄⴰ-ⵜⴰⴼⵉⵍⴰⵍⵜ درعة تافيلالت, 45253, Maroc ⵍⵎⵖⵔⵉⴱ المغرب"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -55.524902,
+          -25.839449
+        ]
+      },
+      "properties": {
+        "post_id": "606",
+        "row_index": 166,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "San Cristóbal",
+        "state": "Alto Paraná",
+        "country": "Paraguay / Paraguái",
+        "country_code": "PY",
+        "display_name": "San Cristóbal, Alto Paraná, Región Oriental, Paraguay / Paraguái"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -61.5,
+          -17.333333
+        ]
+      },
+      "properties": {
+        "post_id": "612",
+        "row_index": 172,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Municipio Pailón",
+        "state": "Santa Cruz",
+        "country": "Bolivia",
+        "country_code": "BO",
+        "display_name": "Municipio Pailón, Chiquitos, Santa Cruz, Bolivia"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "621",
+        "row_index": 177,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29.443359375,
+          27.419928648469
+        ]
+      },
+      "properties": {
+        "post_id": "634",
+        "row_index": 188,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "",
+        "state": "الوادي الجديد",
+        "country": "مصر",
+        "country_code": "EG",
+        "display_name": "الوادي الجديد, مصر"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "640",
+        "row_index": 194,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.9301963,
+          -13.2687204
+        ]
+      },
+      "properties": {
+        "post_id": "642",
+        "row_index": 196,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "",
+        "state": "Ntchisi",
+        "country": "Malawi",
+        "country_code": "MW",
+        "display_name": "Ntchisi, Central Region, Malawi"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "644",
+        "row_index": 198,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "647",
+        "row_index": 201,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "652",
+        "row_index": 206,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "654",
+        "row_index": 208,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.5589884,
+          -14.5189121
+        ]
+      },
+      "properties": {
+        "post_id": "665",
+        "row_index": 219,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "",
+        "state": "Central Province",
+        "country": "Zambia",
+        "country_code": "ZM",
+        "display_name": "Chibombo District, Central Province, Zambia"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "666",
+        "row_index": 220,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "667",
+        "row_index": 221,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "683",
+        "row_index": 237,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.200135009996,
+          -0.06040135
+        ]
+      },
+      "properties": {
+        "post_id": "684",
+        "row_index": 238,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "West Sakwa ward",
+        "state": "Siaya",
+        "country": "Kenya",
+        "country_code": "KE",
+        "display_name": "West Sakwa ward, Bondo, Siaya, Kenya"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "689",
+        "row_index": 243,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "694",
+        "row_index": 248,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          36.826171875,
+          -1.2743089918452
+        ]
+      },
+      "properties": {
+        "post_id": "703",
+        "row_index": 257,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Nairobi",
+        "state": "Nairobi",
+        "country": "Kenya",
+        "country_code": "KE",
+        "display_name": "Nairobi, Kenya"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.2166578,
+          1.5333554
+        ]
+      },
+      "properties": {
+        "post_id": "709",
+        "row_index": 263,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "",
+        "state": "Nakasongola",
+        "country": "Uganda",
+        "country_code": "UG",
+        "display_name": "Nakasongola, Central Region, Uganda"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.5523195,
+          0.6065988
+        ]
+      },
+      "properties": {
+        "post_id": "711",
+        "row_index": 265,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Marakaru/Tuuti ward",
+        "state": "Bungoma",
+        "country": "Kenya",
+        "country_code": "KE",
+        "display_name": "Marakaru/Tuuti ward, Kanduyi, Bungoma, Kenya"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "714",
+        "row_index": 268,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "717",
+        "row_index": 270,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.71875,
+          50.112313451247
+        ]
+      },
+      "properties": {
+        "post_id": "720",
+        "row_index": 273,
+        "suffix": "",
+        "lat_header": "Additional project location 2.lat",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+      }
+    }
+  ]
+}

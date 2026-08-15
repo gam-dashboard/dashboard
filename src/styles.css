@@ -1,5 +1,78 @@
+:root {
+  --app-header-height: 88px;
+}
+
 body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin: 0; padding: 1rem; background: #f8fafc; color: #0f172a; }
 
 .app { max-width: 900px; margin: 0 auto; }
+
+/* Break out of centered container and use full viewport width.
+   Keeps an inner padding so content aligns with body padding (1rem). */
+.breakout {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  box-sizing: border-box;
+  padding-left: 1rem; /* match your body padding so content aligns */
+  padding-right: 1rem;
+  /* optional background to match your page */
+  background: transparent;
+}
+
+  /* Responsive: on narrow screens stack sidebar under map */
+  .breakout .map-layout {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    height: calc(100vh - var(--app-header-height, 0px));
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* map column grows, sidebar fixed */
+  .breakout .map-column {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  /* wider sidebar by default */
+  .breakout .page-sidebar {
+    width: 420px; /* increase/decrease as you like */
+    max-width: 36vw; /* optional */
+    max-height: calc(100vh - var(--app-header-height, 0px) - 24px);
+    overflow-y: auto;
+    background: white;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+/* Mobile: stack vertically and make sidebar full width below 900px */
+@media (max-width: 900px) {
+  .breakout .map-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .breakout .page-sidebar {
+    width: 100%;
+    max-width: none;
+    border-radius: 8px;
+    margin-top: 12px;
+  }
+
+  .breakout .map-column {
+    height: calc(60vh - var(--app-header-height, 0px));
+  }
+  /* keep map visible */
+}
 
 header h1 { font-size: 1.25rem; margin-bottom: 1rem; }

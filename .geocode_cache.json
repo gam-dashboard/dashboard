@@ -1,0 +1,1948 @@
+{
+  "31.17282,-7.33625": {
+    "city": "Ighrem N'Ougdal إغرم نوڭدال",
+    "state": "Drâa-Tafilalet ⴷⴰⵔⵄⴰ-ⵜⴰⴼⵉⵍⴰⵍⵜ درعة تافيلالت",
+    "country": "Maroc ⵍⵎⵖⵔⵉⴱ المغرب",
+    "country_code": "MA",
+    "display_name": "Ighrem N'Ougdal إغرم نوڭدال, Caïdat de Ighrem N'Ougdal, Cercle d'Amerzgane دائرة أمرزكان, Province d'Ouarzazate ⵜⴰⵙⴳⴰ ⵏ ⵡⴰⵔⵣⴰⵣⴰⵜ إقليم ورززات, Drâa-Tafilalet ⴷⴰⵔⵄⴰ-ⵜⴰⴼⵉⵍⴰⵍⵜ درعة تافيلالت, 45253, Maroc ⵍⵎⵖⵔⵉⴱ المغرب"
+  },
+  "-25.83945,-55.52490": {
+    "city": "San Cristóbal",
+    "state": "Alto Paraná",
+    "country": "Paraguay / Paraguái",
+    "country_code": "PY",
+    "display_name": "San Cristóbal, Alto Paraná, Región Oriental, Paraguay / Paraguái"
+  },
+  "-17.33333,-61.50000": {
+    "city": "Municipio Pailón",
+    "state": "Santa Cruz",
+    "country": "Bolivia",
+    "country_code": "BO",
+    "display_name": "Municipio Pailón, Chiquitos, Santa Cruz, Bolivia"
+  },
+  "50.11231,-116.71875": {
+    "city": "Area D (Lardeau Valley/Duncan Lake)",
+    "state": "British Columbia",
+    "country": "Canada",
+    "country_code": "CA",
+    "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+  },
+  "27.41993,29.44336": {
+    "city": "",
+    "state": "الوادي الجديد",
+    "country": "مصر",
+    "country_code": "EG",
+    "display_name": "الوادي الجديد, مصر"
+  },
+  "-13.26872,33.93020": {
+    "city": "",
+    "state": "Ntchisi",
+    "country": "Malawi",
+    "country_code": "MW",
+    "display_name": "Ntchisi, Central Region, Malawi"
+  },
+  "-14.51891,27.55899": {
+    "city": "",
+    "state": "Central Province",
+    "country": "Zambia",
+    "country_code": "ZM",
+    "display_name": "Chibombo District, Central Province, Zambia"
+  },
+  "-0.06040,34.20014": {
+    "city": "West Sakwa ward",
+    "state": "Siaya",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "West Sakwa ward, Bondo, Siaya, Kenya"
+  },
+  "-1.27431,36.82617": {
+    "city": "Nairobi",
+    "state": "Nairobi",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Nairobi, Kenya"
+  },
+  "1.53336,32.21666": {
+    "city": "",
+    "state": "Nakasongola",
+    "country": "Uganda",
+    "country_code": "UG",
+    "display_name": "Nakasongola, Central Region, Uganda"
+  },
+  "0.60660,34.55232": {
+    "city": "Marakaru/Tuuti ward",
+    "state": "Bungoma",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Marakaru/Tuuti ward, Kanduyi, Bungoma, Kenya"
+  },
+  "1.44197,38.43140": {
+    "city": "Merti",
+    "state": "Isiolo",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Merti, Isiolo, Kenya"
+  },
+  "9.60004,7.99997": {
+    "city": "Kurmin Musa",
+    "state": "Kaduna",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Kurmin Musa, Kachia, Kaduna, Nigeria"
+  },
+  "52.79548,-0.54024": {
+    "city": "South Kesteven",
+    "state": "England",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "display_name": "South Kesteven, Lincolnshire, Greater Lincolnshire, England, United Kingdom"
+  },
+  "-10.33333,-53.20000": {
+    "city": "",
+    "state": "Mato Grosso",
+    "country": "Brasil",
+    "country_code": "BR",
+    "display_name": "Peixoto de Azevedo, Mato Grosso, Região Centro-Oeste, Brasil"
+  },
+  "14.47506,-14.45296": {
+    "city": "Communauté rurale de Payar",
+    "state": "",
+    "country": "Sénégal",
+    "country_code": "SN",
+    "display_name": "Communauté rurale de Payar, Arrondissement de Kouthiaba Wolof, Département de Koumpentoum, Région de Tambacounda, Sénégal"
+  },
+  "-19.30223,34.91450": {
+    "city": "",
+    "state": "Sofala",
+    "country": "Moçambique",
+    "country_code": "MZ",
+    "display_name": "Muanza, Sofala, Zona Centro, Moçambique"
+  },
+  "8.03003,-1.08003": {
+    "city": "East Gonja Municipal District",
+    "state": "Savannah Region",
+    "country": "Ghana",
+    "country_code": "GH",
+    "display_name": "East Gonja Municipal District, Savannah Region, Ghana"
+  },
+  "37.76480,-122.46299": {
+    "city": "San Francisco",
+    "state": "California",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "San Francisco, California, United States"
+  },
+  "15.25724,-86.07551": {
+    "city": "",
+    "state": "Olancho",
+    "country": "Honduras",
+    "country_code": "HN",
+    "display_name": "Gualaco, Olancho, Honduras"
+  },
+  "26.25405,29.26755": {
+    "city": "",
+    "state": "الوادي الجديد",
+    "country": "مصر",
+    "country_code": "EG",
+    "display_name": "الوادي الجديد, مصر"
+  },
+  "14.58444,29.49177": {
+    "city": "Sowdari سودري",
+    "state": "شمال كردفان North Kordofan",
+    "country": "السودان",
+    "country_code": "SD",
+    "display_name": "Sowdari سودري, شمال كردفان North Kordofan, السودان"
+  },
+  "34.05368,-118.24277": {
+    "city": "Los Angeles",
+    "state": "California",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Los Angeles, Los Angeles County, California, United States"
+  },
+  "11.96410,-2.84443": {
+    "city": "",
+    "state": "",
+    "country": "Burkina Faso",
+    "country_code": "BF",
+    "display_name": "Zamo, Sanguié, Centre-Ouest, Burkina Faso"
+  },
+  "2.88944,-73.78389": {
+    "city": "Vista Hermosa",
+    "state": "Meta",
+    "country": "Colombia",
+    "country_code": "CO",
+    "display_name": "Vista Hermosa, Subregión Ariari, Meta, RAP (Especial) Central, Colombia"
+  },
+  "28.10839,84.09171": {
+    "city": "Pokhara",
+    "state": "गण्डकी प्रदेश",
+    "country": "नेपाल",
+    "country_code": "NP",
+    "display_name": "Pokhara, कास्की, गण्डकी प्रदेश, नेपाल"
+  },
+  "22.35112,78.66774": {
+    "city": "Tamia Tahsil",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Tamia Tahsil, Chhindwara, Madhya Pradesh, 480559, India"
+  },
+  "19.43260,-99.13334": {
+    "city": "Ciudad de México",
+    "state": "Ciudad de México",
+    "country": "México",
+    "country_code": "MX",
+    "display_name": "Ciudad de México, Cuauhtémoc, Ciudad de México, México"
+  },
+  "15.61341,19.01562": {
+    "city": "",
+    "state": "Borkou بوركو",
+    "country": "Tchad تشاد",
+    "country_code": "TD",
+    "display_name": "Borkou بوركو, Tchad تشاد"
+  },
+  "33.87506,35.84341": {
+    "city": "",
+    "state": "محافظة البقاع",
+    "country": "لبنان",
+    "country_code": "LB",
+    "display_name": "تويتي, قضاء زحلة, محافظة البقاع, لبنان"
+  },
+  "2.00000,16.00000": {
+    "city": "Mouloundou",
+    "state": "Est",
+    "country": "Cameroun",
+    "country_code": "CM",
+    "display_name": "Mouloundou, Boumba-et-Ngoko, Est, Cameroun"
+  },
+  "39.78373,-100.44588": {
+    "city": "Decatur County",
+    "state": "Kansas",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Decatur County, Kansas, United States"
+  },
+  "30.33084,71.24750": {
+    "city": "ضلع کوٹ ادو",
+    "state": "پنجاب",
+    "country": "پاکستان",
+    "country_code": "PK",
+    "display_name": "تحصیل چوک سرور شہید, ضلع کوٹ ادو, ڈیرہ غازی خان ڈویژن, پنجاب, 34030, پاکستان"
+  },
+  "51.00000,10.00000": {
+    "city": "Werra-Meißner-Kreis",
+    "state": "Hessen",
+    "country": "Deutschland",
+    "country_code": "DE",
+    "display_name": "Sontra, Werra-Meißner-Kreis, Hessen, 36205, Deutschland"
+  },
+  "-23.23355,17.32311": {
+    "city": "",
+    "state": "Khomas Region",
+    "country": "Namibia",
+    "country_code": "NA",
+    "display_name": "Khomas Region, Namibia"
+  },
+  "-14.51862,27.55992": {
+    "city": "",
+    "state": "Central Province",
+    "country": "Zambia",
+    "country_code": "ZM",
+    "display_name": "Chibombo District, Central Province, Zambia"
+  },
+  "24.47688,90.29324": {
+    "city": "ফুলবাড়ীয়া উপজেলা",
+    "state": "ময়মনসিংহ বিভাগ",
+    "country": "বাংলাদেশ",
+    "country_code": "BD",
+    "display_name": "ফুলবাড়ীয়া উপজেলা, ময়মনসিংহ জেলা, ময়মনসিংহ বিভাগ, 2216, বাংলাদেশ"
+  },
+  "55.67025,10.33333": {
+    "city": "",
+    "state": "",
+    "country": "Danmark",
+    "country_code": "DK",
+    "display_name": "Danmark"
+  },
+  "22.50005,-100.00004": {
+    "city": "Ciudad del Maíz",
+    "state": "San Luis Potosí",
+    "country": "México",
+    "country_code": "MX",
+    "display_name": "Ciudad del Maíz, San Luis Potosí, México"
+  },
+  "31.64974,35.16207": {
+    "city": "שטח C",
+    "state": "יהודה ושומרון",
+    "country": "الأراضي الفلسطينية",
+    "country_code": "PS",
+    "display_name": "שטח C, יהודה ושומרון, الأراضي الفلسطينية"
+  },
+  "4.61255,13.15358": {
+    "city": "Minta",
+    "state": "Centre",
+    "country": "Cameroun",
+    "country_code": "CM",
+    "display_name": "Minta, Haute-Sanaga, Centre, Cameroun"
+  },
+  "-4.79934,114.56320": {
+    "city": "",
+    "state": "Kalimantan Selatan",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "display_name": "Kalimantan Selatan, Kalimantan, Indonesia"
+  },
+  "13.82505,-60.97504": {
+    "city": "",
+    "state": "Micoud",
+    "country": "Saint Lucia",
+    "country_code": "LC",
+    "display_name": "Micoud, Saint Lucia"
+  },
+  "8.64003,-11.84003": {
+    "city": "",
+    "state": "Tonkolili District",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Tonkolili District, Northern Province, Sierra Leone"
+  },
+  "-20.27595,57.57036": {
+    "city": "Dubreuil VCA, Part",
+    "state": "Moka",
+    "country": "Mauritius / Maurice",
+    "country_code": "MU",
+    "display_name": "Dubreuil VCA, Part, Moka, Mauritius / Maurice"
+  },
+  "30.87603,35.00152": {
+    "city": "מועצה אזורית הערבה התיכונה",
+    "state": "מחוז הדרום",
+    "country": "ישראל",
+    "country_code": "IL",
+    "display_name": "מועצה אזורית הערבה התיכונה, נפת באר שבע, מחוז הדרום, ישראל"
+  },
+  "27.65367,85.32851": {
+    "city": "ललितपुर",
+    "state": "बागमती प्रदेश",
+    "country": "नेपाल",
+    "country_code": "NP",
+    "display_name": "ललितपुर, ललितपुर महानगरपालिका, ललितपुर जिल्ला, बागमती प्रदेश, 44707, नेपाल"
+  },
+  "16.82598,-88.76009": {
+    "city": "",
+    "state": "Cayo",
+    "country": "Belize",
+    "country_code": "BZ",
+    "display_name": "Cayo, Belize"
+  },
+  "28.20947,83.98281": {
+    "city": "Pokhara",
+    "state": "गण्डकी प्रदेश",
+    "country": "नेपाल",
+    "country_code": "NP",
+    "display_name": "Pokhara, कास्की, गण्डकी प्रदेश, नेपाल"
+  },
+  "-24.77611,134.75500": {
+    "city": "",
+    "state": "",
+    "country": "Australia",
+    "country_code": "AU",
+    "display_name": "Northern Territory, Australia"
+  },
+  "7.86994,29.66679": {
+    "city": "Tonj East",
+    "state": "Warab واراب",
+    "country": "South Sudan جنوب السودان",
+    "country_code": "SS",
+    "display_name": "Tonj East, Warab واراب, South Sudan جنوب السودان"
+  },
+  "-2.98143,23.82226": {
+    "city": "",
+    "state": "Sankuru",
+    "country": "République démocratique du Congo",
+    "country_code": "CD",
+    "display_name": "Sankuru, République démocratique du Congo"
+  },
+  "4.10000,4.20000": {
+    "city": "",
+    "state": "",
+    "country": "",
+    "country_code": "",
+    "display_name": null
+  },
+  "-3.36344,29.88706": {
+    "city": "Gitega",
+    "state": "Gitega",
+    "country": "Burundi",
+    "country_code": "BI",
+    "display_name": "Gitega, Burundi"
+  },
+  "14.89719,100.83273": {
+    "city": "อำเภอเมืองลพบุรี",
+    "state": "",
+    "country": "ประเทศไทย",
+    "country_code": "TH",
+    "display_name": "โคกตูม, อำเภอเมืองลพบุรี, จังหวัดลพบุรี, ประเทศไทย"
+  },
+  "34.98230,33.14513": {
+    "city": "Gourri",
+    "state": "Κύπρος",
+    "country": "Κύπρος - Kıbrıs",
+    "country_code": "CY",
+    "display_name": "Gourri, Σύμπλεγμα Κοινοτήτων Ορεινής, Επαρχία Λευκωσίας, Κύπρος, Κύπρος - Kıbrıs"
+  },
+  "38.89333,-77.03003": {
+    "city": "Washington",
+    "state": "District of Columbia",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Washington, District of Columbia, United States"
+  },
+  "50.64028,4.66671": {
+    "city": "Nil-Saint-Vincent-Saint-Martin",
+    "state": "Brabant wallon",
+    "country": "België / Belgique / Belgien",
+    "country_code": "BE",
+    "display_name": "Nil-Saint-Vincent-Saint-Martin, Walhain, Nivelles, Brabant wallon, Wallonie, België / Belgique / Belgien"
+  },
+  "7.98974,-5.56795": {
+    "city": "",
+    "state": "Vallée du Bandama",
+    "country": "Côte d’Ivoire",
+    "country_code": "CI",
+    "display_name": "Gbêkê, Vallée du Bandama, Côte d’Ivoire"
+  },
+  "34.64019,39.04941": {
+    "city": "",
+    "state": "محافظة حمص",
+    "country": "سوريا",
+    "country_code": "SY",
+    "display_name": "ناحية السخنة, منطقة تدمر, محافظة حمص, سوريا"
+  },
+  "54.62950,-6.76544": {
+    "city": "County Londonderry",
+    "state": "Northern Ireland / Tuaisceart Éireann",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "display_name": "Mid-Ulster District Council, County Londonderry, Northern Ireland / Tuaisceart Éireann, United Kingdom"
+  },
+  "16.37004,-2.29002": {
+    "city": "Cercle Gourma-Rharous",
+    "state": "Tombouctou",
+    "country": "Mali",
+    "country_code": "ML",
+    "display_name": "Cercle Gourma-Rharous, Tombouctou, Mali"
+  },
+  "-6.52471,35.78784": {
+    "city": "",
+    "state": "Dodoma",
+    "country": "Tanzania",
+    "country_code": "TZ",
+    "display_name": "Chamwino, Dodoma, Central Zone, Tanzania"
+  },
+  "12.75035,122.73121": {
+    "city": "",
+    "state": "",
+    "country": "Philippines",
+    "country_code": "PH",
+    "display_name": "Philippines"
+  },
+  "33.76209,-84.29699": {
+    "city": "Decatur",
+    "state": "Georgia",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Decatur, DeKalb County, Georgia, 30030, United States"
+  },
+  "43.65396,-79.38721": {
+    "city": "Toronto",
+    "state": "Ontario",
+    "country": "Canada",
+    "country_code": "CA",
+    "display_name": "Toronto, Golden Horseshoe, Ontario, Canada"
+  },
+  "5.74997,-9.36585": {
+    "city": "Central Rivercess",
+    "state": "River Cess County",
+    "country": "Liberia",
+    "country_code": "LR",
+    "display_name": "Central Rivercess, River Cess County, Liberia"
+  },
+  "35.69376,139.70363": {
+    "city": "新宿区",
+    "state": "",
+    "country": "日本",
+    "country_code": "JP",
+    "display_name": "新宿区, 東京都, 160-8484, 日本"
+  },
+  "47.22861,65.20932": {
+    "city": "Ұлытау ауданы",
+    "state": "Ұлытау облысы",
+    "country": "Қазақстан",
+    "country_code": "KZ",
+    "display_name": "Ұлытау ауданы, Ұлытау облысы, 101500, Қазақстан"
+  },
+  "35.92081,74.31404": {
+    "city": "گلگت",
+    "state": "گلگت بلتستان",
+    "country": "پاکستان",
+    "country_code": "PK",
+    "display_name": "گلگت, تحصیل گلگت, ضلع گلگت, گلگت ڈویژن, گلگت بلتستان, 51100, پاکستان"
+  },
+  "-31.76134,-71.31877": {
+    "city": "Illapel",
+    "state": "Región de Coquimbo",
+    "country": "Chile",
+    "country_code": "CL",
+    "display_name": "Illapel, Provincia de Choapa, Región de Coquimbo, 1930000, Chile"
+  },
+  "33.09558,44.17498": {
+    "city": "",
+    "state": "محافظة بغداد",
+    "country": "العراق",
+    "country_code": "IQ",
+    "display_name": "ناحية اليوسفية, قضاء المحمودية, محافظة بغداد, العراق"
+  },
+  "40.56939,-74.61150": {
+    "city": "Somerville",
+    "state": "New Jersey",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Somerville, Somerset County, New Jersey, United States"
+  },
+  "35.00007,104.99993": {
+    "city": "榜罗镇",
+    "state": "甘肃省",
+    "country": "中国",
+    "country_code": "CN",
+    "display_name": "榜罗镇, 通渭县, 定西市, 甘肃省, 中国"
+  },
+  "49.48720,31.27183": {
+    "city": "",
+    "state": "Черкаська область",
+    "country": "Україна",
+    "country_code": "UA",
+    "display_name": "Набутівська сільська громада, Черкаський район, Черкаська область, Україна"
+  },
+  "49.88402,-97.16858": {
+    "city": "Winnipeg",
+    "state": "Manitoba",
+    "country": "Canada",
+    "country_code": "CA",
+    "display_name": "Winnipeg, Manitoba, Canada"
+  },
+  "20.01711,103.37825": {
+    "city": "ເມືອງຮ້ຽມ",
+    "state": "ຫົວພັນ",
+    "country": "ປະເທດລາວ",
+    "country_code": "LA",
+    "display_name": "ເມືອງຮ້ຽມ, ຫົວພັນ, ປະເທດລາວ"
+  },
+  "24.00025,53.99948": {
+    "city": "أم ليله",
+    "state": "أبو ظبي",
+    "country": "الإمارات العربية المتحدة",
+    "country_code": "AE",
+    "display_name": "أم ليله, منطقة الظفرة, أبو ظبي, الإمارات العربية المتحدة"
+  },
+  "13.11693,80.25899": {
+    "city": "Chennai Corporation",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Chennai Corporation, Chennai, Tamil Nadu, India"
+  },
+  "38.85799,-77.05127": {
+    "city": "Arlington",
+    "state": "Virginia",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Arlington, Arlington County, Virginia, 22209, United States"
+  },
+  "50.78356,3.04389": {
+    "city": "Wervik",
+    "state": "West-Vlaanderen",
+    "country": "België / Belgique / Belgien",
+    "country_code": "BE",
+    "display_name": "Wervik, Ieper, West-Vlaanderen, Vlaanderen, België / Belgique / Belgien"
+  },
+  "24.97942,-14.50195": {
+    "city": "Jraifia ⵊⵔⴰⵢⴼⵉⵢⴰ الجريفية",
+    "state": "",
+    "country": "Maroc ⵍⵎⵖⵔⵉⴱ المغرب",
+    "country_code": "MA",
+    "display_name": "Jraifia ⵊⵔⴰⵢⴼⵉⵢⴰ الجريفية, caïdat de Jraifia قيادة الجريفية, cercle de Jraifia دائرة الجريفية, Province de Boujdour إقليم بوجدور, Maroc ⵍⵎⵖⵔⵉⴱ المغرب"
+  },
+  "49.40579,8.71511": {
+    "city": "Heidelberg",
+    "state": "Baden-Württemberg",
+    "country": "Deutschland",
+    "country_code": "DE",
+    "display_name": "Heidelberg, Baden-Württemberg, Deutschland"
+  },
+  "6.40538,3.40769": {
+    "city": "Eti Osa",
+    "state": "Lagos",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Eti Osa, Lagos, Nigeria"
+  },
+  "20.98770,-101.00000": {
+    "city": "Dolores Hidalgo",
+    "state": "Guanajuato",
+    "country": "México",
+    "country_code": "MX",
+    "display_name": "Dolores Hidalgo, Guanajuato, México"
+  },
+  "39.26756,-76.79752": {
+    "city": "Columbia",
+    "state": "Maryland",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Columbia, Howard County, Maryland, 21044, United States"
+  },
+  "47.74232,-121.98568": {
+    "city": "Duvall",
+    "state": "Washington",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Duvall, King County, Washington, United States"
+  },
+  "14.55632,121.00314": {
+    "city": "Makati",
+    "state": "",
+    "country": "Philippines",
+    "country_code": "PH",
+    "display_name": "District I, Makati, Southern Manila District, Metro Manila, Philippines"
+  },
+  "-21.25688,48.06654": {
+    "city": "Marokarima",
+    "state": "Vatovavy",
+    "country": "Madagasikara / Madagascar",
+    "country_code": "MG",
+    "display_name": "Marokarima, District de Mananjary, Vatovavy, Province de Fianarantsoa, Madagasikara / Madagascar"
+  },
+  "35.08410,-106.65099": {
+    "city": "Albuquerque",
+    "state": "New Mexico",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Albuquerque, Bernalillo County, New Mexico, United States"
+  },
+  "-18.92496,46.44164": {
+    "city": "Tsiroanomandidy",
+    "state": "Bongolava",
+    "country": "Madagasikara / Madagascar",
+    "country_code": "MG",
+    "display_name": "Tsiroanomandidy, Bongolava, Province d’Antananarivo, Madagasikara / Madagascar"
+  },
+  "46.41981,15.87174": {
+    "city": "",
+    "state": "",
+    "country": "Slovenija",
+    "country_code": "SI",
+    "display_name": "Ptuj, Slovenija"
+  },
+  "-1.31631,36.83795": {
+    "city": "Nairobi",
+    "state": "Nairobi",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Nairobi South ward, Starehe, Nairobi, 00603, Kenya"
+  },
+  "-1.30261,36.82884": {
+    "city": "Nairobi",
+    "state": "Nairobi",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Landimawe ward, Starehe, Nairobi, 00500, Kenya"
+  },
+  "4.38544,-73.93799": {
+    "city": "Cáqueza",
+    "state": "Cundinamarca",
+    "country": "Colombia",
+    "country_code": "CO",
+    "display_name": "Cáqueza, Oriente, Cundinamarca, RAP (Especial) Central, Colombia"
+  },
+  "-0.67998,34.77433": {
+    "city": "Kisii Central ward",
+    "state": "Kisii",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Kisii Central ward, Kisii Central, Kisii, 42001, Kenya"
+  },
+  "24.68617,46.62915": {
+    "city": "الرياض",
+    "state": "منطقة الرياض",
+    "country": "السعودية",
+    "country_code": "SA",
+    "display_name": "الرياض, محافظة الرياض, منطقة الرياض, 12643, السعودية"
+  },
+  "0.71289,38.34229": {
+    "city": "Garbatulla",
+    "state": "Isiolo",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Garbatulla, Isiolo, Kenya"
+  },
+  "9.43958,7.69043": {
+    "city": "Kushe",
+    "state": "Kaduna",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Kushe, Kagarko, Kaduna, Nigeria"
+  },
+  "7.48282,4.56045": {
+    "city": "Ifẹ̀",
+    "state": "Osun",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Ifẹ̀, Ife Central, Osun, 220282, Nigeria"
+  },
+  "6.66443,0.43945": {
+    "city": "Ho",
+    "state": "Volta Region",
+    "country": "Ghana",
+    "country_code": "GH",
+    "display_name": "Ho, Ho Municipal District, Volta Region, VH-0010-3089, Ghana"
+  },
+  "9.00000,38.75000": {
+    "city": "Kirkos",
+    "state": "አዲስ አበባ",
+    "country": "ኢትዮጵያ",
+    "country_code": "ET",
+    "display_name": "Kirkos, ቂርቆስ ክፍለ ከተማ Kirkos, አዲስ አበባ, ኢትዮጵያ"
+  },
+  "9.62004,7.92114": {
+    "city": "Aribi",
+    "state": "Kaduna",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Aribi, Kagarko, Kaduna, Nigeria"
+  },
+  "13.52483,2.10982": {
+    "city": "Niamey",
+    "state": "",
+    "country": "Niger",
+    "country_code": "NE",
+    "display_name": "Kalley 2, Arrondissement Communal Niamey 2, Niamey, Kollo, Niger"
+  },
+  "-2.24544,23.88428": {
+    "city": "",
+    "state": "Sankuru",
+    "country": "République démocratique du Congo",
+    "country_code": "CD",
+    "display_name": "Sankuru, République démocratique du Congo"
+  },
+  "-2.48338,117.89029": {
+    "city": "",
+    "state": "Sulawesi Barat",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "display_name": "Sulawesi Barat, Indonesia"
+  },
+  "8.47900,-13.26795": {
+    "city": "Freetown",
+    "state": "Western Area Urban",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Freetown, Western Area Urban, Western Area, Sierra Leone"
+  },
+  "-1.73798,37.27661": {
+    "city": "Kiima kiu/kalanzoni ward",
+    "state": "Makueni",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Kiima kiu/kalanzoni ward, Kilome, Makueni, Kenya"
+  },
+  "8.33483,-12.44867": {
+    "city": "",
+    "state": "Tonkolili District",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Tonkolili District, Northern Province, Sierra Leone"
+  },
+  "-3.36968,36.68808": {
+    "city": "Arusha",
+    "state": "Arusha",
+    "country": "Tanzania",
+    "country_code": "TZ",
+    "display_name": "Arusha, Arusha Municipal, Arusha, Northern Zone, 23103, Tanzania"
+  },
+  "27.16532,78.00491": {
+    "city": "Agra",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Agra, Uttar Pradesh, 280001, India"
+  },
+  "10.05766,7.96509": {
+    "city": "Agunu",
+    "state": "Kaduna",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Agunu, Kachia, Kaduna, Nigeria"
+  },
+  "-2.12172,36.78626": {
+    "city": "Matapato North ward",
+    "state": "Kajiado",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Matapato North ward, Kajiado Central, Kajiado, Kenya"
+  },
+  "40.71273,-74.00602": {
+    "city": "New York",
+    "state": "New York",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Manhattan, New York County, New York, United States"
+  },
+  "22.16173,79.26359": {
+    "city": "Chaurai Tahsil",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Chaurai Tahsil, Chhindwara, Madhya Pradesh, 480115, India"
+  },
+  "5.86399,13.35938": {
+    "city": "Bétaré-Oya",
+    "state": "Est",
+    "country": "Cameroun",
+    "country_code": "CM",
+    "display_name": "Bétaré-Oya, Lom-et-Djérem, Est, Cameroun"
+  },
+  "-15.49835,28.53149": {
+    "city": "",
+    "state": "Lusaka Province",
+    "country": "Zambia",
+    "country_code": "ZM",
+    "display_name": "Chongwe District, Lusaka Province, Zambia"
+  },
+  "55.75054,37.61748": {
+    "city": "Москва",
+    "state": "Москва",
+    "country": "Россия",
+    "country_code": "RU",
+    "display_name": "Москва, Центральный федеральный округ, Россия"
+  },
+  "-2.26397,36.92515": {
+    "city": "Matapato North ward",
+    "state": "Kajiado",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Matapato North ward, Kajiado Central, Kajiado, Kenya"
+  },
+  "6.13042,1.21583": {
+    "city": "Lomé",
+    "state": "Région Maritime",
+    "country": "Togo",
+    "country_code": "TG",
+    "display_name": "Lomé, Région Maritime, Togo"
+  },
+  "12.46708,-3.45914": {
+    "city": "Dédougou",
+    "state": "",
+    "country": "Burkina Faso",
+    "country_code": "BF",
+    "display_name": "Dédougou, Mouhoun, Boucle du Mouhoun, Burkina Faso"
+  },
+  "7.14052,37.17705": {
+    "city": "",
+    "state": "የደቡብ ምዕራብ ኢትዮጵያ ህዝቦች ክልል South West Ethiopia Peoples' Region إقليم شعوب جنوب غرب إثيوبيا",
+    "country": "ኢትዮጵያ",
+    "country_code": "ET",
+    "display_name": "Dawro, የደቡብ ምዕራብ ኢትዮጵያ ህዝቦች ክልል South West Ethiopia Peoples' Region إقليم شعوب جنوب غرب إثيوبيا, ኢትዮጵያ"
+  },
+  "6.45162,2.35210": {
+    "city": "Abomey-Calavi",
+    "state": "Atlantique",
+    "country": "Bénin",
+    "country_code": "BJ",
+    "display_name": "Abomey-Calavi, Atlantique, Bénin"
+  },
+  "8.49546,-13.24677": {
+    "city": "Freetown",
+    "state": "Western Area Urban",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Freetown, Western Area Urban, Western Area, Sierra Leone"
+  },
+  "2.30000,4.50000": {
+    "city": "",
+    "state": "",
+    "country": "",
+    "country_code": "",
+    "display_name": null
+  },
+  "-4.03863,39.64855": {
+    "city": "Mombasa",
+    "state": "Mombasa",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Mombasa, Tononoka ward, Mvita, Mombasa, 80100, Kenya"
+  },
+  "19.72534,-99.62402": {
+    "city": "Santa Clara de Juárez",
+    "state": "Estado de México",
+    "country": "México",
+    "country_code": "MX",
+    "display_name": "Santa Clara de Juárez, Morelos, Estado de México, 50560, México"
+  },
+  "-1.21364,36.87931": {
+    "city": "Nairobi",
+    "state": "Nairobi",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Nairobi, Kenya"
+  },
+  "-1.24413,36.88647": {
+    "city": "Nairobi",
+    "state": "Nairobi",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Babadogo ward, Kasarani, Nairobi, 00623, Kenya"
+  },
+  "0.01403,37.07463": {
+    "city": "Laikipia East",
+    "state": "Laikipia",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Laikipia East, Laikipia, 10400, Kenya"
+  },
+  "8.52551,-11.49719": {
+    "city": "",
+    "state": "Kenema District",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Kenema District, Eastern Province, Sierra Leone"
+  },
+  "-0.68049,35.13393": {
+    "city": "Sotik",
+    "state": "Bomet",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Sotik, Bomet, Kenya"
+  },
+  "-1.24340,36.87787": {
+    "city": "Nairobi",
+    "state": "Nairobi",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Babadogo ward, Kasarani, Nairobi, 00623, Kenya"
+  },
+  "-3.65596,39.86389": {
+    "city": "Mnarani ward",
+    "state": "Kilifi",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Mnarani ward, Kilifi North, Kilifi, Kenya"
+  },
+  "23.58111,90.84595": {
+    "city": "দাউদকান্দি উপজেলা",
+    "state": "চট্টগ্রাম বিভাগ",
+    "country": "বাংলাদেশ",
+    "country_code": "BD",
+    "display_name": "দাউদকান্দি উপজেলা, কুমিল্লা জেলা, চট্টগ্রাম বিভাগ, বাংলাদেশ"
+  },
+  "14.73969,-17.46346": {
+    "city": "Dakar",
+    "state": "Région de Dakar",
+    "country": "Sénégal",
+    "country_code": "SN",
+    "display_name": "Commune de Grand Yoff, commune d'arrondissement des Parcelles Assainies, Dakar, Région de Dakar, 11500, Sénégal"
+  },
+  "17.00505,81.78047": {
+    "city": "Rajamahendravaram",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Rajamahendravaram, Rajahmundry Urban, East Godavari, Andhra Pradesh, 533100, India"
+  },
+  "-0.72615,39.00707": {
+    "city": "Bura",
+    "state": "Tana River",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Bura, Tana River, Kenya"
+  },
+  "6.33913,6.83483": {
+    "city": "Anambra West",
+    "state": "Anambra",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Anambra West, Anambra, Nigeria"
+  },
+  "9.03583,38.75241": {
+    "city": "አዲስ አበባ",
+    "state": "አዲስ አበባ",
+    "country": "ኢትዮጵያ",
+    "country_code": "ET",
+    "display_name": "አዲስ አበባ, Arada, አዲስ አበባ, 3578, ኢትዮጵያ"
+  },
+  "3.15170,101.69424": {
+    "city": "",
+    "state": "Kuala Lumpur",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "display_name": "Kuala Lumpur, Malaysia"
+  },
+  "1.44235,32.18579": {
+    "city": "",
+    "state": "Nakasongola",
+    "country": "Uganda",
+    "country_code": "UG",
+    "display_name": "Nakasongola, Central Region, Uganda"
+  },
+  "1.44197,38.43140|en": {
+    "city": "Merti",
+    "state": "Isiolo",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Merti, Isiolo, Kenya"
+  },
+  "9.60004,7.99997|en": {
+    "city": "Kurmin Musa",
+    "state": "Kaduna State",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Kurmin Musa, Kachia, Kaduna State, Nigeria"
+  },
+  "52.79548,-0.54024|en": {
+    "city": "South Kesteven",
+    "state": "England",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "display_name": "South Kesteven, Lincolnshire, Greater Lincolnshire, England, United Kingdom"
+  },
+  "-10.33333,-53.20000|en": {
+    "city": "",
+    "state": "Mato Grosso",
+    "country": "Brazil",
+    "country_code": "BR",
+    "display_name": "Peixoto de Azevedo, Mato Grosso, Central-West Region, Brazil"
+  },
+  "14.47506,-14.45296|en": {
+    "city": "Communauté rurale de Payar",
+    "state": "",
+    "country": "Senegal",
+    "country_code": "SN",
+    "display_name": "Communauté rurale de Payar, Arrondissement de Kouthiaba Wolof, Département de Koumpentoum, Tambacounda Region, Senegal"
+  },
+  "-19.30223,34.91450|en": {
+    "city": "",
+    "state": "Sofala Province",
+    "country": "Mozambique",
+    "country_code": "MZ",
+    "display_name": "Muanza, Sofala Province, Zona Centro, Mozambique"
+  },
+  "8.03003,-1.08003|en": {
+    "city": "East Gonja Municipal District",
+    "state": "Savannah Region",
+    "country": "Ghana",
+    "country_code": "GH",
+    "display_name": "East Gonja Municipal District, Savannah Region, Ghana"
+  },
+  "37.76480,-122.46299|en": {
+    "city": "San Francisco",
+    "state": "California",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "San Francisco, California, United States"
+  },
+  "15.25724,-86.07551|en": {
+    "city": "",
+    "state": "Olancho",
+    "country": "Honduras",
+    "country_code": "HN",
+    "display_name": "Gualaco, Olancho, Honduras"
+  },
+  "26.25405,29.26755|en": {
+    "city": "",
+    "state": "New Valley",
+    "country": "Egypt",
+    "country_code": "EG",
+    "display_name": "New Valley, Egypt"
+  },
+  "14.58444,29.49177|en": {
+    "city": "Sowdari سودري",
+    "state": "North Kordufan",
+    "country": "Sudan",
+    "country_code": "SD",
+    "display_name": "Sowdari سودري, North Kordufan, Sudan"
+  },
+  "34.05368,-118.24277|en": {
+    "city": "Los Angeles",
+    "state": "California",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Los Angeles, Los Angeles County, California, United States"
+  },
+  "11.96410,-2.84443|en": {
+    "city": "",
+    "state": "",
+    "country": "Burkina Faso",
+    "country_code": "BF",
+    "display_name": "Zamo, Sanguié, Central-West, Burkina Faso"
+  },
+  "2.88944,-73.78389|en": {
+    "city": "Vista Hermosa",
+    "state": "Meta",
+    "country": "Colombia",
+    "country_code": "CO",
+    "display_name": "Vista Hermosa, Subregión Ariari, Meta, RAP (Especial) Central, Colombia"
+  },
+  "28.10839,84.09171|en": {
+    "city": "Pokhara",
+    "state": "Gandaki Province",
+    "country": "Nepal",
+    "country_code": "NP",
+    "display_name": "Pokhara, Kaski, Gandaki Province, Nepal"
+  },
+  "22.35112,78.66774|en": {
+    "city": "Tamia Tahsil",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Tamia Tahsil, Chhindwara, Madhya Pradesh, 480559, India"
+  },
+  "19.43260,-99.13334|en": {
+    "city": "Mexico City",
+    "state": "Mexico City",
+    "country": "Mexico",
+    "country_code": "MX",
+    "display_name": "Mexico City, Cuauhtémoc, Mexico City, Mexico"
+  },
+  "1.53336,32.21666|en": {
+    "city": "",
+    "state": "Nakasongola",
+    "country": "Uganda",
+    "country_code": "UG",
+    "display_name": "Nakasongola, Central Region, Uganda"
+  },
+  "15.61341,19.01562|en": {
+    "city": "",
+    "state": "Borkou",
+    "country": "Chad",
+    "country_code": "TD",
+    "display_name": "Borkou, Chad"
+  },
+  "33.87506,35.84341|en": {
+    "city": "",
+    "state": "Beqaa Governorate",
+    "country": "Lebanon",
+    "country_code": "LB",
+    "display_name": "Touayteh, Zahlé District, Beqaa Governorate, Lebanon"
+  },
+  "2.00000,16.00000|en": {
+    "city": "Mouloundou",
+    "state": "East",
+    "country": "Cameroon",
+    "country_code": "CM",
+    "display_name": "Mouloundou, Boumba-et-Ngoko, East, Cameroon"
+  },
+  "39.78373,-100.44588|en": {
+    "city": "Decatur County",
+    "state": "Kansas",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Decatur County, Kansas, United States"
+  },
+  "30.33084,71.24750|en": {
+    "city": "Kot Addu District",
+    "state": "Punjab",
+    "country": "Pakistan",
+    "country_code": "PK",
+    "display_name": "Chowk Sarwar Shaheed Tehsil, Kot Addu District, Dera Ghazi Khan Division, Punjab, 34030, Pakistan"
+  },
+  "51.00000,10.00000|en": {
+    "city": "Werra-Meißner-Kreis",
+    "state": "Hesse",
+    "country": "Germany",
+    "country_code": "DE",
+    "display_name": "Sontra, Werra-Meißner-Kreis, Hesse, 36205, Germany"
+  },
+  "-23.23355,17.32311|en": {
+    "city": "",
+    "state": "Khomas",
+    "country": "Namibia",
+    "country_code": "NA",
+    "display_name": "Khomas, Namibia"
+  },
+  "-14.51862,27.55992|en": {
+    "city": "",
+    "state": "Central Province",
+    "country": "Zambia",
+    "country_code": "ZM",
+    "display_name": "Chibombo District, Central Province, Zambia"
+  },
+  "24.47688,90.29324|en": {
+    "city": "Fulbaria Upazila",
+    "state": "Mymensingh Division",
+    "country": "Bangladesh",
+    "country_code": "BD",
+    "display_name": "Fulbaria Upazila, Mymensingh District, Mymensingh Division, 2216, Bangladesh"
+  },
+  "-13.26872,33.93020|en": {
+    "city": "",
+    "state": "Ntchisi",
+    "country": "Malawi",
+    "country_code": "MW",
+    "display_name": "Ntchisi, Central Region, Malawi, Malawi"
+  },
+  "55.67025,10.33333|en": {
+    "city": "",
+    "state": "",
+    "country": "Denmark",
+    "country_code": "DK",
+    "display_name": "Denmark"
+  },
+  "22.50005,-100.00004|en": {
+    "city": "Ciudad del Maíz",
+    "state": "San Luis Potosí",
+    "country": "Mexico",
+    "country_code": "MX",
+    "display_name": "Ciudad del Maíz, San Luis Potosí, Mexico"
+  },
+  "31.64974,35.16207|en": {
+    "city": "Area C",
+    "state": "Judea and Samaria",
+    "country": "Palestinian Territories",
+    "country_code": "PS",
+    "display_name": "Area C, Judea and Samaria, Palestinian Territories"
+  },
+  "4.61255,13.15358|en": {
+    "city": "Minta",
+    "state": "Centre",
+    "country": "Cameroon",
+    "country_code": "CM",
+    "display_name": "Minta, Haute-Sanaga, Centre, Cameroon"
+  },
+  "-4.79934,114.56320|en": {
+    "city": "",
+    "state": "South Kalimantan",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "display_name": "South Kalimantan, Kalimantan, Indonesia"
+  },
+  "13.82505,-60.97504|en": {
+    "city": "",
+    "state": "Micoud",
+    "country": "Saint Lucia",
+    "country_code": "LC",
+    "display_name": "Micoud, Saint Lucia"
+  },
+  "8.64003,-11.84003|en": {
+    "city": "",
+    "state": "Tonkolili District",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Tonkolili District, Northern Province, Sierra Leone, Sierra Leone"
+  },
+  "-20.27595,57.57036|en": {
+    "city": "Dubreuil VCA, Part",
+    "state": "Moka",
+    "country": "Mauritius",
+    "country_code": "MU",
+    "display_name": "Dubreuil VCA, Part, Moka, Mauritius"
+  },
+  "30.87603,35.00152|en": {
+    "city": "Arava Tichona Regional Council",
+    "state": "South District",
+    "country": "Israel",
+    "country_code": "IL",
+    "display_name": "Arava Tichona Regional Council, Beersheba Subdistrict, South District, Israel"
+  },
+  "27.65367,85.32851|en": {
+    "city": "Lalitpur",
+    "state": "Bagamati Province",
+    "country": "Nepal",
+    "country_code": "NP",
+    "display_name": "Lalitpur, Lalitpur Metropolitan City, Lalitpur, Bagamati Province, 44707, Nepal"
+  },
+  "16.82598,-88.76009|en": {
+    "city": "",
+    "state": "Cayo",
+    "country": "Belize",
+    "country_code": "BZ",
+    "display_name": "Cayo, Belize"
+  },
+  "28.20947,83.98281|en": {
+    "city": "Pokhara",
+    "state": "Gandaki Province",
+    "country": "Nepal",
+    "country_code": "NP",
+    "display_name": "Pokhara, Kaski, Gandaki Province, Nepal"
+  },
+  "-24.77611,134.75500|en": {
+    "city": "",
+    "state": "",
+    "country": "Australia",
+    "country_code": "AU",
+    "display_name": "Northern Territory, Australia"
+  },
+  "7.86994,29.66679|en": {
+    "city": "Tonj East",
+    "state": "Warrap",
+    "country": "South Sudan",
+    "country_code": "SS",
+    "display_name": "Tonj East, Warrap, South Sudan"
+  },
+  "-2.98143,23.82226|en": {
+    "city": "",
+    "state": "Sankuru",
+    "country": "Democratic Republic of the Congo",
+    "country_code": "CD",
+    "display_name": "Sankuru, Democratic Republic of the Congo"
+  },
+  "4.10000,4.20000|en": {
+    "city": "",
+    "state": "",
+    "country": "",
+    "country_code": "",
+    "display_name": null
+  },
+  "-3.36344,29.88706|en": {
+    "city": "Gitega",
+    "state": "Gitega",
+    "country": "Burundi",
+    "country_code": "BI",
+    "display_name": "Gitega, Burundi"
+  },
+  "14.89719,100.83273|en": {
+    "city": "Mueang Lop Buri District",
+    "state": "",
+    "country": "Thailand",
+    "country_code": "TH",
+    "display_name": "Khok Tum, Mueang Lop Buri District, Lop Buri Province, Thailand"
+  },
+  "34.98230,33.14513|en": {
+    "city": "Gourri",
+    "state": "Cyprus",
+    "country": "Cyprus",
+    "country_code": "CY",
+    "display_name": "Gourri, Oreini Community Cluster, Nicosia District, Cyprus"
+  },
+  "38.89333,-77.03003|en": {
+    "city": "Washington",
+    "state": "District of Columbia",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Washington, District of Columbia, United States"
+  },
+  "50.64028,4.66671|en": {
+    "city": "Nil-Saint-Vincent-Saint-Martin",
+    "state": "Walloon Brabant",
+    "country": "Belgium",
+    "country_code": "BE",
+    "display_name": "Nil-Saint-Vincent-Saint-Martin, Walhain, Nivelles, Walloon Brabant, Wallonia, Belgium"
+  },
+  "31.17282,-7.33625|en": {
+    "city": "Ighrem N'Ougdal",
+    "state": "Drâa-Tafilalet",
+    "country": "Morocco",
+    "country_code": "MA",
+    "display_name": "Ighrem N'Ougdal, Caïdat de Ighrem N'Ougdal, Cercle d'Amerzgane دائرة أمرزكان, Ouarzazate Province, Drâa-Tafilalet, 45253, Morocco"
+  },
+  "7.98974,-5.56795|en": {
+    "city": "",
+    "state": "Vallée du Bandama",
+    "country": "Ivory Coast",
+    "country_code": "CI",
+    "display_name": "Gbêkê, Vallée du Bandama, Ivory Coast"
+  },
+  "34.64019,39.04941|en": {
+    "city": "",
+    "state": "Homs Governorate",
+    "country": "Syria",
+    "country_code": "SY",
+    "display_name": "As-Sukhna Subdistrict, Tadmur District, Homs Governorate, Syria"
+  },
+  "54.62950,-6.76544|en": {
+    "city": "County Londonderry",
+    "state": "Northern Ireland",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "display_name": "Mid-Ulster District Council, County Londonderry, Northern Ireland, United Kingdom"
+  },
+  "16.37004,-2.29002|en": {
+    "city": "Gourma-Rharous Cercle",
+    "state": "Timbuktu",
+    "country": "Mali",
+    "country_code": "ML",
+    "display_name": "Gourma-Rharous Cercle, Timbuktu, Mali"
+  },
+  "-6.52471,35.78784|en": {
+    "city": "",
+    "state": "Dodoma Region",
+    "country": "Tanzania",
+    "country_code": "TZ",
+    "display_name": "Chamwino, Dodoma Region, Central Zone, Tanzania"
+  },
+  "12.75035,122.73121|en": {
+    "city": "",
+    "state": "",
+    "country": "Philippines",
+    "country_code": "PH",
+    "display_name": "Philippines"
+  },
+  "33.76209,-84.29699|en": {
+    "city": "Decatur",
+    "state": "Georgia",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Decatur, DeKalb County, Georgia, 30030, United States"
+  },
+  "43.65396,-79.38721|en": {
+    "city": "Toronto",
+    "state": "Ontario",
+    "country": "Canada",
+    "country_code": "CA",
+    "display_name": "Toronto, Golden Horseshoe, Ontario, Canada"
+  },
+  "5.74997,-9.36585|en": {
+    "city": "Central Rivercess",
+    "state": "Rivercess County",
+    "country": "Liberia",
+    "country_code": "LR",
+    "display_name": "Central Rivercess, Rivercess County, Liberia"
+  },
+  "35.69376,139.70363|en": {
+    "city": "Shinjuku",
+    "state": "",
+    "country": "Japan",
+    "country_code": "JP",
+    "display_name": "Shinjuku, Tokyo, 160-8484, Japan"
+  },
+  "47.22861,65.20932|en": {
+    "city": "Ulytau District",
+    "state": "Ulytau Region",
+    "country": "Kazakhstan",
+    "country_code": "KZ",
+    "display_name": "Ulytau District, Ulytau Region, 101500, Kazakhstan"
+  },
+  "35.92081,74.31404|en": {
+    "city": "Gilgit",
+    "state": "Gilgit-Baltistan",
+    "country": "Pakistan",
+    "country_code": "PK",
+    "display_name": "Gilgit, Gilgit Tehsil, Gilgit District, Gilgit Division, Gilgit-Baltistan, 51100, Pakistan"
+  },
+  "-31.76134,-71.31877|en": {
+    "city": "Illapel",
+    "state": "Coquimbo Region",
+    "country": "Chile",
+    "country_code": "CL",
+    "display_name": "Illapel, Provincia de Choapa, Coquimbo Region, 1930000, Chile"
+  },
+  "33.09558,44.17498|en": {
+    "city": "",
+    "state": "Baghdad Governorate",
+    "country": "Iraq",
+    "country_code": "IQ",
+    "display_name": "Al-Yusufiyah Subdistrict, Mahmoudiya District, Baghdad Governorate, Iraq"
+  },
+  "40.56939,-74.61150|en": {
+    "city": "Somerville",
+    "state": "New Jersey",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Somerville, Somerset County, New Jersey, United States"
+  },
+  "35.00007,104.99993|en": {
+    "city": "Bangluo",
+    "state": "Gansu",
+    "country": "China",
+    "country_code": "CN",
+    "display_name": "Bangluo, Tongwei County, Dingxi City, Gansu, China"
+  },
+  "49.48720,31.27183|en": {
+    "city": "Cherkasy Raion",
+    "state": "Cherkasy Oblast",
+    "country": "Ukraine",
+    "country_code": "UA",
+    "display_name": "Набутівська сільська громада, Cherkasy Raion, Cherkasy Oblast, Ukraine"
+  },
+  "49.88402,-97.16858|en": {
+    "city": "Winnipeg",
+    "state": "Manitoba",
+    "country": "Canada",
+    "country_code": "CA",
+    "display_name": "Winnipeg, Manitoba, Canada"
+  },
+  "20.01711,103.37825|en": {
+    "city": "Hiam District",
+    "state": "Houaphanh",
+    "country": "Laos",
+    "country_code": "LA",
+    "display_name": "Hiam District, Houaphanh, Laos"
+  },
+  "24.00025,53.99948|en": {
+    "city": "Um Laylah",
+    "state": "Abu Dhabi Emirate",
+    "country": "United Arab Emirates",
+    "country_code": "AE",
+    "display_name": "Um Laylah, Al Dhafrah Region, Abu Dhabi Emirate, United Arab Emirates"
+  },
+  "13.11693,80.25899|en": {
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Chennai, Tamil Nadu, India"
+  },
+  "38.85799,-77.05127|en": {
+    "city": "Arlington",
+    "state": "Virginia",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Arlington, Arlington County, Virginia, 22209, United States"
+  },
+  "50.78356,3.04389|en": {
+    "city": "Wervik",
+    "state": "West Flanders",
+    "country": "Belgium",
+    "country_code": "BE",
+    "display_name": "Wervik, Ieper, West Flanders, Flanders, Belgium"
+  },
+  "24.97942,-14.50195|en": {
+    "city": "Jraifia",
+    "state": "",
+    "country": "Morocco",
+    "country_code": "MA",
+    "display_name": "Jraifia, caïdat de Jraifia قيادة الجريفية, cercle de Jraifia دائرة الجريفية, Boujdour Province, Morocco"
+  },
+  "49.40579,8.71511|en": {
+    "city": "Heidelberg",
+    "state": "Baden-Württemberg",
+    "country": "Germany",
+    "country_code": "DE",
+    "display_name": "Heidelberg, Baden-Württemberg, Germany"
+  },
+  "6.40538,3.40769|en": {
+    "city": "Eti Osa",
+    "state": "Lagos State",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Eti Osa, Lagos State, Nigeria"
+  },
+  "20.98770,-101.00000|en": {
+    "city": "Dolores Hidalgo",
+    "state": "Guanajuato",
+    "country": "Mexico",
+    "country_code": "MX",
+    "display_name": "Dolores Hidalgo, Guanajuato, Mexico"
+  },
+  "39.26756,-76.79752|en": {
+    "city": "Columbia",
+    "state": "Maryland",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Columbia, Howard County, Maryland, 21044, United States"
+  },
+  "47.74232,-121.98568|en": {
+    "city": "Duvall",
+    "state": "Washington",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Duvall, King County, Washington, United States"
+  },
+  "14.55632,121.00314|en": {
+    "city": "Makati",
+    "state": "",
+    "country": "Philippines",
+    "country_code": "PH",
+    "display_name": "District I, Makati, Southern Manila District, Metro Manila, Philippines"
+  },
+  "-21.25688,48.06654|en": {
+    "city": "Marokarima",
+    "state": "Vatovavy",
+    "country": "Madagascar",
+    "country_code": "MG",
+    "display_name": "Marokarima, District of Mananjary, Vatovavy, Province de Fianarantsoa, Madagascar"
+  },
+  "35.08410,-106.65099|en": {
+    "city": "Albuquerque",
+    "state": "New Mexico",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Albuquerque, Bernalillo County, New Mexico, United States"
+  },
+  "-18.92496,46.44164|en": {
+    "city": "Tsiroanomandidy",
+    "state": "Bongolava",
+    "country": "Madagascar",
+    "country_code": "MG",
+    "display_name": "Tsiroanomandidy, Bongolava, Province d’Antananarivo, Madagascar"
+  },
+  "46.41981,15.87174|en": {
+    "city": "",
+    "state": "",
+    "country": "Slovenia",
+    "country_code": "SI",
+    "display_name": "Ptuj, Slovenia"
+  },
+  "-1.31631,36.83795|en": {
+    "city": "Nairobi",
+    "state": "Nairobi County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Nairobi South ward, Starehe, Nairobi, Nairobi County, 00603, Kenya"
+  },
+  "-1.30261,36.82884|en": {
+    "city": "Nairobi",
+    "state": "Nairobi County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Landimawe ward, Starehe, Nairobi, Nairobi County, 00500, Kenya"
+  },
+  "50.11231,-116.71875|en": {
+    "city": "Area D (Lardeau Valley/Duncan Lake)",
+    "state": "British Columbia",
+    "country": "Canada",
+    "country_code": "CA",
+    "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
+  },
+  "4.38544,-73.93799|en": {
+    "city": "Cáqueza",
+    "state": "Cundinamarca",
+    "country": "Colombia",
+    "country_code": "CO",
+    "display_name": "Cáqueza, Oriente, Cundinamarca, RAP (Especial) Central, Colombia"
+  },
+  "-0.67998,34.77433|en": {
+    "city": "Kisii Central ward",
+    "state": "Kisii County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Kisii Central ward, Kisii Central, Kisii County, 42001, Kenya"
+  },
+  "24.68617,46.62915|en": {
+    "city": "Riyadh",
+    "state": "Riyadh Region",
+    "country": "Saudi Arabia",
+    "country_code": "SA",
+    "display_name": "Riyadh, Riyadh governorate, Riyadh Region, 12643, Saudi Arabia"
+  },
+  "0.71289,38.34229|en": {
+    "city": "Garbatulla",
+    "state": "Isiolo",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Garbatulla, Isiolo, Kenya"
+  },
+  "9.43958,7.69043|en": {
+    "city": "Kushe",
+    "state": "Kaduna State",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Kushe, Kagarko, Kaduna State, Nigeria"
+  },
+  "7.48282,4.56045|en": {
+    "city": "Ife",
+    "state": "Osun State",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Ife, Ife Central, Osun State, 220282, Nigeria"
+  },
+  "6.66443,0.43945|en": {
+    "city": "Ho",
+    "state": "Volta Region",
+    "country": "Ghana",
+    "country_code": "GH",
+    "display_name": "Ho, Ho Municipal District, Volta Region, VH-0010-3089, Ghana"
+  },
+  "9.00000,38.75000|en": {
+    "city": "Kirkos",
+    "state": "Addis Ababa",
+    "country": "Ethiopia",
+    "country_code": "ET",
+    "display_name": "Kirkos, Addis Ababa, Ethiopia"
+  },
+  "9.62004,7.92114|en": {
+    "city": "Aribi",
+    "state": "Kaduna State",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Aribi, Kagarko, Kaduna State, Nigeria"
+  },
+  "13.52483,2.10982|en": {
+    "city": "Niamey",
+    "state": "",
+    "country": "Niger",
+    "country_code": "NE",
+    "display_name": "Kalley 2, Arrondissement Communal Niamey 2, Niamey, Kollo, Niger"
+  },
+  "-14.51891,27.55899|en": {
+    "city": "",
+    "state": "Central Province",
+    "country": "Zambia",
+    "country_code": "ZM",
+    "display_name": "Chibombo District, Central Province, Zambia"
+  },
+  "-2.24544,23.88428|en": {
+    "city": "",
+    "state": "Sankuru",
+    "country": "Democratic Republic of the Congo",
+    "country_code": "CD",
+    "display_name": "Sankuru, Democratic Republic of the Congo"
+  },
+  "-2.48338,117.89029|en": {
+    "city": "",
+    "state": "West Sulawesi",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "display_name": "West Sulawesi, Indonesia"
+  },
+  "8.47900,-13.26795|en": {
+    "city": "Freetown",
+    "state": "Western Area Urban",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Freetown, Western Area Urban, Western Area, Sierra Leone"
+  },
+  "-1.73798,37.27661|en": {
+    "city": "Kiima kiu/kalanzoni ward",
+    "state": "Makueni",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Kiima kiu/kalanzoni ward, Kilome, Makueni, Kenya"
+  },
+  "8.33483,-12.44867|en": {
+    "city": "",
+    "state": "Tonkolili District",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Tonkolili District, Northern Province, Sierra Leone, Sierra Leone"
+  },
+  "-3.36968,36.68808|en": {
+    "city": "Arusha",
+    "state": "Arusha",
+    "country": "Tanzania",
+    "country_code": "TZ",
+    "display_name": "Arusha, Arusha Municipal, Arusha, Northern Zone, 23103, Tanzania"
+  },
+  "27.16532,78.00491|en": {
+    "city": "Agra",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Agra, Uttar Pradesh, 280001, India"
+  },
+  "10.05766,7.96509|en": {
+    "city": "Agunu",
+    "state": "Kaduna State",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Agunu, Kachia, Kaduna State, Nigeria"
+  },
+  "-2.12172,36.78626|en": {
+    "city": "Matapato North ward",
+    "state": "Kajiado County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Matapato North ward, Kajiado Central, Kajiado County, Kenya"
+  },
+  "40.71273,-74.00602|en": {
+    "city": "New York",
+    "state": "New York",
+    "country": "United States",
+    "country_code": "US",
+    "display_name": "Manhattan, New York County, New York, United States"
+  },
+  "22.16173,79.26359|en": {
+    "city": "Chaurai Tahsil",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Chaurai Tahsil, Chhindwara, Madhya Pradesh, 480115, India"
+  },
+  "5.86399,13.35938|en": {
+    "city": "Bétaré-Oya",
+    "state": "East",
+    "country": "Cameroon",
+    "country_code": "CM",
+    "display_name": "Bétaré-Oya, Lom-et-Djérem, East, Cameroon"
+  },
+  "-15.49835,28.53149|en": {
+    "city": "",
+    "state": "Lusaka Province",
+    "country": "Zambia",
+    "country_code": "ZM",
+    "display_name": "Chongwe District, Lusaka Province, Zambia"
+  },
+  "55.75054,37.61748|en": {
+    "city": "Moscow",
+    "state": "Moscow",
+    "country": "Russia",
+    "country_code": "RU",
+    "display_name": "Moscow, Central Federal District, Russia"
+  },
+  "-2.26397,36.92515|en": {
+    "city": "Matapato North ward",
+    "state": "Kajiado County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Matapato North ward, Kajiado Central, Kajiado County, Kenya"
+  },
+  "6.13042,1.21583|en": {
+    "city": "Lomé",
+    "state": "Maritime Region",
+    "country": "Togo",
+    "country_code": "TG",
+    "display_name": "Lomé, Maritime Region, Togo"
+  },
+  "12.46708,-3.45914|en": {
+    "city": "Dédougou",
+    "state": "",
+    "country": "Burkina Faso",
+    "country_code": "BF",
+    "display_name": "Dédougou, Mouhoun, Boucle du Mouhoun, Burkina Faso"
+  },
+  "7.14052,37.17705|en": {
+    "city": "",
+    "state": "South West Ethiopia Peoples",
+    "country": "Ethiopia",
+    "country_code": "ET",
+    "display_name": "Dawro, South West Ethiopia Peoples, Ethiopia"
+  },
+  "6.45162,2.35210|en": {
+    "city": "Abomey-Calavi",
+    "state": "Atlantique Department",
+    "country": "Benin",
+    "country_code": "BJ",
+    "display_name": "Abomey-Calavi, Atlantique Department, Benin"
+  },
+  "8.49546,-13.24677|en": {
+    "city": "Freetown",
+    "state": "Western Area Urban",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Freetown, Western Area Urban, Western Area, Sierra Leone"
+  },
+  "2.30000,4.50000|en": {
+    "city": "",
+    "state": "",
+    "country": "",
+    "country_code": "",
+    "display_name": null
+  },
+  "-4.03863,39.64855|en": {
+    "city": "Mombasa",
+    "state": "Mombasa County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Mombasa, Tononoka ward, Mvita, Mombasa County, 80100, Kenya"
+  },
+  "19.72534,-99.62402|en": {
+    "city": "Santa Clara de Juárez",
+    "state": "State of Mexico",
+    "country": "Mexico",
+    "country_code": "MX",
+    "display_name": "Santa Clara de Juárez, Morelos, State of Mexico, 50560, Mexico"
+  },
+  "-1.21364,36.87931|en": {
+    "city": "Nairobi",
+    "state": "Nairobi County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Nairobi, Nairobi County, Kenya"
+  },
+  "-1.24413,36.88647|en": {
+    "city": "Nairobi",
+    "state": "Nairobi County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Babadogo ward, Kasarani, Nairobi, Nairobi County, 00623, Kenya"
+  },
+  "0.01403,37.07463|en": {
+    "city": "Laikipia East",
+    "state": "Laikipia County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Laikipia East, Laikipia County, 10400, Kenya"
+  },
+  "8.52551,-11.49719|en": {
+    "city": "",
+    "state": "Kenema District",
+    "country": "Sierra Leone",
+    "country_code": "SL",
+    "display_name": "Kenema District, Eastern Province, Sierra Leone"
+  },
+  "-0.68049,35.13393|en": {
+    "city": "Sotik",
+    "state": "Bomet",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Sotik, Bomet, Kenya"
+  },
+  "-1.24340,36.87787|en": {
+    "city": "Nairobi",
+    "state": "Nairobi County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Babadogo ward, Kasarani, Nairobi, Nairobi County, 00623, Kenya"
+  },
+  "-3.65596,39.86389|en": {
+    "city": "Mnarani ward",
+    "state": "Kilifi County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Mnarani ward, Kilifi North, Kilifi County, Kenya"
+  },
+  "23.58111,90.84595|en": {
+    "city": "Daudkandi Upazila",
+    "state": "Chattogram Division",
+    "country": "Bangladesh",
+    "country_code": "BD",
+    "display_name": "Daudkandi Upazila, Cumilla District, Chattogram Division, Bangladesh"
+  },
+  "14.73969,-17.46346|en": {
+    "city": "Dakar",
+    "state": "Dakar Region",
+    "country": "Senegal",
+    "country_code": "SN",
+    "display_name": "Commune de Grand Yoff, commune d'arrondissement des Parcelles Assainies, Dakar, Dakar Region, 11500, Senegal"
+  },
+  "17.00505,81.78047|en": {
+    "city": "Rajamahendravaram",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "country_code": "IN",
+    "display_name": "Rajamahendravaram, Rajahmundry Urban, East Godavari, Andhra Pradesh, 533100, India"
+  },
+  "-0.72615,39.00707|en": {
+    "city": "Bura",
+    "state": "Tana River County",
+    "country": "Kenya",
+    "country_code": "KE",
+    "display_name": "Bura, Tana River County, Kenya"
+  },
+  "6.33913,6.83483|en": {
+    "city": "Anambra West",
+    "state": "Anambra State",
+    "country": "Nigeria",
+    "country_code": "NG",
+    "display_name": "Anambra West, Anambra State, Nigeria"
+  },
+  "9.03583,38.75241|en": {
+    "city": "Addis Ababa",
+    "state": "Addis Ababa",
+    "country": "Ethiopia",
+    "country_code": "ET",
+    "display_name": "Addis Ababa, Arada, Addis Ababa, 3578, Ethiopia"
+  },
+  "3.15170,101.69424|en": {
+    "city": "",
+    "state": "Kuala Lumpur",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "display_name": "Kuala Lumpur, Malaysia"
+  },
+  "1.44235,32.18579|en": {
+    "city": "",
+    "state": "Nakasongola",
+    "country": "Uganda",
+    "country_code": "UG",
+    "display_name": "Nakasongola, Central Region, Uganda"
+  }
+}
