@@ -1,0 +1,31 @@
+name: On external post_update
+
+on:
+  repository_dispatch:
+    types: [post_update]
+
+permissions:
+  contents: write
+
+jobs:
+  handle-post-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install deps
+        run: npm ci || npm i csv-parse csv-stringify @octokit/rest
+
+      - name: Run updater
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node .github/scripts/append-samples.js "$GITHUB_EVENT_PATH"

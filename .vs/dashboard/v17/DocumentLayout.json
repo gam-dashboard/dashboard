@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\nwpla\\dashboard\\dashboard\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\nwpla\\dashboard\\dashboard\\src\\components\\MapView.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\MapView.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\nwpla\\dashboard\\dashboard\\src\\styles.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\nwpla\\dashboard\\dashboard\\src\\components\\MapView.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\MapView.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,11 +18,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "styles.css",
               "DocumentMoniker": "C:\\Users\\nwpla\\dashboard\\dashboard\\src\\styles.css",
               "RelativeDocumentMoniker": "src\\styles.css",
@@ -30,20 +30,20 @@
               "RelativeToolTip": "src\\styles.css",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAZAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-08-14T23:02:37.828Z"
+              "WhenOpened": "2026-08-14T23:02:37.828Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "MapView.tsx",
               "DocumentMoniker": "C:\\Users\\nwpla\\dashboard\\dashboard\\src\\components\\MapView.tsx",
               "RelativeDocumentMoniker": "src\\components\\MapView.tsx",
               "ToolTip": "C:\\Users\\nwpla\\dashboard\\dashboard\\src\\components\\MapView.tsx",
               "RelativeToolTip": "src\\components\\MapView.tsx",
-              "ViewState": "AQIAADEAAAAAAAAAAAAEwEIAAABBAAAA",
+              "ViewState": "AQIAACIAAAAAAAAAAAAmwEIAAABBAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-08-04T04:14:00.106Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-04T04:14:00.106Z"
             }
           ]
         }
