@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   // Optional shared-secret check (set VERCEL_WEBHOOK_TOKEN in Vercel project env)
   const expectedToken = process.env.VERCEL_WEBHOOK_TOKEN || null;
-  const gotToken = req.headers['x-webhook-token'] || req.headers['x-hook-token'] || req.headers['x-source-token'];
+  const gotToken = req.headers['x-webhook-token'] || req.headers['x-hook-token'] || req.headers['x-source-token'] || req.headers['shared_secret'];
 
   if (expectedToken && String(gotToken || '') !== String(expectedToken)) {
     console.warn(`[${now}] Webhook rejected — bad token`, { gotToken: !!gotToken });
