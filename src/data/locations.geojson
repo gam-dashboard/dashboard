@@ -2904,7 +2904,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          32.216658,
+          114.563203,
           -4.799336
         ]
       },
@@ -2912,12 +2912,12 @@
         "post_id": "578",
         "row_index": 138,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Itundu Ward",
-        "state": "Tabora Region",
-        "country": "Tanzania",
-        "country_code": "TZ",
-        "display_name": "Itundu Ward, Urambo, Tabora Region, Central Zone, Tanzania"
+        "lon_header": "Additional project location.lon",
+        "city": "",
+        "state": "South Kalimantan",
+        "country": "Indonesia",
+        "country_code": "ID",
+        "display_name": "South Kalimantan, Kalimantan, Indonesia"
       }
     },
     {
@@ -3471,7 +3471,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          53.999483,
+          -9.365852,
           5.749972
         ]
       },
@@ -3479,12 +3479,12 @@
         "post_id": "604",
         "row_index": 164,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location.lon",
+        "city": "Central Rivercess",
+        "state": "Rivercess County",
+        "country": "Liberia",
+        "country_code": "LR",
+        "display_name": "Central Rivercess, Rivercess County, Liberia"
       }
     },
     {
@@ -3492,7 +3492,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          53.999483,
+          -7.336248,
           31.172821
         ]
       },
@@ -3500,12 +3500,12 @@
         "post_id": "604",
         "row_index": 164,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
-        "city": "دهستان گاریزات",
-        "state": "Yazd Province",
-        "country": "Iran",
-        "country_code": "IR",
-        "display_name": "دهستان گاریزات, بخش گاریزات, Taft County, Yazd Province, Iran"
+        "lon_header": "Additional project location 2.lon",
+        "city": "Ighrem N'Ougdal",
+        "state": "Drâa-Tafilalet",
+        "country": "Morocco",
+        "country_code": "MA",
+        "display_name": "Ighrem N'Ougdal, Caïdat de Ighrem N'Ougdal, Cercle d'Amerzgane دائرة أمرزكان, Ouarzazate Province, Drâa-Tafilalet, 45253, Morocco"
       }
     },
     {
@@ -3555,7 +3555,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -100.445882,
+          134.755,
           -24.776109
         ]
       },
@@ -3563,12 +3563,12 @@
         "post_id": "606",
         "row_index": 166,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
+        "lon_header": "Additional project location.lon",
         "city": "",
         "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "country": "Australia",
+        "country_code": "AU",
+        "display_name": "Northern Territory, Australia"
       }
     },
     {
@@ -3576,7 +3576,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -100.445882,
+          -55.524902,
           -25.839449
         ]
       },
@@ -3584,12 +3584,12 @@
         "post_id": "606",
         "row_index": 166,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location 2.lon",
+        "city": "San Cristóbal",
+        "state": "Alto Paraná",
+        "country": "Paraguay",
+        "country_code": "PY",
+        "display_name": "San Cristóbal, Alto Paraná, Región Oriental, Paraguay"
       }
     },
     {
@@ -3681,7 +3681,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          8.71511,
+          -78.558673,
           -0.375587
         ]
       },
@@ -3689,12 +3689,12 @@
         "post_id": "610",
         "row_index": 170,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "Ogooué-Maritime Province",
-        "country": "Gabon",
-        "country_code": "GA",
-        "display_name": "Ogooué-Maritime Province, Gabon"
+        "lon_header": "Additional project location.lon",
+        "city": "Cutuglagua",
+        "state": "",
+        "country": "Ecuador",
+        "country_code": "EC",
+        "display_name": "Cutuglagua, Machachi, Pichincha, Ecuador"
       }
     },
     {
@@ -3744,7 +3744,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -101.0,
+          -74.105814,
           4.648685
         ]
       },
@@ -3752,12 +3752,12 @@
         "post_id": "612",
         "row_index": 172,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location.lon",
+        "city": "Bogota",
+        "state": "Bogota, Capital District",
+        "country": "Colombia",
+        "country_code": "CO",
+        "display_name": "Localidad Teusaquillo, Bogota, Bogota, Capital District, RAP (Especial) Central, Colombia"
       }
     },
     {
@@ -3765,7 +3765,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -101.0,
+          -61.5,
           -17.333333
         ]
       },
@@ -3773,12 +3773,12 @@
         "post_id": "612",
         "row_index": 172,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location 2.lon",
+        "city": "Municipio Pailón",
+        "state": "Santa Cruz",
+        "country": "Bolivia",
+        "country_code": "BO",
+        "display_name": "Municipio Pailón, Chiquitos, Santa Cruz, Bolivia"
       }
     },
     {
@@ -3807,7 +3807,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -76.797516022068,
+          39.0494106,
           34.6401861
         ]
       },
@@ -3815,12 +3815,12 @@
         "post_id": "613",
         "row_index": 173,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
+        "lon_header": "Additional project location.lon",
         "city": "",
-        "state": "",
-        "country": "United States",
-        "country_code": "US",
-        "display_name": "United States"
+        "state": "Homs Governorate",
+        "country": "Syria",
+        "country_code": "SY",
+        "display_name": "As-Sukhna Subdistrict, Tadmur District, Homs Governorate, Syria"
       }
     },
     {
@@ -3870,7 +3870,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -121.9856782,
+          -122.0432974,
           47.5348778
         ]
       },
@@ -3878,12 +3878,12 @@
         "post_id": "615",
         "row_index": 175,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "King County",
+        "lon_header": "Additional project location.lon",
+        "city": "Issaquah",
         "state": "Washington",
         "country": "United States",
         "country_code": "US",
-        "display_name": "King County, Washington, United States"
+        "display_name": "Issaquah, King County, Washington, United States"
       }
     },
     {
@@ -3933,7 +3933,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          48.0665448,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -3941,12 +3941,12 @@
         "post_id": "621",
         "row_index": 177,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Novouzensky District",
-        "state": "Saratov Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Алгайское сельское поселение, Novouzensky District, Saratov Oblast, Volga Federal District, 413344, Russia"
+        "lon_header": "Additional project location.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -3975,7 +3975,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -106.650985,
+          -111.714358,
           39.4225192
         ]
       },
@@ -3983,12 +3983,12 @@
         "post_id": "623",
         "row_index": 179,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Eagle County",
-        "state": "Colorado",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Sanpete County",
+        "state": "Utah",
         "country": "United States",
         "country_code": "US",
-        "display_name": "Eagle County, Colorado, United States"
+        "display_name": "Sanpete County, Utah, United States"
       }
     },
     {
@@ -4017,7 +4017,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          46.4416422,
+          -86.8138832,
           33.7734352
         ]
       },
@@ -4025,12 +4025,12 @@
         "post_id": "626",
         "row_index": 180,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "دهستان کارزان",
-        "state": "Ilam Province",
-        "country": "Iran",
-        "country_code": "IR",
-        "display_name": "دهستان کارزان, بخش کارزان, Sirvan County, Ilam Province, Iran"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Kimberly",
+        "state": "Alabama",
+        "country": "United States",
+        "country_code": "US",
+        "display_name": "Kimberly, Jefferson County, Alabama, 35091, United States"
       }
     },
     {
@@ -4059,7 +4059,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          15.8717378,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4067,12 +4067,12 @@
         "post_id": "627",
         "row_index": 181,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Pardubice Region",
-        "country": "Czechia",
-        "country_code": "CZ",
-        "display_name": "Újezd u Sezemic, okres Pardubice, Pardubice Region, Czechia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4101,7 +4101,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.837952136993,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4109,12 +4109,12 @@
         "post_id": "628",
         "row_index": 182,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Старосалтівська селищна громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4143,7 +4143,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.828842018137,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4151,12 +4151,12 @@
         "post_id": "629",
         "row_index": 183,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Старосалтівська селищна громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4206,7 +4206,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -73.93798828125,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4214,12 +4214,12 @@
         "post_id": "631",
         "row_index": 185,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Eeyou Istchee James Bay",
-        "state": "Quebec",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
         "country": "Canada",
         "country_code": "CA",
-        "display_name": "Eeyou Istchee James Bay, Jamésie, Nord-du-Québec, Quebec, Canada"
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4248,7 +4248,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.774325679035,
+          34.6664676,
           -0.749763
         ]
       },
@@ -4256,12 +4256,12 @@
         "post_id": "632",
         "row_index": 186,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Bobasi Chache ward",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Tabaka ward",
         "state": "Kisii County",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "Bobasi Chache ward, Sameta, Kisii County, 40200, Kenya"
+        "display_name": "Tabaka ward, Gucha South, Kisii County, Kenya"
       }
     },
     {
@@ -4290,7 +4290,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          46.629152297974,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4298,12 +4298,12 @@
         "post_id": "633",
         "row_index": 187,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Pallasovsky District",
-        "state": "Volgograd Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Ромашковское сельское поселение, Pallasovsky District, Volgograd Oblast, Southern Federal District, 404234, Russia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4332,7 +4332,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.34228515625,
+          8.26171875,
           10.03511915411
         ]
       },
@@ -4340,12 +4340,12 @@
         "post_id": "634",
         "row_index": 188,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "Oromia Region",
-        "country": "Ethiopia",
-        "country_code": "ET",
-        "display_name": "North Shewa (Oromia Region), Oromia Region, 1221, Ethiopia"
+        "lon_header": "Additional project location.lon",
+        "city": "Ikulu",
+        "state": "Kaduna State",
+        "country": "Nigeria",
+        "country_code": "NG",
+        "display_name": "Ikulu, Zangon Kataf, Kaduna State, Nigeria"
       }
     },
     {
@@ -4353,7 +4353,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.34228515625,
+          29.443359375,
           27.419928648469
         ]
       },
@@ -4361,12 +4361,12 @@
         "post_id": "634",
         "row_index": 188,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
+        "lon_header": "Additional project location 2.lon",
         "city": "",
-        "state": "Tabuk Province",
-        "country": "Saudi Arabia",
-        "country_code": "SA",
-        "display_name": "Tayma, Tabuk Province, Saudi Arabia"
+        "state": "New Valley",
+        "country": "Egypt",
+        "country_code": "EG",
+        "display_name": "New Valley, Egypt"
       }
     },
     {
@@ -4395,7 +4395,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.6904296875,
+          2.2584408,
           9.5293472
         ]
       },
@@ -4403,12 +4403,12 @@
         "post_id": "635",
         "row_index": 189,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Kagarko South",
-        "state": "Kaduna State",
-        "country": "Nigeria",
-        "country_code": "NG",
-        "display_name": "Kagarko South, Kagarko, Kaduna State, Nigeria"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Tchaourou",
+        "state": "Borgou Department",
+        "country": "Benin",
+        "country_code": "BJ",
+        "display_name": "Tchaourou, Borgou Department, Benin"
       }
     },
     {
@@ -4437,7 +4437,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          4.5604451,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4445,12 +4445,12 @@
         "post_id": "636",
         "row_index": 190,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Philippeville",
-        "state": "Namur",
-        "country": "Belgium",
-        "country_code": "BE",
-        "display_name": "Fagnolle, Philippeville, Namur, Wallonia, Belgium"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4479,7 +4479,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          0.43945297450671,
+          0.5951312,
           5.9989117
         ]
       },
@@ -4487,12 +4487,12 @@
         "post_id": "637",
         "row_index": 191,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "North Tongu District",
+        "lon_header": "Additional project location.lon__2",
+        "city": "South Tongu District",
         "state": "Volta Region",
         "country": "Ghana",
         "country_code": "GH",
-        "display_name": "North Tongu District, Volta Region, Ghana"
+        "display_name": "South Tongu District, Volta Region, Ghana"
       }
     },
     {
@@ -4521,7 +4521,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.75,
+          38.7524127,
           9.0358287
         ]
       },
@@ -4529,7 +4529,7 @@
         "post_id": "638",
         "row_index": 192,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
+        "lon_header": "Additional project location.lon__2",
         "city": "Addis Ababa",
         "state": "Addis Ababa",
         "country": "Ethiopia",
@@ -4563,7 +4563,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.921142578125,
+          2.515869140625,
           9.9529576755777
         ]
       },
@@ -4571,12 +4571,12 @@
         "post_id": "639",
         "row_index": 193,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Agunu",
-        "state": "Kaduna State",
-        "country": "Nigeria",
-        "country_code": "NG",
-        "display_name": "Agunu, Kachia, Kaduna State, Nigeria"
+        "lon_header": "Additional project location.lon__2",
+        "city": "N'Dali",
+        "state": "Borgou Department",
+        "country": "Benin",
+        "country_code": "BJ",
+        "display_name": "N'Dali, Borgou Department, Benin"
       }
     },
     {
@@ -4626,7 +4626,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          2.109823,
+          9.3238432,
           17.7356214
         ]
       },
@@ -4634,12 +4634,12 @@
         "post_id": "641",
         "row_index": 195,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Ménaka",
-        "country": "Mali",
-        "country_code": "ML",
-        "display_name": "Ménaka, Mali"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Tchirozérine",
+        "state": "Agadez Region",
+        "country": "Niger",
+        "country_code": "NE",
+        "display_name": "Tchirozérine, Agadez Region, Niger"
       }
     },
     {
@@ -4668,7 +4668,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          27.5589884,
+          29.7468414,
           -18.4554963
         ]
       },
@@ -4676,12 +4676,12 @@
         "post_id": "642",
         "row_index": 196,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Lupane",
-        "state": "Matabeleland North Province",
+        "lon_header": "Additional project location.lon",
+        "city": "Kadoma",
+        "state": "Mashonaland West Province",
         "country": "Zimbabwe",
         "country_code": "ZW",
-        "display_name": "Lupane, Matabeleland North Province, Zimbabwe"
+        "display_name": "Kadoma, Mashonaland West Province, Zimbabwe"
       }
     },
     {
@@ -4689,7 +4689,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          27.5589884,
+          33.9301963,
           -13.2687204
         ]
       },
@@ -4697,12 +4697,12 @@
         "post_id": "642",
         "row_index": 196,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
+        "lon_header": "Additional project location 2.lon",
         "city": "",
-        "state": "Copperbelt Province",
-        "country": "Zambia",
-        "country_code": "ZM",
-        "display_name": "Lufwanyama District, Copperbelt Province, Zambia"
+        "state": "Ntchisi",
+        "country": "Malawi",
+        "country_code": "MW",
+        "display_name": "Ntchisi, Central Region, Malawi, Malawi"
       }
     },
     {
@@ -4731,7 +4731,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.88427734375,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4739,12 +4739,12 @@
         "post_id": "643",
         "row_index": 197,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Lviv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Добросинсько-Магерівська сільська громада, Lviv Raion, Lviv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4773,7 +4773,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          71.247499,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4781,12 +4781,12 @@
         "post_id": "644",
         "row_index": 198,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Nura District",
-        "state": "Karaganda Region",
-        "country": "Kazakhstan",
-        "country_code": "KZ",
-        "display_name": "Nura District, Karaganda Region, Kazakhstan"
+        "lon_header": "Additional project location.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4857,7 +4857,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -13.26795,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -4865,12 +4865,12 @@
         "post_id": "647",
         "row_index": 201,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -4920,7 +4920,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -116.71875,
+          -116.68453216378,
           50.156138753418
         ]
       },
@@ -4928,7 +4928,7 @@
         "post_id": "649",
         "row_index": 203,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
+        "lon_header": "Additional project location.lon__2",
         "city": "Area D (Lardeau Valley/Duncan Lake)",
         "state": "British Columbia",
         "country": "Canada",
@@ -4962,7 +4962,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.276611328125,
+          34.767608642578,
           0.2479211700113
         ]
       },
@@ -4970,12 +4970,12 @@
         "post_id": "650",
         "row_index": 204,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Laikipia North",
-        "state": "Laikipia County",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Isukha South ward",
+        "state": "Kakamega County",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "Laikipia North, Laikipia County, Kenya"
+        "display_name": "Isukha South ward, Shinyalu, Kakamega County, Kenya"
       }
     },
     {
@@ -5004,7 +5004,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -12.4486705,
+          -12.430075202199,
           8.3769134902825
         ]
       },
@@ -5012,7 +5012,7 @@
         "post_id": "651",
         "row_index": 205,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
+        "lon_header": "Additional project location.lon__2",
         "city": "",
         "state": "Tonkolili District",
         "country": "Sierra Leone",
@@ -5046,7 +5046,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5054,12 +5054,12 @@
         "post_id": "652",
         "row_index": 206,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Вейделевский муниципальный округ",
-        "state": "Belgorod Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Вейделевский муниципальный округ, Belgorod Oblast, Central Federal District, Russia"
+        "lon_header": "Additional project location.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5130,7 +5130,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.6880794,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5138,12 +5138,12 @@
         "post_id": "655",
         "row_index": 209,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Вовчанська міська громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5193,7 +5193,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          78.004912661258,
+          77.197792439468,
           28.614869066602
         ]
       },
@@ -5201,12 +5201,12 @@
         "post_id": "657",
         "row_index": 211,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Syana",
-        "state": "Uttar Pradesh",
+        "lon_header": "Additional project location.lon__2",
+        "city": "New Delhi",
+        "state": "Delhi",
         "country": "India",
         "country_code": "IN",
-        "display_name": "Syana, Bulandshahr, Uttar Pradesh, India"
+        "display_name": "New Delhi, Delhi, India"
       }
     },
     {
@@ -5235,7 +5235,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.965087890625,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5243,12 +5243,12 @@
         "post_id": "658",
         "row_index": 212,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Rheingau-Taunus-Kreis",
-        "state": "Hesse",
-        "country": "Germany",
-        "country_code": "DE",
-        "display_name": "Schlangenbad, Rheingau-Taunus-Kreis, Hesse, 65388, Germany"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5298,7 +5298,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.78625503676,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5306,12 +5306,12 @@
         "post_id": "660",
         "row_index": 214,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Вовчанська міська громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5340,7 +5340,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.828842018137,
+          49.4098352,
           -18.1553985
         ]
       },
@@ -5348,12 +5348,12 @@
         "post_id": "661",
         "row_index": 215,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Zambezia Province",
-        "country": "Mozambique",
-        "country_code": "MZ",
-        "display_name": "Inhassunge, Zambezia Province, Zona Centro, Mozambique"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Toamasina",
+        "state": "Atsinanana",
+        "country": "Madagascar",
+        "country_code": "MG",
+        "display_name": "Toamasina, Toamasina I, Atsinanana, Toamasina Province, 501, Madagascar"
       }
     },
     {
@@ -5382,7 +5382,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -74.0060152,
+          79.2333984375,
           22.512556954051
         ]
       },
@@ -5390,12 +5390,12 @@
         "post_id": "662",
         "row_index": 216,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Acklins",
-        "state": "",
-        "country": "Bahamas",
-        "country_code": "BS",
-        "display_name": "Acklins, Bahamas"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Harrai Tahsil",
+        "state": "Madhya Pradesh",
+        "country": "India",
+        "country_code": "IN",
+        "display_name": "Harrai Tahsil, Chhindwara, Madhya Pradesh, 480224, India"
       }
     },
     {
@@ -5424,7 +5424,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          79.263589933778,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5432,12 +5432,12 @@
         "post_id": "663",
         "row_index": 217,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Кокентау ауылдық округі",
-        "state": "Abay Region",
-        "country": "Kazakhstan",
-        "country_code": "KZ",
-        "display_name": "Кокентау ауылдық округі, Zhanasemey District, Abay Region, Kazakhstan"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5466,7 +5466,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          13.359375,
+          9.2315915,
           4.1567895
         ]
       },
@@ -5474,12 +5474,12 @@
         "post_id": "664",
         "row_index": 218,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Doumaintang",
-        "state": "East",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Buea",
+        "state": "Southwest",
         "country": "Cameroon",
         "country_code": "CM",
-        "display_name": "Doumaintang, Haut-Nyong, East, Cameroon"
+        "display_name": "Buea, Fako, Southwest, Cameroon"
       }
     },
     {
@@ -5508,7 +5508,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          33.9301963,
+          34.82666015625,
           -18.23391656712
         ]
       },
@@ -5516,12 +5516,12 @@
         "post_id": "665",
         "row_index": 219,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
+        "lon_header": "Additional project location.lon",
         "city": "",
         "state": "Sofala Province",
         "country": "Mozambique",
         "country_code": "MZ",
-        "display_name": "Gorongosa, Sofala Province, Zona Centro, Mozambique"
+        "display_name": "Maringué, Sofala Province, Zona Centro, Mozambique"
       }
     },
     {
@@ -5529,7 +5529,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          33.9301963,
+          27.5589884,
           -14.5189121
         ]
       },
@@ -5537,12 +5537,12 @@
         "post_id": "665",
         "row_index": 219,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
+        "lon_header": "Additional project location 2.lon",
         "city": "",
-        "state": "Tete Province",
-        "country": "Mozambique",
-        "country_code": "MZ",
-        "display_name": "Angónia, Tete Province, Zona Centro, Mozambique"
+        "state": "Central Province",
+        "country": "Zambia",
+        "country_code": "ZM",
+        "display_name": "Chibombo District, Central Province, Zambia"
       }
     },
     {
@@ -5592,7 +5592,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          36.7926632,
           -2.5480008
         ]
       },
@@ -5600,12 +5600,12 @@
         "post_id": "667",
         "row_index": 221,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Athi ward",
-        "state": "Kitui County",
+        "lon_header": "Additional project location.lon",
+        "city": "Kajiado Central",
+        "state": "Kajiado County",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "Athi ward, Kitui South, Kitui County, Kenya"
+        "display_name": "Kajiado Central, Kajiado County, 01100, Kenya"
       }
     },
     {
@@ -5613,7 +5613,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5621,12 +5621,12 @@
         "post_id": "667",
         "row_index": 221,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Вейделевский муниципальный округ",
-        "state": "Belgorod Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Вейделевский муниципальный округ, Belgorod Oblast, Central Federal District, Russia"
+        "lon_header": "Additional project location 2.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5655,7 +5655,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          28.531494140625,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5663,12 +5663,12 @@
         "post_id": "668",
         "row_index": 222,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Zhytomyr Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Novohuivynske Settlement Hromada, Zhytomyr Raion, Zhytomyr Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5697,7 +5697,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.6174782,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5705,12 +5705,12 @@
         "post_id": "669",
         "row_index": 223,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Великобурлуцька селищна громада, Kupiansk Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5739,7 +5739,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.925146373295,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5747,12 +5747,12 @@
         "post_id": "670",
         "row_index": 224,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Вовчанська міська громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5781,7 +5781,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -116.71875,
+          -116.68544769287,
           50.101863421449
         ]
       },
@@ -5789,7 +5789,7 @@
         "post_id": "671",
         "row_index": 225,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
+        "lon_header": "Additional project location.lon__2",
         "city": "Area D (Lardeau Valley/Duncan Lake)",
         "state": "British Columbia",
         "country": "Canada",
@@ -5844,7 +5844,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.8222636,
+          29.2675469,
           26.2540493
         ]
       },
@@ -5852,12 +5852,12 @@
         "post_id": "673",
         "row_index": 227,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
+        "lon_header": "Additional project location.lon__2",
         "city": "",
-        "state": "Kufra",
-        "country": "Libya",
-        "country_code": "LY",
-        "display_name": "Kufra, Libya"
+        "state": "New Valley",
+        "country": "Egypt",
+        "country_code": "EG",
+        "display_name": "New Valley, Egypt"
       }
     },
     {
@@ -5907,7 +5907,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          1.215829,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5915,12 +5915,12 @@
         "post_id": "675",
         "row_index": 229,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "",
-        "country": "France",
-        "country_code": "FR",
-        "display_name": "Metropolitan France, France"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -5970,7 +5970,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.177047729492,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -5978,12 +5978,12 @@
         "post_id": "677",
         "row_index": 231,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Великобурлуцька селищна громада, Kupiansk Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6033,7 +6033,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          2.3521041870117,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6041,12 +6041,12 @@
         "post_id": "679",
         "row_index": 233,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Beauval",
-        "state": "Hauts-de-France",
-        "country": "France",
-        "country_code": "FR",
-        "display_name": "Beauval, Amiens, Somme, Hauts-de-France, Metropolitan France, 80630, France"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6075,7 +6075,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6083,12 +6083,12 @@
         "post_id": "680",
         "row_index": 234,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Вейделевский муниципальный округ",
-        "state": "Belgorod Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Вейделевский муниципальный округ, Belgorod Oblast, Central Federal District, Russia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6138,7 +6138,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -13.246765136719,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6146,12 +6146,12 @@
         "post_id": "682",
         "row_index": 236,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6201,7 +6201,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          39.648547578884,
+          36.828842018137,
           -1.30261485
         ]
       },
@@ -6209,12 +6209,12 @@
         "post_id": "684",
         "row_index": 238,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Galole",
-        "state": "Tana River County",
+        "lon_header": "Additional project location.lon",
+        "city": "Nairobi",
+        "state": "Nairobi County",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "Galole, Tana River County, 70101, Kenya"
+        "display_name": "Landimawe ward, Starehe, Nairobi, Nairobi County, 00500, Kenya"
       }
     },
     {
@@ -6222,7 +6222,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          39.648547578884,
+          34.200135009996,
           -0.06040135
         ]
       },
@@ -6230,12 +6230,12 @@
         "post_id": "684",
         "row_index": 238,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Garissa Township",
-        "state": "Garissa",
+        "lon_header": "Additional project location 2.lon",
+        "city": "West Sakwa ward",
+        "state": "Siaya County",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "Garissa Township, Garissa, Kenya"
+        "display_name": "West Sakwa ward, Bondo, Siaya County, Kenya"
       }
     },
     {
@@ -6264,7 +6264,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.6240234375,
+          -78.75,
           39.909736234537
         ]
       },
@@ -6272,12 +6272,12 @@
         "post_id": "685",
         "row_index": 239,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Phillips County",
-        "state": "Kansas",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Juniata Township",
+        "state": "Pennsylvania",
         "country": "United States",
         "country_code": "US",
-        "display_name": "Phillips County, Kansas, United States"
+        "display_name": "Juniata Township, Bedford County, Pennsylvania, United States"
       }
     },
     {
@@ -6348,7 +6348,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.9999721,
+          -101.36877099075,
           56.606273806935
         ]
       },
@@ -6356,12 +6356,12 @@
         "post_id": "688",
         "row_index": 242,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "",
-        "country": "Denmark",
-        "country_code": "DK",
-        "display_name": "Denmark"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Unorganized Division No. 23",
+        "state": "Manitoba",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Unorganized Division No. 23, Manitoba, Canada"
       }
     },
     {
@@ -6432,7 +6432,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.87930533266,
+          31.3867967,
           2.9327809
         ]
       },
@@ -6440,12 +6440,12 @@
         "post_id": "691",
         "row_index": 245,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Loiyangalani ward",
-        "state": "Marsabit County",
-        "country": "Kenya",
-        "country_code": "KE",
-        "display_name": "Loiyangalani ward, Laisamis, Marsabit County, Kenya"
+        "lon_header": "Additional project location.lon__2",
+        "city": "",
+        "state": "Madi Okollo",
+        "country": "Uganda",
+        "country_code": "UG",
+        "display_name": "Rhino Camp, Madi Okollo, Uganda"
       }
     },
     {
@@ -6474,7 +6474,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.886465419084,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6482,12 +6482,12 @@
         "post_id": "692",
         "row_index": 246,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Старосалтівська селищна громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6516,7 +6516,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          37.074632,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6524,12 +6524,12 @@
         "post_id": "693",
         "row_index": 247,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Вовчанська міська громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6600,7 +6600,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -11.497192382812,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6608,12 +6608,12 @@
         "post_id": "696",
         "row_index": 250,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6642,7 +6642,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          35.133926854469,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6650,12 +6650,12 @@
         "post_id": "697",
         "row_index": 251,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Краснокутська селищна громада, Bohodukhiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6684,7 +6684,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.877873043473,
+          38.4313975,
           1.4419683
         ]
       },
@@ -6692,12 +6692,12 @@
         "post_id": "698",
         "row_index": 252,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "El-Barta ward",
-        "state": "Samburu",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Merti",
+        "state": "Isiolo",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "El-Barta ward, Samburu North, Samburu, Kenya"
+        "display_name": "Merti, Isiolo, Kenya"
       }
     },
     {
@@ -6726,7 +6726,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.877873043473,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6734,12 +6734,12 @@
         "post_id": "699",
         "row_index": 253,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Старосалтівська селищна громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6768,7 +6768,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          36.877873043473,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6776,12 +6776,12 @@
         "post_id": "700",
         "row_index": 254,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Chuhuiv Raion",
-        "state": "Kharkiv Oblast",
-        "country": "Ukraine",
-        "country_code": "UA",
-        "display_name": "Старосалтівська селищна громада, Chuhuiv Raion, Kharkiv Oblast, Ukraine"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -6831,7 +6831,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -116.71875,
+          36.885641102884,
           -1.2481492324356
         ]
       },
@@ -6839,12 +6839,12 @@
         "post_id": "702",
         "row_index": 256,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location.lon__2",
+        "city": "Nairobi",
+        "state": "Nairobi County",
+        "country": "Kenya",
+        "country_code": "KE",
+        "display_name": "Babadogo ward, Kasarani, Nairobi, Nairobi County, 00623, Kenya"
       }
     },
     {
@@ -6873,7 +6873,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          39.863891601563,
+          39.688110351562,
           -4.0724942591674
         ]
       },
@@ -6881,12 +6881,12 @@
         "post_id": "703",
         "row_index": 257,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "",
+        "lon_header": "Additional project location.lon",
+        "city": "Mombasa",
+        "state": "Mombasa County",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "Kenya"
+        "display_name": "Mombasa, Tononoka ward, Mvita, Mombasa County, 80100, Kenya"
       }
     },
     {
@@ -6894,7 +6894,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          39.863891601563,
+          36.826171875,
           -1.2743089918452
         ]
       },
@@ -6902,12 +6902,12 @@
         "post_id": "703",
         "row_index": 257,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Bura",
-        "state": "Tana River County",
+        "lon_header": "Additional project location 2.lon",
+        "city": "Nairobi",
+        "state": "Nairobi County",
         "country": "Kenya",
         "country_code": "KE",
-        "display_name": "Bura, Tana River County, Kenya"
+        "display_name": "Nairobi, Nairobi County, Kenya"
       }
     },
     {
@@ -6936,7 +6936,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          90.845947265625,
+          90.389015,
           23.7644025
         ]
       },
@@ -6944,12 +6944,12 @@
         "post_id": "704",
         "row_index": 258,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Bancharampur Upazila",
-        "state": "Chattogram Division",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Dhaka",
+        "state": "Dhaka Division",
         "country": "Bangladesh",
         "country_code": "BD",
-        "display_name": "Bancharampur Upazila, Brahmanbaria District, Chattogram Division, Bangladesh"
+        "display_name": "Dhaka, Dhaka Metropolitan, Dhaka District, Dhaka Division, 1215, Bangladesh"
       }
     },
     {
@@ -6978,7 +6978,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -6986,12 +6986,12 @@
         "post_id": "705",
         "row_index": 259,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Вейделевский муниципальный округ",
-        "state": "Belgorod Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Вейделевский муниципальный округ, Belgorod Oblast, Central Federal District, Russia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7020,7 +7020,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -7028,12 +7028,12 @@
         "post_id": "706",
         "row_index": 260,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Вейделевский муниципальный округ",
-        "state": "Belgorod Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Вейделевский муниципальный округ, Belgorod Oblast, Central Federal District, Russia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7062,7 +7062,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -7070,12 +7070,12 @@
         "post_id": "707",
         "row_index": 261,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Вейделевский муниципальный округ",
-        "state": "Belgorod Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Вейделевский муниципальный округ, Belgorod Oblast, Central Federal District, Russia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7104,7 +7104,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -17.463455200195,
+          -17.453327,
           14.7426165
         ]
       },
@@ -7112,7 +7112,7 @@
         "post_id": "708",
         "row_index": 262,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
+        "lon_header": "Additional project location.lon__2",
         "city": "Dakar",
         "state": "Dakar Region",
         "country": "Senegal",
@@ -7146,7 +7146,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -1.0800271,
           8.0300284
         ]
       },
@@ -7154,12 +7154,12 @@
         "post_id": "709",
         "row_index": 263,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "Central Ethiopia Regional State",
-        "country": "Ethiopia",
-        "country_code": "ET",
-        "display_name": "East Gurage, Central Ethiopia Regional State, Ethiopia"
+        "lon_header": "Additional project location.lon",
+        "city": "East Gonja Municipal District",
+        "state": "Savannah Region",
+        "country": "Ghana",
+        "country_code": "GH",
+        "display_name": "East Gonja Municipal District, Savannah Region, Ghana"
       }
     },
     {
@@ -7167,7 +7167,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          32.2166578,
           1.5333554
         ]
       },
@@ -7175,12 +7175,12 @@
         "post_id": "709",
         "row_index": 263,
         "lat_header": "Additional project location 2.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Merti",
-        "state": "Isiolo",
-        "country": "Kenya",
-        "country_code": "KE",
-        "display_name": "Merti, Isiolo, Kenya"
+        "lon_header": "Additional project location 2.lon",
+        "city": "",
+        "state": "Nakasongola",
+        "country": "Uganda",
+        "country_code": "UG",
+        "display_name": "Nakasongola, Central Region, Uganda"
       }
     },
     {
@@ -7209,7 +7209,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.4313975,
+          -1.0800271,
           8.0300284
         ]
       },
@@ -7217,12 +7217,12 @@
         "post_id": "710",
         "row_index": 264,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Central Ethiopia Regional State",
-        "country": "Ethiopia",
-        "country_code": "ET",
-        "display_name": "East Gurage, Central Ethiopia Regional State, Ethiopia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "East Gonja Municipal District",
+        "state": "Savannah Region",
+        "country": "Ghana",
+        "country_code": "GH",
+        "display_name": "East Gonja Municipal District, Savannah Region, Ghana"
       }
     },
     {
@@ -7251,7 +7251,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -116.71875,
+          34.5523195,
           0.6065988
         ]
       },
@@ -7259,12 +7259,12 @@
         "post_id": "711",
         "row_index": 265,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "",
-        "state": "",
-        "country": "",
-        "country_code": "",
-        "display_name": null
+        "lon_header": "Additional project location.lon",
+        "city": "Marakaru/Tuuti ward",
+        "state": "Bungoma County",
+        "country": "Kenya",
+        "country_code": "KE",
+        "display_name": "Marakaru/Tuuti ward, Kanduyi, Bungoma County, Kenya"
       }
     },
     {
@@ -7293,7 +7293,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          81.7804732,
+          82.2350607,
           16.9437385
         ]
       },
@@ -7301,12 +7301,12 @@
         "post_id": "712",
         "row_index": 266,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Rajahmundry Rural",
+        "lon_header": "Additional project location.lon__2",
+        "city": "Kakinada",
         "state": "Andhra Pradesh",
         "country": "India",
         "country_code": "IN",
-        "display_name": "Rajahmundry Rural, East Godavari, Andhra Pradesh, 533125, India"
+        "display_name": "Kakinada, Kakinada Urban, Kakinada, Andhra Pradesh, 533001, India"
       }
     },
     {
@@ -7356,7 +7356,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          6.8348264694214,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -7364,12 +7364,12 @@
         "post_id": "714",
         "row_index": 268,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Eckfeld",
-        "state": "Rhineland-Palatinate",
-        "country": "Germany",
-        "country_code": "DE",
-        "display_name": "Eckfeld, Wittlich-Land, Landkreis Bernkastel-Wittlich, Rhineland-Palatinate, Germany"
+        "lon_header": "Additional project location.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7419,7 +7419,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.9999721,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -7427,12 +7427,12 @@
         "post_id": "717",
         "row_index": 270,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Rheingau-Taunus-Kreis",
-        "state": "Hesse",
-        "country": "Germany",
-        "country_code": "DE",
-        "display_name": "Bad Schwalbach, Rheingau-Taunus-Kreis, Hesse, 65307, Germany"
+        "lon_header": "Additional project location.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7461,7 +7461,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          7.9999721,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -7469,12 +7469,12 @@
         "post_id": "718",
         "row_index": 271,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Rheingau-Taunus-Kreis",
-        "state": "Hesse",
-        "country": "Germany",
-        "country_code": "DE",
-        "display_name": "Bad Schwalbach, Rheingau-Taunus-Kreis, Hesse, 65307, Germany"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7503,7 +7503,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          38.7524127,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -7511,12 +7511,12 @@
         "post_id": "719",
         "row_index": 272,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "Вейделевский муниципальный округ",
-        "state": "Belgorod Oblast",
-        "country": "Russia",
-        "country_code": "RU",
-        "display_name": "Вейделевский муниципальный округ, Belgorod Oblast, Central Federal District, Russia"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7545,7 +7545,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          101.6942371,
+          -116.71875,
           50.112313451247
         ]
       },
@@ -7553,12 +7553,12 @@
         "post_id": "720",
         "row_index": 273,
         "lat_header": "Additional project location.lat",
-        "lon_header": "Project main location.lon",
-        "city": "Erdenebulgan",
-        "state": "Hovsgel",
-        "country": "Mongolia",
-        "country_code": "MN",
-        "display_name": "Erdenebulgan, Hovsgel, Mongolia"
+        "lon_header": "Additional project location.lon",
+        "city": "Area D (Lardeau Valley/Duncan Lake)",
+        "state": "British Columbia",
+        "country": "Canada",
+        "country_code": "CA",
+        "display_name": "Area D (Lardeau Valley/Duncan Lake), Regional District of Central Kootenay, British Columbia, Canada"
       }
     },
     {
@@ -7587,7 +7587,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          32.1857889,
+          29.3675028,
           -3.3638125
         ]
       },
@@ -7595,12 +7595,12 @@
         "post_id": "721",
         "row_index": 274,
         "lat_header": "Additional project location.lat__2",
-        "lon_header": "Project main location.lon__2",
-        "city": "",
-        "state": "Geita",
-        "country": "Tanzania",
-        "country_code": "TZ",
-        "display_name": "Mbogwe, Geita, Lake Zone, Tanzania"
+        "lon_header": "Additional project location.lon__2",
+        "city": "Bujumbura",
+        "state": "Bujumbura Mairie",
+        "country": "Burundi",
+        "country_code": "BI",
+        "display_name": "Bujumbura, Bujumbura Mairie, Burundi"
       }
     }
   ]
