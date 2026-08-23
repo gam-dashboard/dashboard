@@ -191,10 +191,10 @@ export default function MapView(): JSX.Element {
           if (!postId) { missingPostId.push(rowIndex); return; }
           if (byPostId.has(postId)) { duplicatePostId.add(postId); return; } // keep first occurrence
 
-          const title = getField(['project', 'project name']);
-          const description = getField(['description', 'unstructured description']);
-          const tagLine = getField(['project tag line']);
-          const org = getField(['organization name', 'organization']);
+          const title = getField(['project', 'project name', 'project_1', 'project_2']);
+          const description = getField(['description', 'unstructured description', 'description_1', 'description_2']);
+          const tagLine = getField(['project tag line', 'project tag line_1', 'project tag line_2']);
+          const org = getField(['organization name', 'organization', 'organization name_1', 'organization name_2']);
 
           let goals: string[] = [];
           for (const h of sdgHeaders) {
@@ -392,14 +392,14 @@ export default function MapView(): JSX.Element {
       const titleEl = document.createElement('div');
       titleEl.style.fontWeight = '600';
       titleEl.style.marginBottom = '6px';
-      titleEl.textContent = project.title || project.org || 'Project';
+      titleEl.textContent = project.title || 'Project';
       container.appendChild(titleEl);
 
       const descEl = document.createElement('div');
       descEl.style.color = '#333';
       descEl.style.fontSize = '12px';
       descEl.style.marginBottom = '8px';
-      descEl.textContent = (project.tagLine || project.description).slice(0, 200);
+      descEl.textContent = (project.tagLine).slice(0, 200);
       container.appendChild(descEl);
 
       const actionsRow = document.createElement('div');
@@ -500,7 +500,7 @@ export default function MapView(): JSX.Element {
         const title = document.createElement('div');
         title.style.fontSize = '14px';
         title.style.fontWeight = '600';
-        title.textContent = project.title || project.org || `Item ${idx + 1}`;
+        title.textContent = project.title || `Item ${idx + 1}`;
         info.appendChild(title);
 
         const sub = document.createElement('div');
