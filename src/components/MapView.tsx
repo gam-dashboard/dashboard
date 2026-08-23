@@ -123,6 +123,8 @@ export default function MapView(): JSX.Element {
   // (e.g. on marker click) is O(1) instead of an array scan.
   const [projects, setProjects] = useState<Map<string, Project>>(new Map());
   const [selected, setSelected] = useState<Project | null>(null);
+  const projectsRef = useRef<Map<string, Project>>(projects);
+  useEffect(() => { projectsRef.current = projects; }, [projects]);
   // Which of the project's locations was actually clicked/opened — used to
   // show a primary "Location" line before the full "All locations" list.
   const [selectedLocation, setSelectedLocation] = useState<ProjectLocation | null>(null);
@@ -616,7 +618,7 @@ export default function MapView(): JSX.Element {
             if (e.features && e.features.length > 0) {
               map.getCanvas().style.cursor = 'pointer';
               const postId = e.features[0].properties?.postId;
-              const project = postId ? projects.get(postId) : undefined;
+              const project = postId ? projectsRef.current.get(postId) : undefined;
               setHoverInfo({ x: e.point.x, y: e.point.y, text: project?.title || 'Project' });
             }
           });
@@ -638,7 +640,7 @@ export default function MapView(): JSX.Element {
             // the projects Map — O(1) per feature, no scanning/reconstruction.
             const matches: ProjectMarker[] = features
               .map((f: any) => {
-                const project = projects.get(f.properties?.postId);
+                const project = projectsRef.current.get(f.properties?.postId);
                 const location = project?.locations.find(l => l.id === f.properties?.locationId);
                 return project && location ? { project, location } : null;
               })
