@@ -506,9 +506,7 @@ export default function MapView(): JSX.Element {
         const sub = document.createElement('div');
         sub.style.fontSize = '12px';
         sub.style.color = '#666';
-        sub.textContent = location.city
-          ? location.city + (location.country ? `, ${location.country}` : '')
-          : (project.tagLine || '').slice(0, 120);
+        sub.textContent = (project.tagLine || '').slice(0, 120);
         info.appendChild(sub);
         item.appendChild(info);
 
