@@ -904,11 +904,7 @@ export default function MapView(): JSX.Element {
               {(selectedPlace || selectedLocation?.display_name || selectedLocation?.state || selectedLocation?.country) && (
                 <p>
                   <strong>Place:</strong>{' '}
-                  {selectedPlace
-                    ? selectedPlace
-                    : selectedLocation?.display_name
-                      ? selectedLocation.display_name
-                      : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
+                  {selectedLocation?.display_name}
                 </p>
               )}
 
