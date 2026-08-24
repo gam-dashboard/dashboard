@@ -1,7 +1,8 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 import * as maplibregl from 'maplibre-gl';
 import Papa from 'papaparse';
-import sampleCsvUrl from '../data/sample.csv?url';
+import sdgProjectsCsvUrl from '../data/SDG_projects.csv?url';
+import unCivicCsvUrl from '../data/un_civic_2024.csv?url';
 import locationsCsvUrl from '../data/locations.csv?url';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 
@@ -31,7 +32,7 @@ type Project = {
   goals: string[];
   searchText: string;
   postDate: Date | null;
-  row: CsvRow; // original sample.csv row, for anything not modeled above
+  row: CsvRow; // original source row, for anything not modeled above
   locations: ProjectLocation[];
 };
 
@@ -96,14 +97,17 @@ const parseNum = (v?: string): number | undefined => {
   return Number.isFinite(n) ? n : undefined;
 };
 
-/** Case/whitespace-tolerant field lookup, so we don't break if a header is
- *  "Organization Name" in one export and "organization name" in another. */
-const makeFieldGetter = (row: CsvRow, headerNormToOrig: Map<string, string>) =>
+/** Case/whitespace-tolerant field lookup, updated to account for duplicate
+ *  CSV headers with the same normalized name by storing an array of original
+ *  header strings for each normalized key. */
+const makeFieldGetter = (row: CsvRow, headerNormToOrig: Map<string, string[]>) =>
   (candidates: string[]): string => {
     for (const c of candidates) {
-      const orig = headerNormToOrig.get(c);
-      if (orig != null && row[orig] != null && String(row[orig]).trim() !== '') {
-        return String(row[orig]);
+      const origs = headerNormToOrig.get(c) || [];
+      for (const orig of origs) {
+        if (orig != null && row[orig] != null && String(row[orig]).trim() !== '') {
+          return String(row[orig]);
+        }
       }
     }
     return '';
@@ -122,11 +126,11 @@ export default function MapView(): JSX.Element {
   // `projects` is the single source of truth, keyed by Post ID so any lookup
   // (e.g. on marker click) is O(1) instead of an array scan.
   const [projects, setProjects] = useState<Map<string, Project>>(new Map());
-  const [selected, setSelected] = useState<Project | null>(null);
+  // keep a ref to avoid stale closures in map event handlers
   const projectsRef = useRef<Map<string, Project>>(projects);
   useEffect(() => { projectsRef.current = projects; }, [projects]);
-  // Which of the project's locations was actually clicked/opened — used to
-  // show a primary "Location" line before the full "All locations" list.
+
+  const [selected, setSelected] = useState<Project | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<ProjectLocation | null>(null);
   const [hoverInfo, setHoverInfo] = useState<{ x: number; y: number; text: string } | null>(null);
 
@@ -139,8 +143,7 @@ export default function MapView(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
 
-  // city enrichment / UI (state is wired up for a city filter; no control
-  // currently renders one — kept as-is from the original, not new to this pass)
+  // city enrichment / UI
   const [uniqueCities, setUniqueCities] = useState<string[]>([]);
   const [activeCity, setActiveCity] = useState<string | null>(null);
 
@@ -164,18 +167,41 @@ export default function MapView(): JSX.Element {
     }
   }
 
-  // ---- Load sample.csv -> Project metadata keyed by Post ID, then load ----
-  // ---- locations.csv -> attach every matching row as a location ----------
-  useEffect(() => {
-    Papa.parse<CsvRow>(sampleCsvUrl, {
+  // Helper that wraps Papa.parse in a Promise so we can combine multiple CSVs
+  const parseCsv = (url: string) => new Promise<{ rows: CsvRow[]; headers: string[] }>((resolve, reject) => {
+    Papa.parse<CsvRow>(url, {
       download: true,
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
         const rows = results.data as CsvRow[];
         const headers = results.meta.fields || (rows.length ? Object.keys(rows[0]) : []);
-        const headerNormToOrig = new Map(headers.map(h => [normalize(h), h]));
-        const sdgHeaders = headers.filter(h => {
+        resolve({ rows, headers });
+      },
+      error: (err) => reject(err),
+    });
+  });
+
+  // ---- Load SDG_projects.csv + un_civic_2024.csv -> Project metadata keyed by Post ID,
+  // ---- then load locations.csv -> attach every matching row as a location ----------
+  useEffect(() => {
+    Promise.all([parseCsv(sdgProjectsCsvUrl), parseCsv(unCivicCsvUrl)])
+      .then(([a, b]) => {
+        // combine rows from both sources
+        const rows = [...a.rows, ...b.rows];
+        const allHeaders = Array.from(new Set([...(a.headers || []), ...(b.headers || [])]));
+
+        // build normalized -> original headers map (array) to tolerate duplicate-named headers
+        const headerNormToOrig = new Map<string, string[]>();
+        for (const h of allHeaders) {
+          const n = normalize(h);
+          const cur = headerNormToOrig.get(n) || [];
+          cur.push(h);
+          headerNormToOrig.set(n, cur);
+        }
+
+        // find any SDG-related header names (we want all originals that match)
+        const sdgHeaders = allHeaders.filter(h => {
           const n = normalize(h);
           return n.includes('sustainable development goal') || n.includes('sdg');
         });
@@ -187,14 +213,14 @@ export default function MapView(): JSX.Element {
         rows.forEach((r, rowIndex) => {
           const getField = makeFieldGetter(r, headerNormToOrig);
 
-          const postId = getField(['post id', 'postid']) || String(r['Post ID'] ?? '').trim();
+          const postId = getField(['post id', 'postid']) || String(r['Post ID'] ?? r['post_id'] ?? '').trim();
           if (!postId) { missingPostId.push(rowIndex); return; }
           if (byPostId.has(postId)) { duplicatePostId.add(postId); return; } // keep first occurrence
 
-          const title = getField(['project', 'project name', 'project_1', 'project_2']);
-          const description = getField(['description', 'unstructured description', 'description_1', 'description_2']);
-          const tagLine = getField(['project tag line', 'project tag line_1', 'project tag line_2']);
-          const org = getField(['organization name', 'organization', 'organization name_1', 'organization name_2']);
+          const title = getField(['project', 'project name', 'title', 'project title', 'name']) || getField(['organization name', 'organization']) || postId;
+          const description = getField(['description', 'unstructured description', 'summary', 'abstract']);
+          const tagLine = getField(['project tag line', 'tagline', 'tag line']);
+          const org = getField(['organization name', 'organization', 'partner']);
 
           let goals: string[] = [];
           for (const h of sdgHeaders) {
@@ -203,7 +229,7 @@ export default function MapView(): JSX.Element {
           }
           goals = Array.from(new Set(goals));
 
-          const dateStr = getField(['post date (utc)', 'post date', 'created (utc)', 'created']);
+          const dateStr = getField(['post date (utc)', 'post date', 'created (utc)', 'created', 'date']);
           const postDate = dateStr ? tryParseDate(dateStr) : null;
 
           const searchText = [postId, title, description, tagLine, org, Object.values(r).join(' ')]
@@ -222,7 +248,7 @@ export default function MapView(): JSX.Element {
         byPostId.forEach(p => p.goals.forEach(g => allGoals.add(g)));
         setUniqueGoals(Array.from(allGoals).sort(goalSort));
 
-        console.group('sample.csv → projects');
+        console.group('SDG_projects.csv + un_civic_2024.csv → projects');
         console.log(`parsed rows: ${rows.length}`);
         console.log(`projects: ${byPostId.size}`);
         if (missingPostId.length) console.warn(`rows with no Post ID (skipped): ${missingPostId.length}`, missingPostId);
@@ -262,7 +288,7 @@ export default function MapView(): JSX.Element {
 
             console.group('locations.csv → attached to projects');
             console.log(`parsed rows: ${locRows.length}`);
-            if (orphanRows.length) console.warn(`rows with a post_id not found in sample.csv: ${orphanRows.length}`, orphanRows);
+            if (orphanRows.length) console.warn(`rows with a post_id not found in projects CSVs: ${orphanRows.length}`, orphanRows);
             if (badCoordRows.length) console.warn(`rows with non-numeric coordinates: ${badCoordRows.length}`, badCoordRows);
             console.groupEnd();
 
@@ -278,8 +304,10 @@ export default function MapView(): JSX.Element {
             setProjects(new Map(byPostId));
           }
         });
-      },
-    });
+      })
+      .catch(err => {
+        console.error('Error loading project CSVs', err);
+      });
   }, []);
 
   // debounce search input
@@ -316,7 +344,7 @@ export default function MapView(): JSX.Element {
   }, [filteredProjects, activeCity]);
 
   // Country extraction: prefer locations.csv's country field; fall back to
-  // scanning the original sample.csv row for any "*country*" column.
+  // scanning the original project.row for any "*country*" column.
   const extractCountries = (p: Project): string[] => {
     const fromLocations = p.locations.map(l => l.country).filter(Boolean) as string[];
     if (fromLocations.length) return fromLocations;
@@ -392,14 +420,14 @@ export default function MapView(): JSX.Element {
       const titleEl = document.createElement('div');
       titleEl.style.fontWeight = '600';
       titleEl.style.marginBottom = '6px';
-      titleEl.textContent = project.title || 'Project';
+      titleEl.textContent = project.title || project.org || 'Project';
       container.appendChild(titleEl);
 
       const descEl = document.createElement('div');
       descEl.style.color = '#333';
       descEl.style.fontSize = '12px';
       descEl.style.marginBottom = '8px';
-      descEl.textContent = (project.tagLine).slice(0, 200);
+      descEl.textContent = (project.tagLine || project.description).slice(0, 200);
       container.appendChild(descEl);
 
       const actionsRow = document.createElement('div');
@@ -500,13 +528,15 @@ export default function MapView(): JSX.Element {
         const title = document.createElement('div');
         title.style.fontSize = '14px';
         title.style.fontWeight = '600';
-        title.textContent = project.title || `Item ${idx + 1}`;
+        title.textContent = project.title || project.org || `Item ${idx + 1}`;
         info.appendChild(title);
 
         const sub = document.createElement('div');
         sub.style.fontSize = '12px';
         sub.style.color = '#666';
-        sub.textContent = (project.tagLine || '').slice(0, 120);
+        sub.textContent = location.city
+          ? location.city + (location.country ? `, ${location.country}` : '')
+          : (project.tagLine || '').slice(0, 120);
         info.appendChild(sub);
         item.appendChild(info);
 
@@ -635,7 +665,7 @@ export default function MapView(): JSX.Element {
             if (!features || features.length === 0) return;
 
             // Resolve each feature back to its {project, location} pair via
-            // the projects Map — O(1) per feature, no scanning/reconstruction.
+            // the projects Map (use the ref to avoid stale closures).
             const matches: ProjectMarker[] = features
               .map((f: any) => {
                 const project = projectsRef.current.get(f.properties?.postId);
@@ -902,7 +932,11 @@ export default function MapView(): JSX.Element {
               {(selectedPlace || selectedLocation?.display_name || selectedLocation?.state || selectedLocation?.country) && (
                 <p>
                   <strong>Place:</strong>{' '}
-                  {selectedLocation?.display_name}
+                  {selectedPlace
+                    ? selectedPlace
+                    : selectedLocation?.display_name
+                      ? selectedLocation.display_name
+                      : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
                 </p>
               )}
 
