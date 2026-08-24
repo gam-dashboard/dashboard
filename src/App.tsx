@@ -6,7 +6,7 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <h1>Dashboard — Interactive Map</h1>
+        <h1>Global Action Mosaic — Interactive Dashboard</h1>
       </header>
       <main>
         <MapView />
