@@ -143,6 +143,14 @@ export default function MapView(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
 
+  // location autocomplete + filter state
+  const [locationInput, setLocationInput] = useState<string>(''); // free-text / datalist value
+  const [activeLocationFilter, setActiveLocationFilter] = useState<{ city?: string; state?: string; country?: string } | null>(null);
+  const [applyLocationFilter, setApplyLocationFilter] = useState<boolean>(false);
+
+  // helper to normalize labels for dedupe & lookup
+  const normLabel = (s: string) => String(s || '').trim().toLowerCase();
+
   // city enrichment / UI
   const [uniqueCities, setUniqueCities] = useState<string[]>([]);
   const [activeCity, setActiveCity] = useState<string | null>(null);
@@ -316,6 +324,44 @@ export default function MapView(): JSX.Element {
     return () => clearTimeout(t);
   }, [searchQuery]);
 
+  // unique location labels for the autocomplete (derived from loaded projects.locations)
+  const uniqueLocationOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const out: { label: string; city?: string; state?: string; country?: string }[] = [];
+
+    projects.forEach((p) => {
+      for (const loc of p.locations) {
+        const parts = [];
+        if (loc.city) parts.push(loc.city);
+        if (loc.state) parts.push(loc.state);
+        if (loc.country) parts.push(loc.country);
+        // prefer City, State, Country; fall back to display_name or country/state only
+        const label = parts.length > 0 ? parts.join(', ') : (loc.display_name || loc.country || loc.state || loc.city || `${loc.position[1]}, ${loc.position[0]}`);
+        const n = normLabel(label);
+        if (!seen.has(n)) {
+          seen.add(n);
+          out.push({ label, city: loc.city, state: loc.state, country: loc.country });
+        }
+      }
+    });
+
+    // sort alphabetically for nicer UX
+    out.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+    return out;
+  }, [projects]);
+
+  // call when the user picks/changes the datalist value (or presses Enter)
+  const handleLocationInputChange = (value: string) => {
+    setLocationInput(value);
+    const match = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(value));
+    if (match) {
+      setActiveLocationFilter({ city: match.city, state: match.state, country: match.country });
+    } else {
+      // no exact match selected (partial typing) — do not set the filter until user picks an option
+      setActiveLocationFilter(null);
+    }
+  };
+
   // Filter at the Project level (goals / search live on the project; city
   // lives on its locations), then derive the flat marker list for the map.
   const filteredProjects = useMemo(() => {
@@ -324,12 +370,35 @@ export default function MapView(): JSX.Element {
     const terms = q ? q.split(/\s+/).filter(Boolean) : [];
 
     return Array.from(projects.values()).filter((p) => {
+      // inside filteredProjects .filter((p) => { ... })
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
+
+      // location-based filter (if active)
+      if (applyLocationFilter && activeLocationFilter) {
+        const afCity = activeLocationFilter.city?.toLowerCase();
+        const afState = activeLocationFilter.state?.toLowerCase();
+        const afCountry = activeLocationFilter.country?.toLowerCase();
+
+        const hasMatch = p.locations.some(l => {
+          const lc = (l.city || '').toLowerCase();
+          const ls = (l.state || '').toLowerCase();
+          const lco = (l.country || '').toLowerCase();
+
+          // require all non-empty parts of the active filter to match the location
+          if (afCity && afCity !== lc) return false;
+          if (afState && afState !== ls) return false;
+          if (afCountry && afCountry !== lco) return false;
+          return true;
+        });
+        if (!hasMatch) return false;
+      }
+
+      // keep your activeCity behavior (if you still want separate city filter UI):
       if (activeCity && !p.locations.some(l => l.city?.toLowerCase() === activeCity.toLowerCase())) return false;
       if (terms.length > 0 && !terms.every(t => p.searchText.includes(t))) return false;
       return true;
     });
-  }, [projects, activeGoals, debouncedQuery, activeCity]);
+  }, [projects, activeGoals, debouncedQuery, activeCity, applyLocationFilter, activeLocationFilter]);
 
   // Markers to actually plot: one per (project, location) pair. When a city
   // filter is active, only that project's matching location(s) are shown —
@@ -792,6 +861,50 @@ export default function MapView(): JSX.Element {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Location autocomplete + filter */}
+        <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ flex: '1 1 auto', display: 'flex', gap: 8 }}>
+            <input
+              list="locations-datalist"
+              value={locationInput}
+              onChange={(e) => handleLocationInputChange(e.target.value)}
+              placeholder="Type a city, state, or country (e.g. \" Nairobi, Kenya\")"
+            style={{ flex: '1 1 auto', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
+    />
+            <datalist id="locations-datalist">
+              {uniqueLocationOptions.map(o => <option key={o.label} value={o.label} />)}
+            </datalist>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <input
+                type="checkbox"
+                checked={applyLocationFilter}
+                onChange={(e) => {
+                  // If enabling filter but no active selection, try to set from input
+                  if (e.target.checked && !activeLocationFilter) {
+                    const match = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(locationInput));
+                    if (match) setActiveLocationFilter({ city: match.city, state: match.state, country: match.country });
+                  }
+                  setApplyLocationFilter(e.target.checked);
+                }}
+              />
+              Filter to this location
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => {
+                setLocationInput('');
+                setActiveLocationFilter(null);
+                setApplyLocationFilter(false);
+              }}
+              style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+            >
+              Reset
+            </button>
           </div>
         </div>
 
