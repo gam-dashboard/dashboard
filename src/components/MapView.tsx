@@ -1,3 +1,4 @@
+// src/components/MapView.tsx
 import 'maplibre-gl/dist/maplibre-gl.css';
 import * as maplibregl from 'maplibre-gl';
 import Papa from 'papaparse';
@@ -326,22 +327,55 @@ export default function MapView(): JSX.Element {
   }, [searchQuery]);
 
   // unique location labels for the autocomplete (derived from loaded projects.locations)
+  // This now includes multiple granularities per recorded location:
+  // - "City, State, Country" (if city present)
+  // - "City, Country" (if city + country)
+  // - "State, Country" (if state + country)
+  // - "Country" (if country)
   const uniqueLocationOptions = useMemo(() => {
     const seen = new Set<string>();
     const out: { label: string; city?: string; state?: string; country?: string }[] = [];
 
+    const addLabel = (lbl: string, city?: string, state?: string, country?: string) => {
+      const n = normLabel(lbl);
+      if (!n) return;
+      if (!seen.has(n)) {
+        seen.add(n);
+        out.push({ label: lbl, city, state, country });
+      }
+    };
+
     projects.forEach((p) => {
       for (const loc of p.locations) {
-        const parts: string[] = [];
-        if (loc.city) parts.push(loc.city);
-        if (loc.state) parts.push(loc.state);
-        if (loc.country) parts.push(loc.country);
-        // prefer City, State, Country; fall back to display_name or country/state only
-        const label = parts.length > 0 ? parts.join(', ') : (loc.display_name || loc.country || loc.state || loc.city || `${loc.position[1]}, ${loc.position[0]}`);
-        const n = normLabel(label);
-        if (!seen.has(n)) {
-          seen.add(n);
-          out.push({ label, city: loc.city, state: loc.state, country: loc.country });
+        const city = loc.city?.trim();
+        const state = loc.state?.trim();
+        const country = loc.country?.trim();
+
+        // highest granularity: City, State, Country
+        if (city && state && country) {
+          addLabel(`${city}, ${state}, ${country}`, city, state, country);
+        }
+
+        // City, Country (useful when state is not relevant)
+        if (city && country) {
+          addLabel(`${city}, ${country}`, city, undefined, country);
+        }
+
+        // State, Country
+        if (state && country) {
+          addLabel(`${state}, ${country}`, undefined, state, country);
+        }
+
+        // Country only
+        if (country) {
+          addLabel(`${country}`, undefined, undefined, country);
+        }
+
+        // fallback: display_name or coordinates if none of the above
+        if (!city && !state && !country && loc.display_name) {
+          addLabel(loc.display_name, undefined, undefined, undefined);
+        } else if (!city && !state && !country && !loc.display_name) {
+          addLabel(`${loc.position[1]}, ${loc.position[0]}`, undefined, undefined, undefined);
         }
       }
     });
@@ -957,6 +991,8 @@ export default function MapView(): JSX.Element {
             </div>
           </div>
         </div>
+
+        {/* ...rest of UI unchanged (goals panel, hover, popups, sidebar, etc.) ... */}
 
         {/* Goals filter panel (collapsible) - still over the map */}
         <div style={{ position: 'absolute', left: 12, top: 12, zIndex: 20 }}>
