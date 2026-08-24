@@ -143,13 +143,26 @@ export default function MapView(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
 
-  // location autocomplete + filter state
+  // location autocomplete + running selection list
   const [locationInput, setLocationInput] = useState<string>(''); // free-text / datalist value
-  const [activeLocationFilter, setActiveLocationFilter] = useState<{ city?: string; state?: string; country?: string } | null>(null);
-  const [applyLocationFilter, setApplyLocationFilter] = useState<boolean>(false);
+  const [selectedLocationFilters, setSelectedLocationFilters] = useState<
+    { label: string; city?: string; state?: string; country?: string }[]
+  >([]);
 
-  // helper to normalize labels for dedupe & lookup
   const normLabel = (s: string) => String(s || '').trim().toLowerCase();
+
+  const addSelectedLocation = (value: string) => {
+    const match = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(value));
+    if (!match) return;
+    // avoid duplicates
+    if (selectedLocationFilters.some(f => normLabel(f.label) === normLabel(match.label))) return;
+    setSelectedLocationFilters(prev => [...prev, match]);
+    setLocationInput('');
+  };
+
+  const removeSelectedLocation = (label: string) => {
+    setSelectedLocationFilters(prev => prev.filter(f => normLabel(f.label) !== normLabel(label)));
+  };
 
   // city enrichment / UI
   const [uniqueCities, setUniqueCities] = useState<string[]>([]);
@@ -373,22 +386,23 @@ export default function MapView(): JSX.Element {
       // inside filteredProjects .filter((p) => { ... })
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
 
-      // location-based filter (if active)
-      if (applyLocationFilter && activeLocationFilter) {
-        const afCity = activeLocationFilter.city?.toLowerCase();
-        const afState = activeLocationFilter.state?.toLowerCase();
-        const afCountry = activeLocationFilter.country?.toLowerCase();
-
+      // location-based filters (running list): project must match ANY selected filter
+      if (selectedLocationFilters.length > 0) {
         const hasMatch = p.locations.some(l => {
-          const lc = (l.city || '').toLowerCase();
-          const ls = (l.state || '').toLowerCase();
-          const lco = (l.country || '').toLowerCase();
+          return selectedLocationFilters.some(f => {
+            const afCity = f.city?.toLowerCase();
+            const afState = f.state?.toLowerCase();
+            const afCountry = f.country?.toLowerCase();
 
-          // require all non-empty parts of the active filter to match the location
-          if (afCity && afCity !== lc) return false;
-          if (afState && afState !== ls) return false;
-          if (afCountry && afCountry !== lco) return false;
-          return true;
+            const lc = (l.city || '').toLowerCase();
+            const ls = (l.state || '').toLowerCase();
+            const lco = (l.country || '').toLowerCase();
+
+            if (afCity && afCity !== lc) return false;
+            if (afState && afState !== ls) return false;
+            if (afCountry && afCountry !== lco) return false;
+            return true;
+          });
         });
         if (!hasMatch) return false;
       }
@@ -830,81 +844,128 @@ export default function MapView(): JSX.Element {
       <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingRight: 6, paddingLeft: 6 }}>
         <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0 }} />
 
-        {/* Search box (overlayed above the map) */}
+        {/* Search + Location filters row (overlayed above the map) */}
         <div
           style={{
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
             top: 12,
-            zIndex: 30,
-            width: 'min(720px, 92%)',
-            pointerEvents: 'auto'
+            zIndex: 60, // higher than other overlays so clickable
+            width: 'min(920px, 96%)',
+            pointerEvents: 'auto',
+            display: 'flex',
+            justifyContent: 'center',
           }}
         >
-          <div style={{ background: 'white', padding: 8, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)' }}>
-            <input
-              type="search"
-              placeholder="Search title, description, org, city, etc."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ width: '100%', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
-            />
-            {searchQuery && (
-              <div style={{ marginTop: 6, fontSize: 12, color: '#666' }}>
-                Searching for: <strong>{searchQuery}</strong>
-                <button
-                  onClick={() => setSearchQuery('')}
-                  style={{ marginLeft: 8, fontSize: 12, padding: '4px 6px' }}
-                >
-                  Clear
-                </button>
+          <div style={{ background: 'white', padding: 8, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', width: '100%' }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              {/* Keyword search (left, grows) */}
+              <div style={{ flex: '1 1 0' }}>
+                <input
+                  type="search"
+                  placeholder="Search title, description, org, city, etc."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ width: '100%', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
+                />
+                {searchQuery && (
+                  <div style={{ marginTop: 6, fontSize: 12, color: '#666' }}>
+                    Searching for: <strong>{searchQuery}</strong>
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      style={{ marginLeft: 8, fontSize: 12, padding: '4px 6px' }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Location autocomplete + filter */}
-        <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
-          <div style={{ flex: '1 1 auto', display: 'flex', gap: 8 }}>
-            <input
-              list="locations-datalist"
-              value={locationInput}
-              onChange={(e) => handleLocationInputChange(e.target.value)}
-              placeholder={"Type a city, state, or country (e.g. \" Nairobi, Kenya\")"}
-            style={{ flex: '1 1 auto', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
-    />
-            <datalist id="locations-datalist">
-              {uniqueLocationOptions.map(o => <option key={o.label} value={o.label} />)}
-            </datalist>
-            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <input
-                type="checkbox"
-                checked={applyLocationFilter}
-                onChange={(e) => {
-                  // If enabling filter but no active selection, try to set from input
-                  if (e.target.checked && !activeLocationFilter) {
-                    const match = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(locationInput));
-                    if (match) setActiveLocationFilter({ city: match.city, state: match.state, country: match.country });
-                  }
-                  setApplyLocationFilter(e.target.checked);
-                }}
-              />
-              Filter to this location
-            </label>
-          </div>
+              {/* Location input + chips (right, fixed width) */}
+              <div style={{ width: 360, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    list="locations-datalist"
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addSelectedLocation(locationInput);
+                      }
+                    }}
+                    placeholder='Type city, state, or country (choose suggestion and press Enter)'
+                    style={{ flex: '1 1 auto', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
+                  />
+                  <datalist id="locations-datalist">
+                    {uniqueLocationOptions.map(o => <option key={o.label} value={o.label} />)}
+                  </datalist>
 
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => {
-                setLocationInput('');
-                setActiveLocationFilter(null);
-                setApplyLocationFilter(false);
-              }}
-              style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
-            >
-              Reset
-            </button>
+                  <button
+                    onClick={() => {
+                      // try to add selection from current input
+                      addSelectedLocation(locationInput);
+                    }}
+                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                    title="Add location filter"
+                  >
+                    Add
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      // reset all location filters
+                      setLocationInput('');
+                      setSelectedLocationFilters([]);
+                    }}
+                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                    title="Reset location filters"
+                  >
+                    Reset
+                  </button>
+                </div>
+
+                {/* chips for selected location filters */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {selectedLocationFilters.length === 0 && (
+                    <div style={{ color: '#666', fontSize: 12 }}>No location filters</div>
+                  )}
+                  {selectedLocationFilters.map((f) => (
+                    <div
+                      key={f.label}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        background: '#f1f7ff',
+                        border: '1px solid #d6e8ff',
+                        padding: '6px 8px',
+                        borderRadius: 999,
+                        fontSize: 13
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked
+                        readOnly
+                        style={{ width: 14, height: 14 }}
+                      />
+                      <div style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={f.label}>
+                        {f.label}
+                      </div>
+                      <button
+                        onClick={() => removeSelectedLocation(f.label)}
+                        aria-label={`Remove ${f.label}`}
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
