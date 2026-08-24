@@ -5,6 +5,7 @@ import Papa from 'papaparse';
 import sdgProjectsCsvUrl from '../data/SDG_projects.csv?url';
 import unCivicCsvUrl from '../data/un_civic_2024.csv?url';
 import locationsCsvUrl from '../data/locations.csv?url';
+import projectCategoriesCsvUrl from '../data/project_categories.csv?url';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 
 type CsvRow = Record<string, string>;
@@ -27,6 +28,7 @@ type Project = {
   tagLine: string;
   org: string;
   goals: string[];
+  categories: string[]; // new
   searchText: string;
   postDate: Date | null;
   row: CsvRow;
@@ -125,6 +127,11 @@ export default function MapView(): JSX.Element {
   const [activeGoals, setActiveGoals] = useState<string[]>([]);
   const [filterMinimized, setFilterMinimized] = useState<boolean>(true); // used as collapsed/expanded for goals
 
+  // new: categories
+  const [uniqueCategories, setUniqueCategories] = useState<string[]>([]);
+  const [activeCategories, setActiveCategories] = useState<string[]>([]);
+  const [categoriesMinimized, setCategoriesMinimized] = useState<boolean>(true);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
 
@@ -173,8 +180,9 @@ export default function MapView(): JSX.Element {
   });
 
   useEffect(() => {
-    Promise.all([parseCsv(sdgProjectsCsvUrl), parseCsv(unCivicCsvUrl)])
-      .then(([a, b]) => {
+    // load SDG, UN civic, and project categories CSVs
+    Promise.all([parseCsv(sdgProjectsCsvUrl), parseCsv(unCivicCsvUrl), parseCsv(projectCategoriesCsvUrl)])
+      .then(([a, b, c]) => {
         const rows = [...a.rows, ...b.rows];
         const allHeaders = Array.from(new Set([...(a.headers || []), ...(b.headers || [])]));
 
@@ -223,21 +231,51 @@ export default function MapView(): JSX.Element {
             .toLowerCase();
 
           byPostId.set(postId, {
-            postId, title, description, tagLine, org, goals, searchText, postDate,
+            postId, title, description, tagLine, org, goals, categories: [], searchText, postDate,
             row: r,
             locations: []
           });
+        });
+
+        // Attach categories from project_categories.csv (c.rows)
+        const catRows = c.rows || [];
+        const orphanCatRows: number[] = [];
+        catRows.forEach((cr, idx) => {
+          const postId = String(cr['Post ID'] ?? cr['post_id'] ?? cr['postId'] ?? cr['postid'] ?? '').trim();
+          if (!postId) { orphanCatRows.push(idx); return; }
+          const project = byPostId.get(postId);
+          if (!project) { orphanCatRows.push(idx); return; }
+          const raw = String(cr['Categories'] ?? cr['categories'] ?? cr['Category'] ?? '').trim();
+          if (!raw) return;
+          const parts = raw.split(/[,;|]+/).map(s => s.trim()).filter(Boolean);
+          const existing = new Set(project.categories.map(x => x.toLowerCase()));
+          for (const p of parts) {
+            if (!existing.has(p.toLowerCase())) {
+              project.categories.push(p);
+              existing.add(p.toLowerCase());
+            }
+          }
+          // also add categories to searchText
+          if (project.categories.length > 0) {
+            project.searchText = [project.searchText, project.categories.join(' ')].filter(Boolean).join(' ').toLowerCase();
+          }
         });
 
         const allGoals = new Set<string>();
         byPostId.forEach(p => p.goals.forEach(g => allGoals.add(g)));
         setUniqueGoals(Array.from(allGoals).sort(goalSort));
 
-        console.group('SDG_projects.csv + un_civic_2024.csv → projects');
+        // unique categories
+        const allCategories = new Set<string>();
+        byPostId.forEach(p => p.categories.forEach(cg => allCategories.add(cg)));
+        setUniqueCategories(Array.from(allCategories).sort((a, b) => String(a).localeCompare(b)));
+
+        console.group('SDG_projects.csv + un_civic_2024.csv + project_categories.csv → projects');
         console.log(`parsed rows: ${rows.length}`);
         console.log(`projects: ${byPostId.size}`);
         if (missingPostId.length) console.warn(`rows with no Post ID (skipped): ${missingPostId.length}`, missingPostId);
         if (duplicatePostId.size) console.warn(`duplicate Post IDs (kept first row): ${duplicatePostId.size}`, Array.from(duplicatePostId));
+        if (orphanCatRows.length) console.warn(`category rows with no matching project post_id: ${orphanCatRows.length}`, orphanCatRows);
         console.groupEnd();
 
         // attach locations
@@ -364,11 +402,14 @@ export default function MapView(): JSX.Element {
 
   const filteredProjects = useMemo(() => {
     const goalFilterActive = activeGoals.length > 0;
+    const categoryFilterActive = activeCategories.length > 0;
     const q = debouncedQuery.trim();
     const terms = q ? q.split(/\s+/).filter(Boolean) : [];
 
     return Array.from(projects.values()).filter((p) => {
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
+
+      if (categoryFilterActive && !p.categories.some(c => activeCategories.includes(c))) return false;
 
       if (selectedLocationFilters.length > 0) {
         const hasMatch = p.locations.some(l => {
@@ -395,7 +436,7 @@ export default function MapView(): JSX.Element {
       if (terms.length > 0 && !terms.every(t => p.searchText.includes(t))) return false;
       return true;
     });
-  }, [projects, activeGoals, debouncedQuery, activeCity, selectedLocationFilters]);
+  }, [projects, activeGoals, activeCategories, debouncedQuery, activeCity, selectedLocationFilters]);
 
   const filteredMarkers = useMemo((): ProjectMarker[] => {
     return filteredProjects.flatMap((project) => {
@@ -884,12 +925,21 @@ export default function MapView(): JSX.Element {
                 </div>
               </div>
 
-              {/* Goals toggle */}
+              {/* Goals toggle and Categories toggle */}
               <div style={{ width: 240 }}>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                  <button
+                    onClick={() => setCategoriesMinimized(v => !v)}
+                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                    title="Open Categories"
+                  >
+                    {categoriesMinimized ? 'Open Categories' : 'Close Categories'}
+                  </button>
+
                   <button
                     onClick={() => setFilterMinimized(v => !v)}
                     style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                    title="Open Goals"
                   >
                     {filterMinimized ? 'Open Goals' : 'Close Goals'}
                   </button>
@@ -897,6 +947,46 @@ export default function MapView(): JSX.Element {
               </div>
             </div>
           </div>
+
+          {/* Categories panel (like Goals) */}
+          {!categoriesMinimized && (
+            <div style={{ padding: '0 12px 12px', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ width: 'min(980px, 96%)', background: 'white', padding: 8, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)' }}>
+                <div style={{ maxHeight: '36vh', overflow: 'auto' }}>
+                  {uniqueCategories.length === 0 ? (
+                    <div style={{ fontSize: 12, color: '#666' }}>Loading categories…</div>
+                  ) : (
+                    uniqueCategories.map((c) => {
+                      const checked = activeCategories.includes(c);
+                      return (
+                        <label key={c} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              setActiveCategories((prev) => {
+                                if (prev.includes(c)) return prev.filter((x) => x !== c);
+                                return [...prev, c];
+                              });
+                            }}
+                            style={{ marginRight: 8 }}
+                          />
+                          {c}
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+                {uniqueCategories.length > 0 && (
+                  <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                    <button onClick={() => setActiveCategories([])} style={{ fontSize: 12, padding: '6px 8px' }}>
+                      Clear
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Goals panel dropdown (appears below header, not overlapping the map) */}
           {!filterMinimized && (
@@ -1064,6 +1154,17 @@ export default function MapView(): JSX.Element {
                       <ul>
                         {selected.goals.map((g) => (
                           <li key={g}>{g}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {selected.categories && selected.categories.length > 0 && (
+                    <div style={{ marginTop: 12 }}>
+                      <strong>Categories</strong>
+                      <ul>
+                        {selected.categories.map((c) => (
+                          <li key={c}>{c}</li>
                         ))}
                       </ul>
                     </div>
