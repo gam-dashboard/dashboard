@@ -147,23 +147,10 @@ export default function MapView(): JSX.Element {
   const [locationInput, setLocationInput] = useState<string>(''); // free-text / datalist value
   const [selectedLocationFilters, setSelectedLocationFilters] = useState<
     { label: string; city?: string; state?: string; country?: string }[]
-    >([]);
-  const [applyLocationFilter, setApplyLocationFilter] = useState<boolean>(false);
+  >([]);
 
+  // helper for label normalization
   const normLabel = (s: string) => String(s || '').trim().toLowerCase();
-
-  const addSelectedLocation = (value: string) => {
-    const match = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(value));
-    if (!match) return;
-    // avoid duplicates
-    if (selectedLocationFilters.some(f => normLabel(f.label) === normLabel(match.label))) return;
-    setSelectedLocationFilters(prev => [...prev, match]);
-    setLocationInput('');
-  };
-
-  const removeSelectedLocation = (label: string) => {
-    setSelectedLocationFilters(prev => prev.filter(f => normLabel(f.label) !== normLabel(label)));
-  };
 
   // city enrichment / UI
   const [uniqueCities, setUniqueCities] = useState<string[]>([]);
@@ -345,7 +332,7 @@ export default function MapView(): JSX.Element {
 
     projects.forEach((p) => {
       for (const loc of p.locations) {
-        const parts = [];
+        const parts: string[] = [];
         if (loc.city) parts.push(loc.city);
         if (loc.state) parts.push(loc.state);
         if (loc.country) parts.push(loc.country);
@@ -364,16 +351,19 @@ export default function MapView(): JSX.Element {
     return out;
   }, [projects]);
 
-  // call when the user picks/changes the datalist value (or presses Enter)
-  const handleLocationInputChange = (value: string) => {
-    setLocationInput(value);
+  const addSelectedLocation = (value: string) => {
     const match = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(value));
-    if (match) {
-      setActiveLocationFilter({ city: match.city, state: match.state, country: match.country });
-    } else {
-      // no exact match selected (partial typing) — do not set the filter until user picks an option
-      setActiveLocationFilter(null);
+    if (!match) return;
+    if (selectedLocationFilters.some(f => normLabel(f.label) === normLabel(match.label))) {
+      setLocationInput('');
+      return;
     }
+    setSelectedLocationFilters(prev => [...prev, match]);
+    setLocationInput('');
+  };
+
+  const removeSelectedLocation = (label: string) => {
+    setSelectedLocationFilters(prev => prev.filter(f => normLabel(f.label) !== normLabel(label)));
   };
 
   // Filter at the Project level (goals / search live on the project; city
@@ -384,10 +374,9 @@ export default function MapView(): JSX.Element {
     const terms = q ? q.split(/\s+/).filter(Boolean) : [];
 
     return Array.from(projects.values()).filter((p) => {
-      // inside filteredProjects .filter((p) => { ... })
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
 
-      // location-based filters (running list): project must match ANY selected filter
+      // running list of location filters: project must match ANY of the selected filters
       if (selectedLocationFilters.length > 0) {
         const hasMatch = p.locations.some(l => {
           return selectedLocationFilters.some(f => {
@@ -408,12 +397,13 @@ export default function MapView(): JSX.Element {
         if (!hasMatch) return false;
       }
 
-      // keep your activeCity behavior (if you still want separate city filter UI):
+      // keep your activeCity behavior (if you still want separate city filter UI)
       if (activeCity && !p.locations.some(l => l.city?.toLowerCase() === activeCity.toLowerCase())) return false;
+
       if (terms.length > 0 && !terms.every(t => p.searchText.includes(t))) return false;
       return true;
     });
-  }, [projects, activeGoals, debouncedQuery, activeCity, applyLocationFilter, activeLocationFilter]);
+  }, [projects, activeGoals, debouncedQuery, activeCity, selectedLocationFilters]);
 
   // Markers to actually plot: one per (project, location) pair. When a city
   // filter is active, only that project's matching location(s) are shown —
@@ -852,7 +842,7 @@ export default function MapView(): JSX.Element {
             left: '50%',
             transform: 'translateX(-50%)',
             top: 12,
-            zIndex: 60, // higher than other overlays so clickable
+            zIndex: 60, // front-most overlay so it's interactive
             width: 'min(920px, 96%)',
             pointerEvents: 'auto',
             display: 'flex',
@@ -905,7 +895,6 @@ export default function MapView(): JSX.Element {
 
                   <button
                     onClick={() => {
-                      // try to add selection from current input
                       addSelectedLocation(locationInput);
                     }}
                     style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
@@ -916,7 +905,6 @@ export default function MapView(): JSX.Element {
 
                   <button
                     onClick={() => {
-                      // reset all location filters
                       setLocationInput('');
                       setSelectedLocationFilters([]);
                     }}
@@ -1103,8 +1091,8 @@ export default function MapView(): JSX.Element {
                   {selectedLocation?.display_name
                     ? selectedLocation.display_name
                     : selectedPlace
-                    ? selectedPlace
-                    : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
+                      ? selectedPlace
+                      : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
                 </p>
               )}
 
