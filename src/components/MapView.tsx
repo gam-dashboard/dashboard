@@ -871,7 +871,7 @@ export default function MapView(): JSX.Element {
               list="locations-datalist"
               value={locationInput}
               onChange={(e) => handleLocationInputChange(e.target.value)}
-              placeholder="Type a city, state, or country (e.g. \" Nairobi, Kenya\")"
+              placeholder={"Type a city, state, or country (e.g. \" Nairobi, Kenya\")"}
             style={{ flex: '1 1 auto', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
     />
             <datalist id="locations-datalist">
