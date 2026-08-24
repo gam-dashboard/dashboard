@@ -432,6 +432,9 @@ export default function MapView(): JSX.Element {
   );
   const showingCount = filteredMarkers.length;
 
+  const totalProjectsCount = projects.size;
+  const showingProjectsCount = filteredProjects.length;
+
   const recentPosts = useMemo(() => {
     return Array.from(projects.values())
       .slice()
