@@ -147,7 +147,8 @@ export default function MapView(): JSX.Element {
   const [locationInput, setLocationInput] = useState<string>(''); // free-text / datalist value
   const [selectedLocationFilters, setSelectedLocationFilters] = useState<
     { label: string; city?: string; state?: string; country?: string }[]
-  >([]);
+    >([]);
+  const [applyLocationFilter, setApplyLocationFilter] = useState<boolean>(false);
 
   const normLabel = (s: string) => String(s || '').trim().toLowerCase();
 
