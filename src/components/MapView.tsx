@@ -9,12 +9,10 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 
 type CsvRow = Record<string, string>;
 
-/** One geographic point for a project, sourced from a single locations.csv
- *  row (joined to its project by post_id). */
 type ProjectLocation = {
-  id: string; // stable id: `${postId}::${index within this project}`
+  id: string;
   postId: string;
-  position: [number, number]; // [lon, lat] — matches maplibre convention
+  position: [number, number];
   city?: string;
   state?: string;
   country?: string;
@@ -22,8 +20,6 @@ type ProjectLocation = {
   display_name?: string;
 };
 
-/** One project/post, sourced from a single sample.csv row (keyed by Post ID),
- *  carrying every matching locations.csv row under `.locations`. */
 type Project = {
   postId: string;
   title: string;
@@ -33,18 +29,14 @@ type Project = {
   goals: string[];
   searchText: string;
   postDate: Date | null;
-  row: CsvRow; // original source row, for anything not modeled above
+  row: CsvRow;
   locations: ProjectLocation[];
 };
 
-/** A single map marker: one project location plus a back-reference to its
- *  project, so click handlers don't need to reconstruct anything. */
 type ProjectMarker = {
   project: Project;
   location: ProjectLocation;
 };
-
-// ---- module-level helpers (pure — no reason to recreate these every render) ----
 
 const normalize = (s: string) =>
   String(s || '')
@@ -98,9 +90,6 @@ const parseNum = (v?: string): number | undefined => {
   return Number.isFinite(n) ? n : undefined;
 };
 
-/** Case/whitespace-tolerant field lookup, updated to account for duplicate
- *  CSV headers with the same normalized name by storing an array of original
- *  header strings for each normalized key. */
 const makeFieldGetter = (row: CsvRow, headerNormToOrig: Map<string, string[]>) =>
   (candidates: string[]): string => {
     for (const c of candidates) {
@@ -124,10 +113,7 @@ export default function MapView(): JSX.Element {
   const mapRef = useRef<maplibregl.Map | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
 
-  // `projects` is the single source of truth, keyed by Post ID so any lookup
-  // (e.g. on marker click) is O(1) instead of an array scan.
   const [projects, setProjects] = useState<Map<string, Project>>(new Map());
-  // keep a ref to avoid stale closures in map event handlers
   const projectsRef = useRef<Map<string, Project>>(projects);
   useEffect(() => { projectsRef.current = projects; }, [projects]);
 
@@ -135,29 +121,24 @@ export default function MapView(): JSX.Element {
   const [selectedLocation, setSelectedLocation] = useState<ProjectLocation | null>(null);
   const [hoverInfo, setHoverInfo] = useState<{ x: number; y: number; text: string } | null>(null);
 
-  // filter UI state
   const [uniqueGoals, setUniqueGoals] = useState<string[]>([]);
   const [activeGoals, setActiveGoals] = useState<string[]>([]);
-  const [filterMinimized, setFilterMinimized] = useState<boolean>(true); // start minimized
+  const [filterMinimized, setFilterMinimized] = useState<boolean>(true); // used as collapsed/expanded for goals
 
-  // search queries
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
 
-  // location autocomplete + running selection list
-  const [locationInput, setLocationInput] = useState<string>(''); // free-text / datalist value
+  const [locationInput, setLocationInput] = useState<string>('');
   const [selectedLocationFilters, setSelectedLocationFilters] = useState<
     { label: string; city?: string; state?: string; country?: string }[]
   >([]);
 
-  // helper for label normalization
   const normLabel = (s: string) => String(s || '').trim().toLowerCase();
 
-  // city enrichment / UI
   const [uniqueCities, setUniqueCities] = useState<string[]>([]);
   const [activeCity, setActiveCity] = useState<string | null>(null);
 
-  // Defensive attempt to set maplibre worker URL
+  // set worker url defensively
   try {
     (maplibregl as any).workerUrl = WORKER_PUBLIC_PATH;
   } catch {
@@ -177,7 +158,6 @@ export default function MapView(): JSX.Element {
     }
   }
 
-  // Helper that wraps Papa.parse in a Promise so we can combine multiple CSVs
   const parseCsv = (url: string) => new Promise<{ rows: CsvRow[]; headers: string[] }>((resolve, reject) => {
     Papa.parse<CsvRow>(url, {
       download: true,
@@ -192,16 +172,12 @@ export default function MapView(): JSX.Element {
     });
   });
 
-  // ---- Load SDG_projects.csv + un_civic_2024.csv -> Project metadata keyed by Post ID,
-  // ---- then load locations.csv -> attach every matching row as a location ----------
   useEffect(() => {
     Promise.all([parseCsv(sdgProjectsCsvUrl), parseCsv(unCivicCsvUrl)])
       .then(([a, b]) => {
-        // combine rows from both sources
         const rows = [...a.rows, ...b.rows];
         const allHeaders = Array.from(new Set([...(a.headers || []), ...(b.headers || [])]));
 
-        // build normalized -> original headers map (array) to tolerate duplicate-named headers
         const headerNormToOrig = new Map<string, string[]>();
         for (const h of allHeaders) {
           const n = normalize(h);
@@ -210,7 +186,6 @@ export default function MapView(): JSX.Element {
           headerNormToOrig.set(n, cur);
         }
 
-        // find any SDG-related header names (we want all originals that match)
         const sdgHeaders = allHeaders.filter(h => {
           const n = normalize(h);
           return n.includes('sustainable development goal') || n.includes('sdg');
@@ -225,7 +200,7 @@ export default function MapView(): JSX.Element {
 
           const postId = getField(['post id', 'postid']) || String(r['Post ID'] ?? r['post_id'] ?? '').trim();
           if (!postId) { missingPostId.push(rowIndex); return; }
-          if (byPostId.has(postId)) { duplicatePostId.add(postId); return; } // keep first occurrence
+          if (byPostId.has(postId)) { duplicatePostId.add(postId); return; }
 
           const title = getField(['project', 'project name', 'title', 'project title', 'name']) || getField(['organization name', 'organization']) || postId;
           const description = getField(['description', 'unstructured description', 'summary', 'abstract']);
@@ -265,7 +240,7 @@ export default function MapView(): JSX.Element {
         if (duplicatePostId.size) console.warn(`duplicate Post IDs (kept first row): ${duplicatePostId.size}`, Array.from(duplicatePostId));
         console.groupEnd();
 
-        // Attach every locations.csv row to its project via post_id.
+        // attach locations
         Papa.parse<CsvRow>(locationsCsvUrl, {
           download: true,
           header: true,
@@ -320,28 +295,24 @@ export default function MapView(): JSX.Element {
       });
   }, []);
 
-  // debounce search input
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(searchQuery.trim().toLowerCase()), 300);
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  // unique location labels for the autocomplete (derived from loaded projects.locations)
-  // This now includes multiple granularities per recorded location:
-  // - "City, State, Country" (if city present)
-  // - "City, Country" (if city + country)
-  // - "State, Country" (if state + country)
-  // - "Country" (if country)
+  // Build location suggestions including multiple granularities and prioritized
   const uniqueLocationOptions = useMemo(() => {
     const seen = new Set<string>();
-    const out: { label: string; city?: string; state?: string; country?: string }[] = [];
+    type Opt = { label: string; city?: string; state?: string; country?: string; rank: number };
+    const out: Opt[] = [];
 
-    const addLabel = (lbl: string, city?: string, state?: string, country?: string) => {
+    const addLabel = (lbl: string, city?: string, state?: string, country?: string, rank = 10) => {
+      if (!lbl) return;
       const n = normLabel(lbl);
       if (!n) return;
       if (!seen.has(n)) {
         seen.add(n);
-        out.push({ label: lbl, city, state, country });
+        out.push({ label: lbl, city, state, country, rank });
       }
     };
 
@@ -351,38 +322,29 @@ export default function MapView(): JSX.Element {
         const state = loc.state?.trim();
         const country = loc.country?.trim();
 
-        // highest granularity: City, State, Country
-        if (city && state && country) {
-          addLabel(`${city}, ${state}, ${country}`, city, state, country);
-        }
+        // rank: lower = broader first
+        // country-only -> rank 0
+        // state+country -> rank 1
+        // city+country -> rank 2
+        // city+state+country -> rank 3
+        // display_name / coords -> rank 4
 
-        // City, Country (useful when state is not relevant)
-        if (city && country) {
-          addLabel(`${city}, ${country}`, city, undefined, country);
-        }
+        if (country) addLabel(`${country}`, undefined, undefined, country, 0);
+        if (state && country) addLabel(`${state}, ${country}`, undefined, state, country, 1);
+        if (city && country) addLabel(`${city}, ${country}`, city, undefined, country, 2);
+        if (city && state && country) addLabel(`${city}, ${state}, ${country}`, city, state, country, 3);
 
-        // State, Country
-        if (state && country) {
-          addLabel(`${state}, ${country}`, undefined, state, country);
-        }
-
-        // Country only
-        if (country) {
-          addLabel(`${country}`, undefined, undefined, country);
-        }
-
-        // fallback: display_name or coordinates if none of the above
-        if (!city && !state && !country && loc.display_name) {
-          addLabel(loc.display_name, undefined, undefined, undefined);
-        } else if (!city && !state && !country && !loc.display_name) {
-          addLabel(`${loc.position[1]}, ${loc.position[0]}`, undefined, undefined, undefined);
-        }
+        if (!city && !state && !country && loc.display_name) addLabel(loc.display_name, undefined, undefined, undefined, 4);
+        if (!city && !state && !country && !loc.display_name) addLabel(`${loc.position[1]}, ${loc.position[0]}`, undefined, undefined, undefined, 4);
       }
     });
 
-    // sort alphabetically for nicer UX
-    out.sort((a, b) => String(a.label).localeCompare(String(b.label)));
-    return out;
+    out.sort((a, b) => {
+      if (a.rank !== b.rank) return a.rank - b.rank;
+      return String(a.label).localeCompare(String(b.label));
+    });
+
+    return out.map(o => ({ label: o.label, city: o.city, state: o.state, country: o.country }));
   }, [projects]);
 
   const addSelectedLocation = (value: string) => {
@@ -400,8 +362,6 @@ export default function MapView(): JSX.Element {
     setSelectedLocationFilters(prev => prev.filter(f => normLabel(f.label) !== normLabel(label)));
   };
 
-  // Filter at the Project level (goals / search live on the project; city
-  // lives on its locations), then derive the flat marker list for the map.
   const filteredProjects = useMemo(() => {
     const goalFilterActive = activeGoals.length > 0;
     const q = debouncedQuery.trim();
@@ -410,7 +370,6 @@ export default function MapView(): JSX.Element {
     return Array.from(projects.values()).filter((p) => {
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
 
-      // running list of location filters: project must match ANY of the selected filters
       if (selectedLocationFilters.length > 0) {
         const hasMatch = p.locations.some(l => {
           return selectedLocationFilters.some(f => {
@@ -431,7 +390,6 @@ export default function MapView(): JSX.Element {
         if (!hasMatch) return false;
       }
 
-      // keep your activeCity behavior (if you still want separate city filter UI)
       if (activeCity && !p.locations.some(l => l.city?.toLowerCase() === activeCity.toLowerCase())) return false;
 
       if (terms.length > 0 && !terms.every(t => p.searchText.includes(t))) return false;
@@ -439,9 +397,6 @@ export default function MapView(): JSX.Element {
     });
   }, [projects, activeGoals, debouncedQuery, activeCity, selectedLocationFilters]);
 
-  // Markers to actually plot: one per (project, location) pair. When a city
-  // filter is active, only that project's matching location(s) are shown —
-  // not the rest of a multi-location project's other cities.
   const filteredMarkers = useMemo((): ProjectMarker[] => {
     return filteredProjects.flatMap((project) => {
       const locs = activeCity
@@ -451,8 +406,6 @@ export default function MapView(): JSX.Element {
     });
   }, [filteredProjects, activeCity]);
 
-  // Country extraction: prefer locations.csv's country field; fall back to
-  // scanning the original project.row for any "*country*" column.
   const extractCountries = (p: Project): string[] => {
     const fromLocations = p.locations.map(l => l.country).filter(Boolean) as string[];
     if (fromLocations.length) return fromLocations;
@@ -473,11 +426,36 @@ export default function MapView(): JSX.Element {
     return { totalCountriesCount: totalSet.size, showingCountriesCount: showSet.size };
   }, [projects, filteredProjects]);
 
-  // Project counts: trivial now that data starts pre-grouped by Post ID.
-  const totalProjectsCount = projects.size;
-  const showingProjectsCount = filteredProjects.length;
+  const totalCount = useMemo(
+    () => Array.from(projects.values()).reduce((sum, p) => sum + p.locations.length, 0),
+    [projects]
+  );
+  const showingCount = filteredMarkers.length;
 
-  // Initialize MapLibre map once (unchanged)
+  const recentPosts = useMemo(() => {
+    return Array.from(projects.values())
+      .slice()
+      .sort((a, b) => (b.postDate?.getTime() ?? -1) - (a.postDate?.getTime() ?? -1))
+      .slice(0, 10);
+  }, [projects]);
+
+  const handleRecentClick = (rp: Project) => {
+    if (!rp.locations || rp.locations.length === 0) { setSelected(rp); setSelectedLocation(null); return; }
+    const map = mapRef.current;
+    const positions = rp.locations.map(l => l.position);
+    if (map && positions.length > 0) {
+      const bounds = new (maplibregl as any).LngLatBounds(positions[0], positions[0]);
+      positions.forEach(pos => bounds.extend(pos));
+      try {
+        map.fitBounds(bounds, { padding: 80, maxZoom: 9, duration: 600 });
+      } catch { /* ignore */ }
+    }
+    setSelected(rp);
+    setSelectedLocation(rp.locations[0]);
+  };
+
+  const selectedPlace = derivePlace(selectedLocation ?? undefined);
+
   useEffect(() => {
     if (mapRef.current || !mapContainerRef.current) return;
 
@@ -507,10 +485,6 @@ export default function MapView(): JSX.Element {
     };
   }, []);
 
-  // Update source/layer when filteredMarkers change. Feature properties now
-  // only carry {postId, locationId} — everything else is looked up from
-  // `projects` (an O(1) Map lookup) instead of being duplicated into every
-  // feature and re-derived on every click.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -552,7 +526,6 @@ export default function MapView(): JSX.Element {
       btnSee.style.fontSize = '13px';
       btnSee.addEventListener('click', (ev) => {
         ev.stopPropagation();
-        // No merge/reconstruction needed — the project already has every location.
         setSelected(project);
         setSelectedLocation(location);
         try { popupRef.current?.remove(); } catch { /* ignore */ }
@@ -696,7 +669,6 @@ export default function MapView(): JSX.Element {
         if (first) first.focus();
       });
 
-      // ensure popup not clipped: nudge map if necessary
       const popupEl = popupRef.current.getElement();
       if (popupEl) {
         requestAnimationFrame(() => {
@@ -762,7 +734,6 @@ export default function MapView(): JSX.Element {
             setHoverInfo(null);
           });
 
-          // click handler with multi-feature list popup
           map.on('click', layerId, (e: any) => {
             if (!e.point) return;
             const features = (e.features && e.features.length > 0)
@@ -770,8 +741,6 @@ export default function MapView(): JSX.Element {
               : map.queryRenderedFeatures(e.point, { layers: [layerId] });
             if (!features || features.length === 0) return;
 
-            // Resolve each feature back to its {project, location} pair via
-            // the projects Map (use the ref to avoid stale closures).
             const matches: ProjectMarker[] = features
               .map((f: any) => {
                 const project = projectsRef.current.get(f.properties?.postId);
@@ -786,7 +755,6 @@ export default function MapView(): JSX.Element {
           });
         }
 
-        // Fit to filteredMarkers if any
         if (filteredMarkers.length > 0) {
           const bounds = new (maplibregl as any).LngLatBounds(filteredMarkers[0].location.position, filteredMarkers[0].location.position);
           filteredMarkers.forEach((m) => bounds.extend(m.location.position));
@@ -809,7 +777,6 @@ export default function MapView(): JSX.Element {
     }
   }, [filteredMarkers, projects]);
 
-  // keep popups off the map and prevent page scroll while details overlay is open
   useEffect(() => {
     if (selected) {
       try {
@@ -824,68 +791,17 @@ export default function MapView(): JSX.Element {
         document.body.style.overflow = prevOverflow;
       };
     }
-    return; // no-op when selected is null
+    return;
   }, [selected]);
 
-  // Summary counts for UI. `totalCount`/`showingCount` are raw marker
-  // (location) counts — distinct from the unique-project counts below, same
-  // distinction the original made.
-  const totalCount = useMemo(
-    () => Array.from(projects.values()).reduce((sum, p) => sum + p.locations.length, 0),
-    [projects]
-  );
-  const showingCount = filteredMarkers.length;
-
-  // Recent posts (top 10 by Post Date). Trivial now — projects are already
-  // grouped by Post ID, so there's no re-grouping pass needed at render time.
-  const recentPosts = useMemo(() => {
-    return Array.from(projects.values())
-      .slice()
-      .sort((a, b) => (b.postDate?.getTime() ?? -1) - (a.postDate?.getTime() ?? -1))
-      .slice(0, 10);
-  }, [projects]);
-
-  const handleRecentClick = (rp: Project) => {
-    if (!rp.locations || rp.locations.length === 0) { setSelected(rp); setSelectedLocation(null); return; }
-    const map = mapRef.current;
-    const positions = rp.locations.map(l => l.position);
-    if (map && positions.length > 0) {
-      const bounds = new (maplibregl as any).LngLatBounds(positions[0], positions[0]);
-      positions.forEach(pos => bounds.extend(pos));
-      try {
-        map.fitBounds(bounds, { padding: 80, maxZoom: 9, duration: 600 });
-      } catch { /* ignore */ }
-    }
-    setSelected(rp);
-    setSelectedLocation(rp.locations[0]);
-  };
-
-  const selectedPlace = derivePlace(selectedLocation ?? undefined);
-
   return (
-    // Outer layout: map column (left) and sidebar (right) as siblings.
-    <div className="breakout"> <div className="map-layout"> <div className="map-column">
-      {/* Map column (left) */}
-      <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingRight: 6, paddingLeft: 6 }}>
-        <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0 }} />
-
-        {/* Search + Location filters row (overlayed above the map) */}
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            top: 12,
-            zIndex: 60, // front-most overlay so it's interactive
-            width: 'min(920px, 96%)',
-            pointerEvents: 'auto',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ background: 'white', padding: 8, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', width: '100%' }}>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-              {/* Keyword search (left, grows) */}
+    <div className="breakout">
+      <div className="map-layout">
+        <div className="map-column">
+          {/* Header above the map: keyword search, location input, goals toggle */}
+          <div style={{ padding: '12px', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: 'min(980px, 96%)', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              {/* Keyword search */}
               <div style={{ flex: '1 1 0' }}>
                 <input
                   type="search"
@@ -894,21 +810,10 @@ export default function MapView(): JSX.Element {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ width: '100%', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
                 />
-                {searchQuery && (
-                  <div style={{ marginTop: 6, fontSize: 12, color: '#666' }}>
-                    Searching for: <strong>{searchQuery}</strong>
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      style={{ marginLeft: 8, fontSize: 12, padding: '4px 6px' }}
-                    >
-                      Clear
-                    </button>
-                  </div>
-                )}
               </div>
 
-              {/* Location input + chips (right, fixed width) */}
-              <div style={{ width: 360, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* Location input + add/reset */}
+              <div style={{ width: 380, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <input
                     list="locations-datalist"
@@ -928,9 +833,7 @@ export default function MapView(): JSX.Element {
                   </datalist>
 
                   <button
-                    onClick={() => {
-                      addSelectedLocation(locationInput);
-                    }}
+                    onClick={() => addSelectedLocation(locationInput)}
                     style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
                     title="Add location filter"
                   >
@@ -949,11 +852,9 @@ export default function MapView(): JSX.Element {
                   </button>
                 </div>
 
-                {/* chips for selected location filters */}
+                {/* chips */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {selectedLocationFilters.length === 0 && (
-                    <div style={{ color: '#666', fontSize: 12 }}>No location filters</div>
-                  )}
+                  {selectedLocationFilters.length === 0 && <div style={{ color: '#666', fontSize: 12 }}>No location filters</div>}
                   {selectedLocationFilters.map((f) => (
                     <div
                       key={f.label}
@@ -968,50 +869,37 @@ export default function MapView(): JSX.Element {
                         fontSize: 13
                       }}
                     >
-                      <input
-                        type="checkbox"
-                        checked
-                        readOnly
-                        style={{ width: 14, height: 14 }}
-                      />
-                      <div style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={f.label}>
+                      <input type="checkbox" checked readOnly style={{ width: 14, height: 14 }} />
+                      <div style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={f.label}>
                         {f.label}
                       </div>
-                      <button
-                        onClick={() => removeSelectedLocation(f.label)}
-                        aria-label={`Remove ${f.label}`}
-                        style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-                      >
+                      <button onClick={() => removeSelectedLocation(f.label)} aria-label={`Remove ${f.label}`} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
                         ✕
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
+
+              {/* Goals toggle */}
+              <div style={{ width: 240 }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={() => setFilterMinimized(v => !v)}
+                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                  >
+                    {filterMinimized ? 'Open Goals' : 'Close Goals'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* ...rest of UI unchanged (goals panel, hover, popups, sidebar, etc.) ... */}
-
-        {/* Goals filter panel (collapsible) - still over the map */}
-        <div style={{ position: 'absolute', left: 12, top: 12, zIndex: 20 }}>
-          <div style={{ background: 'white', padding: 6, borderRadius: 6, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', minWidth: 220 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontWeight: 600, fontSize: 14 }}>Filter by Goal</div>
-              <button
-                onClick={() => setFilterMinimized((v) => !v)}
-                style={{ fontSize: 12, padding: '4px 8px', marginLeft: 8 }}
-              >
-                {filterMinimized ? 'Open' : 'Minimize'}
-              </button>
-            </div>
-
-            {filterMinimized ? (
-              <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>{activeGoals.length === 0 ? 'All goals' : `${activeGoals.length} selected`}</div>
-            ) : (
-              <>
-                <div style={{ marginTop: 8, maxHeight: '36vh', overflow: 'auto' }}>
+          {/* Goals panel dropdown (appears below header, not overlapping the map) */}
+          {!filterMinimized && (
+            <div style={{ padding: '0 12px 12px', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ width: 'min(980px, 96%)', background: 'white', padding: 8, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)' }}>
+                <div style={{ maxHeight: '36vh', overflow: 'auto' }}>
                   {uniqueGoals.length === 0 ? (
                     <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
                   ) : (
@@ -1043,211 +931,214 @@ export default function MapView(): JSX.Element {
                     </button>
                   </div>
                 )}
-              </>
-            )}
-          </div>
-        </div>
+              </div>
+            </div>
+          )}
 
-        {/* Hover tooltip */}
-        {hoverInfo && (
-          <div
-            style={{
-              position: 'absolute',
-              left: hoverInfo.x + 12,
-              top: hoverInfo.y + 12,
-              pointerEvents: 'none',
-              background: 'rgba(255,255,255,0.95)',
-              padding: '6px 8px',
-              borderRadius: 4,
-              boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
-              fontSize: 12,
-              maxWidth: 300,
-              zIndex: 15
-            }}
-          >
-            {hoverInfo.text}
-          </div>
-        )}
+          {/* Map container */}
+          <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 6 }}>
+            <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0 }} />
 
-        {/* Full-screen details overlay */}
-        {selected && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.55)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 99999
-            }}
-            onClick={() => { setSelected(null); setSelectedLocation(null); }}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                width: 'min(90%, 1100px)',
-                maxHeight: '90vh',
-                overflow: 'auto',
-                background: 'white',
-                padding: 20,
-                borderRadius: 10,
-                boxShadow: '0 12px 40px rgba(0,0,0,0.35)',
-                position: 'relative'
-              }}
-            >
-              <button
-                onClick={() => { setSelected(null); setSelectedLocation(null); }}
+            {/* Hover tooltip */}
+            {hoverInfo && (
+              <div
                 style={{
                   position: 'absolute',
-                  right: 12,
-                  top: 12,
-                  background: 'transparent',
-                  border: 'none',
-                  fontSize: 16,
-                  cursor: 'pointer'
+                  left: hoverInfo.x + 12,
+                  top: hoverInfo.y + 12,
+                  pointerEvents: 'none',
+                  background: 'rgba(255,255,255,0.95)',
+                  padding: '6px 8px',
+                  borderRadius: 4,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                  fontSize: 12,
+                  maxWidth: 300,
+                  zIndex: 15
                 }}
-                aria-label="Close details"
               >
-                ✕
-              </button>
-
-              <h2 style={{ marginTop: 4 }}>{selected.title || selected.org || 'Details'}</h2>
-
-              <p>
-                <strong>Post ID:</strong> {selected.postId}
-              </p>
-              <p>
-                <strong>Organization:</strong> {selected.org}
-              </p>
-
-              {(selectedPlace || selectedLocation?.display_name || selectedLocation?.state || selectedLocation?.country) && (
-                <p>
-                  <strong>Location:</strong>{' '}
-                  {selectedLocation?.display_name
-                    ? selectedLocation.display_name
-                    : selectedPlace
-                      ? selectedPlace
-                      : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
-                </p>
-              )}
-
-              {selectedLocation && (
-                <p>
-                  <strong>Coordinates:</strong> {selectedLocation.position[1]}, {selectedLocation.position[0]}
-                </p>
-              )}
-
-              <div style={{ whiteSpace: 'pre-wrap', marginTop: 8 }}>
-                <strong>Description</strong>
-                <div>{selected.description || ''}</div>
+                {hoverInfo.text}
               </div>
+            )}
 
-              {selected.locations.length > 0 && (
-                <div style={{ marginTop: 12 }}>
-                  <strong>All locations</strong>
-                  <ul>
-                    {selected.locations.map((loc) => {
-                      const place = derivePlace(loc);
-                      return (
-                        <li key={loc.id} style={{ marginBottom: 6 }}>
-                          <div style={{ fontSize: 13 }}>
-                            {(loc.display_name || place || loc.state || loc.country) ? (
-                              <span> — {loc.display_name ? loc.display_name : place ? place : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)}</span>
-                            ) : null}
-                            {loc.position[1]}, {loc.position[0]}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
+            {/* Details overlay and bottom summary bars unchanged... */}
+            {selected && (
+              <div
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  background: 'rgba(0,0,0,0.55)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 99999
+                }}
+                onClick={() => { setSelected(null); setSelectedLocation(null); }}
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    width: 'min(90%, 1100px)',
+                    maxHeight: '90vh',
+                    overflow: 'auto',
+                    background: 'white',
+                    padding: 20,
+                    borderRadius: 10,
+                    boxShadow: '0 12px 40px rgba(0,0,0,0.35)',
+                    position: 'relative'
+                  }}
+                >
+                  <button
+                    onClick={() => { setSelected(null); setSelectedLocation(null); }}
+                    style={{
+                      position: 'absolute',
+                      right: 12,
+                      top: 12,
+                      background: 'transparent',
+                      border: 'none',
+                      fontSize: 16,
+                      cursor: 'pointer'
+                    }}
+                    aria-label="Close details"
+                  >
+                    ✕
+                  </button>
+
+                  <h2 style={{ marginTop: 4 }}>{selected.title || selected.org || 'Details'}</h2>
+
+                  <p>
+                    <strong>Post ID:</strong> {selected.postId}
+                  </p>
+                  <p>
+                    <strong>Organization:</strong> {selected.org}
+                  </p>
+
+                  {(selectedPlace || selectedLocation?.display_name || selectedLocation?.state || selectedLocation?.country) && (
+                    <p>
+                      <strong>Location:</strong>{' '}
+                      {selectedLocation?.display_name
+                        ? selectedLocation.display_name
+                        : selectedPlace
+                          ? selectedPlace
+                          : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
+                    </p>
+                  )}
+
+                  {selectedLocation && (
+                    <p>
+                      <strong>Coordinates:</strong> {selectedLocation.position[1]}, {selectedLocation.position[0]}
+                    </p>
+                  )}
+
+                  <div style={{ whiteSpace: 'pre-wrap', marginTop: 8 }}>
+                    <strong>Description</strong>
+                    <div>{selected.description || ''}</div>
+                  </div>
+
+                  {selected.locations.length > 0 && (
+                    <div style={{ marginTop: 12 }}>
+                      <strong>All locations</strong>
+                      <ul>
+                        {selected.locations.map((loc) => {
+                          const place = derivePlace(loc);
+                          return (
+                            <li key={loc.id} style={{ marginBottom: 6 }}>
+                              <div style={{ fontSize: 13 }}>
+                                {(loc.display_name || place || loc.state || loc.country) ? (
+                                  <span> — {loc.display_name ? loc.display_name : place ? place : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)}</span>
+                                ) : null}
+                                {loc.position[1]}, {loc.position[0]}
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+
+                  {selected.goals.length > 0 && (
+                    <div style={{ marginTop: 12 }}>
+                      <strong>Goals</strong>
+                      <ul>
+                        {selected.goals.map((g) => (
+                          <li key={g}>{g}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {selected.goals.length > 0 && (
-                <div style={{ marginTop: 12 }}>
-                  <strong>Goals</strong>
-                  <ul>
-                    {selected.goals.map((g) => (
-                      <li key={g}>{g}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Bottom summary bar inside the map column */}
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            bottom: 12,
-            display: 'flex',
-            gap: 10,
-            zIndex: 15,
-            alignItems: 'center'
-          }}
-        >
-          <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
-            Showing <strong>{showingCount}</strong> of <strong>{totalCount}</strong> points
-          </div>
-
-          <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
-            Countries: <strong>{showingCountriesCount}</strong> of <strong>{totalCountriesCount}</strong>
-          </div>
-
-          <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
-            Projects: <strong>{showingProjectsCount}</strong> of <strong>{totalProjectsCount}</strong>
-          </div>
-        </div>
-      </div>
-    </div>
-
-      {/* Sidebar (outside the map) - lives on the page to the right of the map */}
-      <aside className="page-sidebar">
-        <div style={{ padding: '6px 4px', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontWeight: 700 }}>Recent posts</div>
-          <div style={{ fontSize: 12, color: '#666' }}>{recentPosts.length} shown</div>
-        </div>
-
-        <div style={{ marginTop: 8 }}>
-          {recentPosts.length === 0 && <div style={{ color: '#666', fontSize: 13 }}>No recent posts</div>}
-          {recentPosts.map((rp) => (
+            {/* Bottom summary bar */}
             <div
-              key={rp.postId}
-              tabIndex={0}
-              role="button"
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentClick(rp); } }}
-              onClick={() => handleRecentClick(rp)}
               style={{
-                padding: '10px',
-                marginBottom: 10,
-                borderRadius: 8,
-                cursor: 'pointer',
-                background: '#fff',
-                boxShadow: '0 1px 0 rgba(0,0,0,0.04)'
+                position: 'absolute',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                bottom: 12,
+                display: 'flex',
+                gap: 10,
+                zIndex: 15,
+                alignItems: 'center'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '1.2' }}>{rp.title || rp.org || rp.postId}</div>
-                <div style={{ fontSize: 12, color: '#666', whiteSpace: 'nowrap', marginLeft: 8 }}>
-                  {rp.postDate ? rp.postDate.toLocaleString() : 'No date'}
-                </div>
+              <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
+                Showing <strong>{showingCount}</strong> of <strong>{totalCount}</strong> points
               </div>
-              {rp.org && <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>{rp.org}</div>}
-              {(rp.tagLine || rp.description) && (
-                <div style={{ fontSize: 12, color: '#444', marginTop: 8 }}>
-                  {(rp.tagLine || rp.description).slice(0, 240)}
-                </div>
-              )}
+
+              <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
+                Countries: <strong>{showingCountriesCount}</strong> of <strong>{totalCountriesCount}</strong>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
+                Projects: <strong>{showingProjectsCount}</strong> of <strong>{totalProjectsCount}</strong>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
-      </aside>
-    </div>
+
+        {/* Sidebar */}
+        <aside className="page-sidebar">
+          <div style={{ padding: '6px 4px', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ fontWeight: 700 }}>Recent posts</div>
+            <div style={{ fontSize: 12, color: '#666' }}>{recentPosts.length} shown</div>
+          </div>
+
+          <div style={{ marginTop: 8 }}>
+            {recentPosts.length === 0 && <div style={{ color: '#666', fontSize: 13 }}>No recent posts</div>}
+            {recentPosts.map((rp) => (
+              <div
+                key={rp.postId}
+                tabIndex={0}
+                role="button"
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentClick(rp); } }}
+                onClick={() => handleRecentClick(rp)}
+                style={{
+                  padding: '10px',
+                  marginBottom: 10,
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  background: '#fff',
+                  boxShadow: '0 1px 0 rgba(0,0,0,0.04)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '1.2' }}>{rp.title || rp.org || rp.postId}</div>
+                  <div style={{ fontSize: 12, color: '#666', whiteSpace: 'nowrap', marginLeft: 8 }}>
+                    {rp.postDate ? rp.postDate.toLocaleString() : 'No date'}
+                  </div>
+                </div>
+                {rp.org && <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>{rp.org}</div>}
+                {(rp.tagLine || rp.description) && (
+                  <div style={{ fontSize: 12, color: '#444', marginTop: 8 }}>
+                    {(rp.tagLine || rp.description).slice(0, 240)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
