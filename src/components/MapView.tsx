@@ -534,9 +534,7 @@ export default function MapView(): JSX.Element {
         const sub = document.createElement('div');
         sub.style.fontSize = '12px';
         sub.style.color = '#666';
-        sub.textContent = location.city
-          ? location.city + (location.country ? `, ${location.country}` : '')
-          : (project.tagLine || '').slice(0, 120);
+        sub.textContent = (project.tagLine || '').slice(0, 120);
         info.appendChild(sub);
         item.appendChild(info);
 
@@ -923,20 +921,21 @@ export default function MapView(): JSX.Element {
               <p>
                 <strong>Organization:</strong> {selected.org}
               </p>
-              {selectedLocation && (
-                <p>
-                  <strong>Location:</strong> {selectedLocation.position[1]}, {selectedLocation.position[0]}
-                </p>
-              )}
 
               {(selectedPlace || selectedLocation?.display_name || selectedLocation?.state || selectedLocation?.country) && (
                 <p>
-                  <strong>Place:</strong>{' '}
-                  {selectedPlace
+                  <strong>Location:</strong>{' '}
+                  {selectedLocation?.display_name
+                    ? selectedLocation.display_name
+                    : selectedPlace
                     ? selectedPlace
-                    : selectedLocation?.display_name
-                      ? selectedLocation.display_name
-                      : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
+                    : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
+                </p>
+              )}
+
+              {selectedLocation && (
+                <p>
+                  <strong>Coordinates:</strong> {selectedLocation.position[1]}, {selectedLocation.position[0]}
                 </p>
               )}
 
@@ -954,10 +953,10 @@ export default function MapView(): JSX.Element {
                       return (
                         <li key={loc.id} style={{ marginBottom: 6 }}>
                           <div style={{ fontSize: 13 }}>
-                            <strong>Coords:</strong> {loc.position[1]}, {loc.position[0]}
-                            {(place || loc.display_name || loc.state || loc.country) ? (
-                              <span> — {place ? place : loc.display_name ? loc.display_name : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)}</span>
+                            {(loc.display_name || place || loc.state || loc.country) ? (
+                              <span> — {loc.display_name ? loc.display_name : place ? place : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)}</span>
                             ) : null}
+                            {loc.position[1]}, {loc.position[0]}
                           </div>
                         </li>
                       );
@@ -1040,9 +1039,9 @@ export default function MapView(): JSX.Element {
                 </div>
               </div>
               {rp.org && <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>{rp.org}</div>}
-              {(rp.description || rp.tagLine) && (
+              {(rp.tagLine || rp.description) && (
                 <div style={{ fontSize: 12, color: '#444', marginTop: 8 }}>
-                  {(rp.description || rp.tagLine).slice(0, 240)}
+                  {(rp.tagLine || rp.description).slice(0, 240)}
                 </div>
               )}
             </div>
