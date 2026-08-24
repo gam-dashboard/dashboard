@@ -869,7 +869,7 @@ export default function MapView(): JSX.Element {
                         addSelectedLocation(locationInput);
                       }
                     }}
-                    placeholder='Type city, state, or country (choose suggestion and press Enter)'
+                    placeholder='City, state, or country filtering'
                     style={{ flex: '1 1 auto', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
                   />
                   <datalist id="locations-datalist">
