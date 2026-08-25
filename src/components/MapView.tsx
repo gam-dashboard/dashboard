@@ -66,8 +66,8 @@ const parseGoals = (raw: string | undefined): string[] => {
 
   // First try to match long-form goals (Goal X: Full description)
   const longMatches = Array.from(s.matchAll(/(Goal\s*\d+\s*:\s*[^;|]+?)(?=Goal\s*\d+|$)/gi))
-    .map(m => m[1].trim());
-  if (longMatches.length) return Array.from(new Set(longMatches));
+    .map(m => m[1].trim().replace(/[,;|]+$/, '')); // Strip trailing punctuation
+  return Array.from(new Set(longMatches));
 };
 
 const tryParseDate = (s?: string | null): Date | null => {
