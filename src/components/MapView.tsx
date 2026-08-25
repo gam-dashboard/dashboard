@@ -68,14 +68,6 @@ const parseGoals = (raw: string | undefined): string[] => {
   const longMatches = Array.from(s.matchAll(/(Goal\s*\d+\s*:\s*[^;|]+?)(?=Goal\s*\d+|$)/gi))
     .map(m => m[1].trim());
   if (longMatches.length) return Array.from(new Set(longMatches));
-
-  // Then try short form (just Goal X)
-  const shortMatches = Array.from(s.matchAll(/(Goal\s*\d+)/gi)).map(m => m[1].trim());
-  if (shortMatches.length) return Array.from(new Set(shortMatches));
-
-  // Fallback: split by semicolon or pipe only (not comma)
-  const parts = s.split(/[;|]+/).map(p => p.trim()).filter(Boolean);
-  return Array.from(new Set(parts));
 };
 
 const tryParseDate = (s?: string | null): Date | null => {
@@ -1144,7 +1136,7 @@ export default function MapView(): JSX.Element {
                             <li key={loc.id} style={{ marginBottom: 6 }}>
                               <div style={{ fontSize: 13 }}>
                                 {(loc.display_name || place || loc.state || loc.country) ? (
-                                  <span> {loc.display_name ? loc.display_name : place ? place : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)} —</span>
+                                  <span> {loc.display_name ? loc.display_name : place ? place : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)} —  </span>
                                 ) : null}
                                 {loc.position[1]}, {loc.position[0]}
                               </div>
