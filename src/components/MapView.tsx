@@ -1202,29 +1202,47 @@ export default function MapView(): JSX.Element {
 
                   {selected.supportingSites && (
                     <p>
-                      <strong>Supporting Sites:</strong>{' '}
-                      <a href={selected.supportingSites} target="_blank" rel="noopener noreferrer">
+                      <strong>Supporting Sites:</strong>
+                      <div style={{ whiteSpace: 'pre-wrap', marginTop: 4 }}>
                         {selected.supportingSites}
-                      </a>
+                      </div>
                     </p>
                   )}
 
                   {selected.video && (
-                    <p>
-                      <strong>Video:</strong>{' '}
-                      <a href={selected.video} target="_blank" rel="noopener noreferrer">
-                        Watch Video
-                      </a>
-                    </p>
+                    <div style={{ marginTop: 12 }}>
+                      <strong>Video:</strong>
+                      <div style={{ marginTop: 8, aspectRatio: '16 / 9', width: '100%', maxWidth: '500px' }}>
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          src={selected.video}
+                          title="Project Video"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          style={{ borderRadius: 6 }}
+                        />
+                      </div>
+                    </div>
                   )}
 
                   {selected.video2 && (
-                    <p>
-                      <strong>Video 2:</strong>{' '}
-                      <a href={selected.video2} target="_blank" rel="noopener noreferrer">
-                        Watch Video
-                      </a>
-                    </p>
+                    <div style={{ marginTop: 12 }}>
+                      <strong>Video 2:</strong>
+                      <div style={{ marginTop: 8, aspectRatio: '16 / 9', width: '100%', maxWidth: '500px' }}>
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          src={selected.video2}
+                          title="Project Video 2"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          style={{ borderRadius: 6 }}
+                        />
+                      </div>
+                    </div>
                   )}
 
                   {selected.projectStartDate && (
