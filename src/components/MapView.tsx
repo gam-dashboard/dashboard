@@ -28,11 +28,17 @@ type Project = {
   tagLine: string;
   org: string;
   goals: string[];
-  categories: string[]; // new
+  categories: string[];
   searchText: string;
   postDate: Date | null;
   row: CsvRow;
   locations: ProjectLocation[];
+  // Add new fields
+  orgWebsite?: string;
+  supportingSites?: string;
+  video?: string;
+  video2?: string;
+  projectStartDate?: string;
 };
 
 type ProjectMarker = {
@@ -229,8 +235,24 @@ export default function MapView(): JSX.Element {
             .join(' ')
             .toLowerCase();
 
+          const projectStartDate = getField(['project start date']);
+
           byPostId.set(postId, {
-            postId, title, description, tagLine, org, goals, categories: [], searchText, postDate,
+            postId,
+            title,
+            description,
+            tagLine,
+            org,
+            goals,
+            categories: [],
+            searchText,
+            postDate,
+            // Add new fields
+            orgWebsite: getField(['organization website']),
+            supportingSites: getField(['supporting sites']),
+            video: getField(['video']),
+            video2: getField(['video 2']),
+            projectStartDate,
             row: r,
             locations: []
           });
@@ -1167,6 +1189,48 @@ export default function MapView(): JSX.Element {
                         ))}
                       </ul>
                     </div>
+                  )}
+
+                  {selected.orgWebsite && (
+                    <p>
+                      <strong>Organization Website:</strong>{' '}
+                      <a href={selected.orgWebsite} target="_blank" rel="noopener noreferrer">
+                        {selected.orgWebsite}
+                      </a>
+                    </p>
+                  )}
+
+                  {selected.supportingSites && (
+                    <p>
+                      <strong>Supporting Sites:</strong>{' '}
+                      <a href={selected.supportingSites} target="_blank" rel="noopener noreferrer">
+                        {selected.supportingSites}
+                      </a>
+                    </p>
+                  )}
+
+                  {selected.video && (
+                    <p>
+                      <strong>Video:</strong>{' '}
+                      <a href={selected.video} target="_blank" rel="noopener noreferrer">
+                        Watch Video
+                      </a>
+                    </p>
+                  )}
+
+                  {selected.video2 && (
+                    <p>
+                      <strong>Video 2:</strong>{' '}
+                      <a href={selected.video2} target="_blank" rel="noopener noreferrer">
+                        Watch Video
+                      </a>
+                    </p>
+                  )}
+
+                  {selected.projectStartDate && (
+                    <p>
+                      <strong>Project Start Date:</strong> {selected.projectStartDate}
+                    </p>
                   )}
                 </div>
               </div>
