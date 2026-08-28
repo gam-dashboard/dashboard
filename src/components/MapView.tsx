@@ -461,12 +461,36 @@ export default function MapView(): JSX.Element {
 
   const filteredMarkers = useMemo((): ProjectMarker[] => {
     return filteredProjects.flatMap((project) => {
-      const locs = activeCity
-        ? project.locations.filter(l => l.city?.toLowerCase() === activeCity.toLowerCase())
-        : project.locations;
+      let locs = project.locations;
+
+      // Filter locations based on active city
+      if (activeCity) {
+        locs = locs.filter(l => l.city?.toLowerCase() === activeCity.toLowerCase());
+      }
+
+      // Filter locations based on selected location filters
+      if (selectedLocationFilters.length > 0) {
+        locs = locs.filter(l => {
+          return selectedLocationFilters.some(f => {
+            const afCity = f.city?.toLowerCase();
+            const afState = f.state?.toLowerCase();
+            const afCountry = f.country?.toLowerCase();
+
+            const lc = (l.city || '').toLowerCase();
+            const ls = (l.state || '').toLowerCase();
+            const lco = (l.country || '').toLowerCase();
+
+            if (afCity && afCity !== lc) return false;
+            if (afState && afState !== ls) return false;
+            if (afCountry && afCountry !== lco) return false;
+            return true;
+          });
+        });
+      }
+
       return locs.map((location) => ({ project, location }));
     });
-  }, [filteredProjects, activeCity]);
+  }, [filteredProjects, activeCity, selectedLocationFilters]);
 
   const extractCountries = (p: Project): string[] => {
     const fromLocations = p.locations.map(l => l.country).filter(Boolean) as string[];
