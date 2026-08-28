@@ -665,28 +665,27 @@ export default function MapView(): JSX.Element {
       listEl.style.gap = '6px';
       listEl.style.maxHeight = 'calc(70vh - 64px)';
 
-      const btnCommonStyle = (btn: HTMLButtonElement) => {
-        btn.style.fontSize = '13px';
-        btn.style.padding = '6px 10px';
-        btn.style.cursor = 'pointer';
-        btn.style.borderRadius = '6px';
-        btn.style.border = '1px solid #ddd';
-        btn.style.background = '#fff';
-      };
-
       matches.forEach(({ project, location }, idx) => {
         const item = document.createElement('div');
         item.style.display = 'flex';
-        item.style.justifyContent = 'space-between';
-        item.style.alignItems = 'center';
+        item.style.flexDirection = 'column';
         item.style.padding = '8px';
         item.style.borderRadius = '6px';
-        item.style.background = '#fff';
+        item.style.background = '#f9f9f9';
         item.style.boxShadow = '0 1px 0 rgba(0,0,0,0.04)';
+        item.style.cursor = 'pointer';
+        item.style.transition = 'background-color 0.2s ease';
+
+        // Hover effect
+        item.addEventListener('mouseenter', () => {
+          item.style.background = '#f0f0f0';
+        });
+        item.addEventListener('mouseleave', () => {
+          item.style.background = '#f9f9f9';
+        });
 
         const info = document.createElement('div');
         info.style.flex = '1 1 auto';
-        info.style.marginRight = '10px';
 
         const title = document.createElement('div');
         title.style.fontSize = '14px';
@@ -697,36 +696,19 @@ export default function MapView(): JSX.Element {
         const sub = document.createElement('div');
         sub.style.fontSize = '12px';
         sub.style.color = '#666';
+        sub.style.marginTop = '4px';
         sub.textContent = (project.tagLine || '').slice(0, 120);
         info.appendChild(sub);
-        item.appendChild(info);
 
-        const actions = document.createElement('div');
-        actions.style.display = 'flex';
-        actions.style.gap = '8px';
-        actions.style.flex = '0 0 auto';
-
-        const seeBtn = document.createElement('button');
-        seeBtn.textContent = 'See more';
-        btnCommonStyle(seeBtn);
-        seeBtn.addEventListener('click', (ev) => {
+        // Make the entire item clickable to open details
+        item.addEventListener('click', (ev) => {
           ev.stopPropagation();
           setSelected(project);
           setSelectedLocation(location);
           try { popupRef.current?.remove(); } catch { /* ignore */ }
         });
-        actions.appendChild(seeBtn);
 
-        const zoomBtn = document.createElement('button');
-        zoomBtn.textContent = 'Zoom';
-        btnCommonStyle(zoomBtn);
-        zoomBtn.addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          try { map.easeTo({ center: location.position, zoom: Math.max(map.getZoom(), 6), duration: 300 }); } catch { /* ignore */ }
-        });
-        actions.appendChild(zoomBtn);
-
-        item.appendChild(actions);
+        item.appendChild(info);
         listEl.appendChild(item);
       });
 
@@ -747,10 +729,11 @@ export default function MapView(): JSX.Element {
         .addTo(map);
 
       requestAnimationFrame(() => {
-        const first = listContainer.querySelector('button') as HTMLElement | null;
+        const first = listContainer.querySelector('div:nth-child(3)') as HTMLElement | null;
         if (first) first.focus();
       });
 
+      // Adjust popup position to ensure it fits on screen
       const popupEl = popupRef.current.getElement();
       if (popupEl) {
         requestAnimationFrame(() => {
@@ -758,10 +741,12 @@ export default function MapView(): JSX.Element {
           const pad = 20;
           const vw = window.innerWidth, vh = window.innerHeight;
           let dx = 0, dy = 0;
+
           if (rect.right > vw - pad) dx = rect.right - (vw - pad);
-          if (rect.left < pad) dx = rect.left - pad;
-          if (rect.top < pad) dy = rect.top - pad;
+          if (rect.left < pad) dx = pad - rect.left;
+          if (rect.top < pad) dy = pad - rect.top;
           if (rect.bottom > vh - pad) dy = rect.bottom - (vh - pad);
+
           if (dx !== 0 || dy !== 0) {
             try { (map as any).panBy([Math.round(dx), Math.round(dy)], { duration: 250 }); } catch { /* ignore */ }
           }
