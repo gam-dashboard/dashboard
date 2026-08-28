@@ -971,37 +971,50 @@ export default function MapView(): JSX.Element {
             </div>
           </div>
 
-          {/* Categories panel (like Goals) */}
+          {/* Categories panel - overlay style */}
           {!categoriesMinimized && (
-            <div style={{ padding: '0 12px 12px', display: 'flex', justifyContent: 'center' }}>
-              <div style={{ width: 'min(980px, 96%)', background: 'white', padding: 8, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)' }}>
-                <div style={{ maxHeight: '36vh', overflow: 'auto' }}>
-                  {uniqueCategories.length === 0 ? (
-                    <div style={{ fontSize: 12, color: '#666' }}>Loading categories…</div>
-                  ) : (
-                    uniqueCategories.map((c) => {
-                      const checked = activeCategories.includes(c);
-                      return (
-                        <label key={c} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => {
-                              setActiveCategories((prev) => {
-                                if (prev.includes(c)) return prev.filter((x) => x !== c);
-                                return [...prev, c];
-                              });
-                            }}
-                            style={{ marginRight: 8 }}
-                          />
-                          {c}
-                        </label>
-                      );
-                    })
-                  )}
-                </div>
+            <div style={{
+              position: 'absolute',
+              top: 60,
+              right: 12,
+              zIndex: 50,
+              display: 'flex',
+              justifyContent: 'flex-end'
+            }}>
+              <div style={{
+                background: 'white',
+                padding: 12,
+                borderRadius: 8,
+                boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
+                maxWidth: '400px',
+                maxHeight: '50vh',
+                overflow: 'auto'
+              }}>
+                {uniqueCategories.length === 0 ? (
+                  <div style={{ fontSize: 12, color: '#666' }}>Loading categories…</div>
+                ) : (
+                  uniqueCategories.map((c) => {
+                    const checked = activeCategories.includes(c);
+                    return (
+                      <label key={c} style={{ display: 'block', fontSize: 13, marginBottom: 4, whiteSpace: 'nowrap' }}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            setActiveCategories((prev) => {
+                              if (prev.includes(c)) return prev.filter((x) => x !== c);
+                              return [...prev, c];
+                            });
+                          }}
+                          style={{ marginRight: 8 }}
+                        />
+                        {c}
+                      </label>
+                    );
+                  })
+                )}
                 {uniqueCategories.length > 0 && (
-                  <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                  <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
                     <button onClick={() => setActiveCategories([])} style={{ fontSize: 12, padding: '6px 8px' }}>
                       Clear
                     </button>
@@ -1011,37 +1024,50 @@ export default function MapView(): JSX.Element {
             </div>
           )}
 
-          {/* Goals panel dropdown (appears below header, not overlapping the map) */}
+          {/* Goals panel - overlay style */}
           {!filterMinimized && (
-            <div style={{ padding: '0 12px 12px', display: 'flex', justifyContent: 'center' }}>
-              <div style={{ width: 'min(980px, 96%)', background: 'white', padding: 8, borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)' }}>
-                <div style={{ maxHeight: '36vh', overflow: 'auto' }}>
-                  {uniqueGoals.length === 0 ? (
-                    <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
-                  ) : (
-                    uniqueGoals.map((g) => {
-                      const checked = activeGoals.includes(g);
-                      return (
-                        <label key={g} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => {
-                              setActiveGoals((prev) => {
-                                if (prev.includes(g)) return prev.filter((x) => x !== g);
-                                return [...prev, g];
-                              });
-                            }}
-                            style={{ marginRight: 8 }}
-                          />
-                          {g}
-                        </label>
-                      );
-                    })
-                  )}
-                </div>
+            <div style={{
+              position: 'absolute',
+              top: 60,
+              right: 12,
+              zIndex: 50,
+              display: 'flex',
+              justifyContent: 'flex-end'
+            }}>
+              <div style={{
+                background: 'white',
+                padding: 12,
+                borderRadius: 8,
+                boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
+                maxWidth: '400px',
+                maxHeight: '50vh',
+                overflow: 'auto'
+              }}>
+                {uniqueGoals.length === 0 ? (
+                  <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
+                ) : (
+                  uniqueGoals.map((g) => {
+                    const checked = activeGoals.includes(g);
+                    return (
+                      <label key={g} style={{ display: 'block', fontSize: 13, marginBottom: 4, whiteSpace: 'nowrap' }}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            setActiveGoals((prev) => {
+                              if (prev.includes(g)) return prev.filter((x) => x !== g);
+                              return [...prev, g];
+                            });
+                          }}
+                          style={{ marginRight: 8 }}
+                        />
+                        {g}
+                      </label>
+                    );
+                  })
+                )}
                 {uniqueGoals.length > 0 && (
-                  <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                  <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
                     <button onClick={() => setActiveGoals([])} style={{ fontSize: 12, padding: '6px 8px' }}>
                       Clear
                     </button>
