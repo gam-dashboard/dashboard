@@ -497,13 +497,6 @@ export default function MapView(): JSX.Element {
   const totalProjectsCount = projects.size;
   const showingProjectsCount = filteredProjects.length;
 
-  const recentPosts = useMemo(() => {
-    return Array.from(projects.values())
-      .slice()
-      .sort((a, b) => (b.postDate?.getTime() ?? -1) - (a.postDate?.getTime() ?? -1))
-      .slice(0, 10);
-  }, [projects]);
-
   const handleRecentClick = (rp: Project) => {
     if (!rp.locations || rp.locations.length === 0) { setSelected(rp); setSelectedLocation(null); return; }
     const map = mapRef.current;
@@ -1285,42 +1278,44 @@ export default function MapView(): JSX.Element {
         {/* Sidebar */}
         <aside className="page-sidebar">
           <div style={{ padding: '6px 4px', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ fontWeight: 700 }}>Recent posts</div>
-            <div style={{ fontSize: 12, color: '#666' }}>{recentPosts.length} shown</div>
+            <div style={{ fontWeight: 700 }}>Filtered Projects</div>
+            <div style={{ fontSize: 12, color: '#666' }}>{filteredProjects.length} shown</div>
           </div>
 
           <div style={{ marginTop: 8 }}>
-            {recentPosts.length === 0 && <div style={{ color: '#666', fontSize: 13 }}>No recent posts</div>}
-            {recentPosts.map((rp) => (
-              <div
-                key={rp.postId}
-                tabIndex={0}
-                role="button"
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentClick(rp); } }}
-                onClick={() => handleRecentClick(rp)}
-                style={{
-                  padding: '10px',
-                  marginBottom: 10,
-                  borderRadius: 8,
-                  cursor: 'pointer',
-                  background: '#fff',
-                  boxShadow: '0 1px 0 rgba(0,0,0,0.04)'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '1.2' }}>{rp.title || rp.org || rp.postId}</div>
-                  <div style={{ fontSize: 12, color: '#666', whiteSpace: 'nowrap', marginLeft: 8 }}>
-                    {rp.postDate ? rp.postDate.toLocaleString() : 'No date'}
+            {filteredProjects.length === 0 && <div style={{ color: '#666', fontSize: 13 }}>No projects match your filters</div>}
+            {Array.from(filteredProjects)
+              .sort((a, b) => (b.postDate?.getTime() ?? -1) - (a.postDate?.getTime() ?? -1))
+              .map((project) => (
+                <div
+                  key={project.postId}
+                  tabIndex={0}
+                  role="button"
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentClick(project); } }}
+                  onClick={() => handleRecentClick(project)}
+                  style={{
+                    padding: '10px',
+                    marginBottom: 10,
+                    borderRadius: 8,
+                    cursor: 'pointer',
+                    background: '#fff',
+                    boxShadow: '0 1px 0 rgba(0,0,0,0.04)'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '1.2' }}>{project.title || project.org || project.postId}</div>
+                    <div style={{ fontSize: 12, color: '#666', whiteSpace: 'nowrap', marginLeft: 8 }}>
+                      {project.postDate ? project.postDate.toLocaleString() : 'No date'}
+                    </div>
                   </div>
+                  {project.org && <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>{project.org}</div>}
+                  {(project.tagLine || project.description) && (
+                    <div style={{ fontSize: 12, color: '#444', marginTop: 8 }}>
+                      {(project.tagLine || project.description).slice(0, 240)}
+                    </div>
+                  )}
                 </div>
-                {rp.org && <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>{rp.org}</div>}
-                {(rp.tagLine || rp.description) && (
-                  <div style={{ fontSize: 12, color: '#444', marginTop: 8 }}>
-                    {(rp.tagLine || rp.description).slice(0, 240)}
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
           </div>
         </aside>
       </div>
