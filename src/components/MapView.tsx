@@ -948,9 +948,9 @@ export default function MapView(): JSX.Element {
                 </div>
               </div>
 
-              {/* Goals toggle and Categories toggle */}
-              <div style={{ width: 240 }}>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              {/* Goals and Categories toggle - with positioned dropdowns */}
+              <div style={{ width: 240, position: 'relative', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <div style={{ position: 'relative' }}>
                   <button
                     onClick={() => setCategoriesMinimized(v => !v)}
                     style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
@@ -959,6 +959,61 @@ export default function MapView(): JSX.Element {
                     {categoriesMinimized ? 'Open Categories' : 'Close Categories'}
                   </button>
 
+                  {/* Categories panel - positioned below button */}
+                  {!categoriesMinimized && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: 8,
+                      zIndex: 50,
+                    }}>
+                      <div style={{
+                        background: 'white',
+                        padding: 12,
+                        borderRadius: 8,
+                        boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
+                        maxWidth: '400px',
+                        maxHeight: '50vh',
+                        overflow: 'auto',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {uniqueCategories.length === 0 ? (
+                          <div style={{ fontSize: 12, color: '#666' }}>Loading categories…</div>
+                        ) : (
+                          uniqueCategories.map((c) => {
+                            const checked = activeCategories.includes(c);
+                            return (
+                              <label key={c} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => {
+                                    setActiveCategories((prev) => {
+                                      if (prev.includes(c)) return prev.filter((x) => x !== c);
+                                      return [...prev, c];
+                                    });
+                                  }}
+                                  style={{ marginRight: 8 }}
+                                />
+                                {c}
+                              </label>
+                            );
+                          })
+                        )}
+                        {uniqueCategories.length > 0 && (
+                          <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
+                            <button onClick={() => setActiveCategories([])} style={{ fontSize: 12, padding: '6px 8px' }}>
+                              Clear
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ position: 'relative' }}>
                   <button
                     onClick={() => setFilterMinimized(v => !v)}
                     style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
@@ -966,116 +1021,63 @@ export default function MapView(): JSX.Element {
                   >
                     {filterMinimized ? 'Open Goals' : 'Close Goals'}
                   </button>
+
+                  {/* Goals panel - positioned below button */}
+                  {!filterMinimized && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: 8,
+                      zIndex: 50,
+                    }}>
+                      <div style={{
+                        background: 'white',
+                        padding: 12,
+                        borderRadius: 8,
+                        boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
+                        maxWidth: '400px',
+                        maxHeight: '50vh',
+                        overflow: 'auto',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {uniqueGoals.length === 0 ? (
+                          <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
+                        ) : (
+                          uniqueGoals.map((g) => {
+                            const checked = activeGoals.includes(g);
+                            return (
+                              <label key={g} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => {
+                                    setActiveGoals((prev) => {
+                                      if (prev.includes(g)) return prev.filter((x) => x !== g);
+                                      return [...prev, g];
+                                    });
+                                  }}
+                                  style={{ marginRight: 8 }}
+                                />
+                                {g}
+                              </label>
+                            );
+                          })
+                        )}
+                        {uniqueGoals.length > 0 && (
+                          <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
+                            <button onClick={() => setActiveGoals([])} style={{ fontSize: 12, padding: '6px 8px' }}>
+                              Clear
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Categories panel - overlay style */}
-          {!categoriesMinimized && (
-            <div style={{
-              position: 'absolute',
-              top: 60,
-              right: 12,
-              zIndex: 50,
-              display: 'flex',
-              justifyContent: 'flex-end'
-            }}>
-              <div style={{
-                background: 'white',
-                padding: 12,
-                borderRadius: 8,
-                boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                maxWidth: '400px',
-                maxHeight: '50vh',
-                overflow: 'auto'
-              }}>
-                {uniqueCategories.length === 0 ? (
-                  <div style={{ fontSize: 12, color: '#666' }}>Loading categories…</div>
-                ) : (
-                  uniqueCategories.map((c) => {
-                    const checked = activeCategories.includes(c);
-                    return (
-                      <label key={c} style={{ display: 'block', fontSize: 13, marginBottom: 4, whiteSpace: 'nowrap' }}>
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => {
-                            setActiveCategories((prev) => {
-                              if (prev.includes(c)) return prev.filter((x) => x !== c);
-                              return [...prev, c];
-                            });
-                          }}
-                          style={{ marginRight: 8 }}
-                        />
-                        {c}
-                      </label>
-                    );
-                  })
-                )}
-                {uniqueCategories.length > 0 && (
-                  <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
-                    <button onClick={() => setActiveCategories([])} style={{ fontSize: 12, padding: '6px 8px' }}>
-                      Clear
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Goals panel - overlay style */}
-          {!filterMinimized && (
-            <div style={{
-              position: 'absolute',
-              top: 60,
-              right: 12,
-              zIndex: 50,
-              display: 'flex',
-              justifyContent: 'flex-end'
-            }}>
-              <div style={{
-                background: 'white',
-                padding: 12,
-                borderRadius: 8,
-                boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                maxWidth: '400px',
-                maxHeight: '50vh',
-                overflow: 'auto'
-              }}>
-                {uniqueGoals.length === 0 ? (
-                  <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
-                ) : (
-                  uniqueGoals.map((g) => {
-                    const checked = activeGoals.includes(g);
-                    return (
-                      <label key={g} style={{ display: 'block', fontSize: 13, marginBottom: 4, whiteSpace: 'nowrap' }}>
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => {
-                            setActiveGoals((prev) => {
-                              if (prev.includes(g)) return prev.filter((x) => x !== g);
-                              return [...prev, g];
-                            });
-                          }}
-                          style={{ marginRight: 8 }}
-                        />
-                        {g}
-                      </label>
-                    );
-                  })
-                )}
-                {uniqueGoals.length > 0 && (
-                  <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
-                    <button onClick={() => setActiveGoals([])} style={{ fontSize: 12, padding: '6px 8px' }}>
-                      Clear
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* Map container */}
           <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 6 }}>
