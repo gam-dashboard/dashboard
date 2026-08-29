@@ -889,7 +889,16 @@ export default function MapView(): JSX.Element {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
-                        addSelectedLocation(locationInput);
+                        // Try exact match first
+                        let matchedOption = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(locationInput));
+                        // If no exact match, use first suggestion
+                        if (!matchedOption && uniqueLocationOptions.length > 0) {
+                          matchedOption = uniqueLocationOptions[0];
+                        }
+                        // Add the matched option if found
+                        if (matchedOption) {
+                          addSelectedLocation(matchedOption.label);
+                        }
                       }
                     }}
                     placeholder='City, state, or country filtering'
@@ -1077,7 +1086,7 @@ export default function MapView(): JSX.Element {
                 </div>
               </div>
             </div>
-          </div>
+          </div>l
 
           {/* Map container */}
           <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 6 }}>
