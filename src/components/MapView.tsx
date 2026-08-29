@@ -889,12 +889,21 @@ export default function MapView(): JSX.Element {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
+                        const normalizedInput = normLabel(locationInput);
+
                         // Try exact match first
-                        let matchedOption = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(locationInput));
-                        // If no exact match, use first suggestion
-                        if (!matchedOption && uniqueLocationOptions.length > 0) {
-                          matchedOption = uniqueLocationOptions[0];
+                        let matchedOption = uniqueLocationOptions.find(o => normLabel(o.label) === normalizedInput);
+
+                        // If no exact match, filter suggestions and use first one
+                        if (!matchedOption) {
+                          const filteredSuggestions = uniqueLocationOptions.filter(o =>
+                            normLabel(o.label).includes(normalizedInput)
+                          );
+                          if (filteredSuggestions.length > 0) {
+                            matchedOption = filteredSuggestions[0];
+                          }
                         }
+
                         // Add the matched option if found
                         if (matchedOption) {
                           addSelectedLocation(matchedOption.label);
