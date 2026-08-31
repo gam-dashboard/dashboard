@@ -874,7 +874,7 @@ export default function MapView(): JSX.Element {
               <div style={{ flex: '1 1 0' }}>
                 <input
                   type="search"
-                  placeholder="Search title, description, org, city, etc."
+                  placeholder="Filter by keyword (any text)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ width: '100%', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
@@ -1106,7 +1106,7 @@ export default function MapView(): JSX.Element {
                 {sidebarMinimized ? 'Open Sidebar' : 'Close Sidebar'}
               </button>
             </div>
-          </div>l
+          </div>
 
           {/* Map container */}
           <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 6 }}>
@@ -1133,7 +1133,7 @@ export default function MapView(): JSX.Element {
               </div>
             )}
 
-            {/* Details overlay and bottom summary bars unchanged... */}
+            {/* Details overlay and bottom summary bars*/}
             {selected && (
               <div
                 style={{
@@ -1253,7 +1253,15 @@ export default function MapView(): JSX.Element {
                   {selected.orgWebsite && (
                     <p>
                       <strong>Organization Website:</strong>{' '}
-                      <a href={selected.orgWebsite} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={
+                          selected.orgWebsite.startsWith('http://') || selected.orgWebsite.startsWith('https://')
+                            ? selected.orgWebsite
+                            : `https://${selected.orgWebsite}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {selected.orgWebsite}
                       </a>
                     </p>
