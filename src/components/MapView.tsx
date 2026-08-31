@@ -1096,6 +1096,15 @@ export default function MapView(): JSX.Element {
                   )}
                 </div>
               </div>
+
+              {/* Sidebar toggle button */}
+              <button
+                onClick={() => setSidebarMinimized(v => !v)}
+                style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13, whiteSpace: 'nowrap' }}
+                title="Toggle sidebar"
+              >
+                {sidebarMinimized ? 'Open Sidebar' : 'Close Sidebar'}
+              </button>
             </div>
           </div>l
 
