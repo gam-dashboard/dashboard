@@ -147,6 +147,8 @@ export default function MapView(): JSX.Element {
 
   const normLabel = (s: string) => String(s || '').trim().toLowerCase();
 
+  const [sidebarMinimized, setSidebarMinimized] = useState<boolean>(true);
+
   const [uniqueCities, setUniqueCities] = useState<string[]>([]);
   const [activeCity, setActiveCity] = useState<string | null>(null);
 
@@ -1331,48 +1333,50 @@ export default function MapView(): JSX.Element {
         </div>
 
         {/* Sidebar */}
-        <aside className="page-sidebar">
-          <div style={{ padding: '6px 4px', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ fontWeight: 700 }}>Filtered Projects</div>
-            <div style={{ fontSize: 12, color: '#666' }}>{filteredProjects.length} shown</div>
-          </div>
+        {!sidebarMinimized && (
+          <aside className="page-sidebar">
+            <div style={{ padding: '6px 4px', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontWeight: 700 }}>Filtered Projects</div>
+              <div style={{ fontSize: 12, color: '#666' }}>{filteredProjects.length} shown</div>
+            </div>
 
-          <div style={{ marginTop: 8 }}>
-            {filteredProjects.length === 0 && <div style={{ color: '#666', fontSize: 13 }}>No projects match your filters</div>}
-            {Array.from(filteredProjects)
-              .sort((a, b) => (b.postDate?.getTime() ?? -1) - (a.postDate?.getTime() ?? -1))
-              .map((project) => (
-                <div
-                  key={project.postId}
-                  tabIndex={0}
-                  role="button"
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentClick(project); } }}
-                  onClick={() => handleRecentClick(project)}
-                  style={{
-                    padding: '10px',
-                    marginBottom: 10,
-                    borderRadius: 8,
-                    cursor: 'pointer',
-                    background: '#fff',
-                    boxShadow: '0 1px 0 rgba(0,0,0,0.04)'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '1.2' }}>{project.title || project.org || project.postId}</div>
-                    <div style={{ fontSize: 12, color: '#666', whiteSpace: 'nowrap', marginLeft: 8 }}>
-                      {project.postDate ? project.postDate.toLocaleString() : 'No date'}
+            <div style={{ marginTop: 8 }}>
+              {filteredProjects.length === 0 && <div style={{ color: '#666', fontSize: 13 }}>No projects match your filters</div>}
+              {Array.from(filteredProjects)
+                .sort((a, b) => (b.postDate?.getTime() ?? -1) - (a.postDate?.getTime() ?? -1))
+                .map((project) => (
+                  <div
+                    key={project.postId}
+                    tabIndex={0}
+                    role="button"
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentClick(project); } }}
+                    onClick={() => handleRecentClick(project)}
+                    style={{
+                      padding: '10px',
+                      marginBottom: 10,
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      background: '#fff',
+                      boxShadow: '0 1px 0 rgba(0,0,0,0.04)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '1.2' }}>{project.title || project.org || project.postId}</div>
+                      <div style={{ fontSize: 12, color: '#666', whiteSpace: 'nowrap', marginLeft: 8 }}>
+                        {project.postDate ? project.postDate.toLocaleString() : 'No date'}
+                      </div>
                     </div>
+                    {project.org && <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>{project.org}</div>}
+                    {(project.tagLine || project.description) && (
+                      <div style={{ fontSize: 12, color: '#444', marginTop: 8 }}>
+                        {(project.tagLine || project.description).slice(0, 240)}
+                      </div>
+                    )}
                   </div>
-                  {project.org && <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>{project.org}</div>}
-                  {(project.tagLine || project.description) && (
-                    <div style={{ fontSize: 12, color: '#444', marginTop: 8 }}>
-                      {(project.tagLine || project.description).slice(0, 240)}
-                    </div>
-                  )}
-                </div>
-              ))}
-          </div>
-        </aside>
+                ))}
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   );
