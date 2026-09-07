@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MapView from './components/MapView';
 import AltDashboard from './pages/waDashboard';
+import DataChatbot from './components/DataChatbot';
 import './styles.css';
 
 export default function App() {
@@ -19,7 +20,19 @@ export default function App() {
         <a href="#/WATracker">WA State Behavioral Health Tracker</a>
       </nav>
 
-      {route === '#/WATracker' ? <AltDashboard /> : (
+      {route === '#/WATracker' ? (
+        <div>
+          <AltDashboard />
+          
+          {/* WA State Chatbot - analyzes health tracker and location data */}
+          <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
+            <DataChatbot 
+              csvFiles={['WA_tracker_entries.csv', 'WA_locations.csv']}
+              title="WA State Health Data Assistant"
+            />
+          </section>
+        </div>
+      ) : (
         <div className="app">
           <header>
             <h1>Global Action Mosaic — Interactive Dashboard</h1>
@@ -27,6 +40,14 @@ export default function App() {
           <main>
             <MapView />
           </main>
+          
+          {/* Global Projects Chatbot - analyzes cross-dataset patterns */}
+          <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
+            <DataChatbot 
+              csvFiles={['SDG_projects.csv', 'locations.csv', 'project_categories.csv']}
+              title="Global Projects Intelligence"
+            />
+          </section>
         </div>
       )}
     </div>
