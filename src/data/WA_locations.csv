@@ -1,0 +1,7 @@
+post_id,row_index,lat,lon,lat_header,lon_header,city,state,country,country_code,display_name
+1,1,47.6205131,-122.3493036,Project main location.lat,Project main location.lon,Seattle,Washington,United States,US,"Seattle, King County, Washington, United States"
+1,1,47.2868352,-120.212613,Additional project location.lat,Additional project location.lon,Chelan County,Washington,United States,US,"Chelan County, Washington, United States"
+3,2,47.5298384,-122.0342674,Project main location.lat,Project main location.lon,Issaquah,Washington,United States,US,"Issaquah, King County, Washington, United States"
+3,2,47.2868352,-120.212613,Additional project location.lat,Additional project location.lon,Chelan County,Washington,United States,US,"Chelan County, Washington, United States"
+10,3,47.753359303285,-118.76165784895,Project main location.lat,Project main location.lon,Lincoln County,Washington,United States,US,"Lincoln County, Washington, United States"
+10,3,47.2868352,-120.212613,Additional project location.lat,Additional project location.lon,Chelan County,Washington,United States,US,"Chelan County, Washington, United States"

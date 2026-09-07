@@ -8,6 +8,21 @@ import locationsCsvUrl from '../data/locations.csv?url';
 import projectCategoriesCsvUrl from '../data/project_categories.csv?url';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 
+// New: configuration interface for MapView so the same component can be reused for multiple pages
+export type MapViewConfig = {
+  sdgProjectsCsvUrl?: string;
+  unCivicCsvUrl?: string;
+  projectCategoriesCsvUrl?: string;
+  locationsCsvUrl?: string;
+  showGoals?: boolean; // default true
+  pageTitle?: string;
+  // small label overrides (optional)
+  goalsOpenLabel?: string;
+  goalsCloseLabel?: string;
+  clearLabel?: string;
+  // any other label/terminology overrides can be added here
+};
+
 type CsvRow = Record<string, string>;
 
 type ProjectLocation = {
@@ -115,7 +130,12 @@ const derivePlace = (l?: { city?: string; state?: string; display_name?: string;
 
 const WORKER_PUBLIC_PATH = '/maplibre-gl-worker.mjs';
 
-export default function MapView(): JSX.Element {
+export default function MapView({ config }: { config?: MapViewConfig }): JSX.Element {
+  const sdgUrl = config?.sdgProjectsCsvUrl ?? sdgProjectsCsvUrl;
+  const unCivicUrl = config?.unCivicCsvUrl ?? unCivicCsvUrl;
+  const categoriesUrl = config?.projectCategoriesCsvUrl ?? projectCategoriesCsvUrl;
+  const locUrl = config?.locationsCsvUrl ?? locationsCsvUrl;
+
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
@@ -187,8 +207,8 @@ export default function MapView(): JSX.Element {
   });
 
   useEffect(() => {
-    // load SDG, UN civic, and project categories CSVs
-    Promise.all([parseCsv(sdgProjectsCsvUrl), parseCsv(unCivicCsvUrl), parseCsv(projectCategoriesCsvUrl)])
+    // load SDG, UN civic, and project categories CSVs (allow overrides via config)
+    Promise.all([parseCsv(sdgUrl), parseCsv(unCivicUrl), parseCsv(categoriesUrl)])
       .then(([a, b, c]) => {
         const rows = [...a.rows, ...b.rows];
         const allHeaders = Array.from(new Set([...(a.headers || []), ...(b.headers || [])]));
@@ -424,7 +444,7 @@ export default function MapView(): JSX.Element {
   };
 
   const filteredProjects = useMemo(() => {
-    const goalFilterActive = activeGoals.length > 0;
+    const goalFilterActive = (config?.showGoals ?? true) && activeGoals.length > 0;
     const categoryFilterActive = activeCategories.length > 0;
     const q = debouncedQuery.trim();
     const terms = q ? q.split(/\s+/).filter(Boolean) : [];
@@ -1033,68 +1053,70 @@ export default function MapView(): JSX.Element {
                   )}
                 </div>
 
-                <div style={{ position: 'relative' }}>
-                  <button
-                    onClick={() => setFilterMinimized(v => !v)}
-                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
-                    title="Open Goals"
-                  >
-                    {filterMinimized ? 'Open Goals' : 'Close Goals'}
-                  </button>
+                {(config?.showGoals ?? true) && (
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      onClick={() => setFilterMinimized(v => !v)}
+                      style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                      title={filterMinimized ? (config?.goalsOpenLabel ?? 'Open Goals') : (config?.goalsCloseLabel ?? 'Close Goals')}
+                    >
+                      {filterMinimized ? (config?.goalsOpenLabel ?? 'Open Goals') : (config?.goalsCloseLabel ?? 'Close Goals')}
+                    </button>
 
-                  {/* Goals panel - positioned below button */}
-                  {!filterMinimized && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      marginTop: 8,
-                      zIndex: 50,
-                    }}>
+                    {/* Goals panel - positioned below button */}
+                    {!filterMinimized && (
                       <div style={{
-                        background: 'white',
-                        padding: 12,
-                        borderRadius: 8,
-                        boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                        maxWidth: '400px',
-                        maxHeight: '50vh',
-                        overflow: 'auto',
-                        whiteSpace: 'nowrap'
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        marginTop: 8,
+                        zIndex: 50,
                       }}>
-                        {uniqueGoals.length === 0 ? (
-                          <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
-                        ) : (
-                          uniqueGoals.map((g) => {
-                            const checked = activeGoals.includes(g);
-                            return (
-                              <label key={g} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
-                                <input
-                                  type="checkbox"
-                                  checked={checked}
-                                  onChange={() => {
-                                    setActiveGoals((prev) => {
-                                      if (prev.includes(g)) return prev.filter((x) => x !== g);
-                                      return [...prev, g];
-                                    });
-                                  }}
-                                  style={{ marginRight: 8 }}
-                                />
-                                {g}
-                              </label>
-                            );
-                          })
-                        )}
-                        {uniqueGoals.length > 0 && (
-                          <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
-                            <button onClick={() => setActiveGoals([])} style={{ fontSize: 12, padding: '6px 8px' }}>
-                              Clear
-                            </button>
-                          </div>
-                        )}
+                        <div style={{
+                          background: 'white',
+                          padding: 12,
+                          borderRadius: 8,
+                          boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
+                          maxWidth: '400px',
+                          maxHeight: '50vh',
+                          overflow: 'auto',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          {uniqueGoals.length === 0 ? (
+                            <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
+                          ) : (
+                            uniqueGoals.map((g) => {
+                              const checked = activeGoals.includes(g);
+                              return (
+                                <label key={g} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => {
+                                      setActiveGoals((prev) => {
+                                        if (prev.includes(g)) return prev.filter((x) => x !== g);
+                                        return [...prev, g];
+                                      });
+                                    }}
+                                    style={{ marginRight: 8 }}
+                                  />
+                                  {g}
+                                </label>
+                              );
+                            })
+                          )}
+                          {uniqueGoals.length > 0 && (
+                            <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
+                              <button onClick={() => setActiveGoals([])} style={{ fontSize: 12, padding: '6px 8px' }}>
+                                {config?.clearLabel ?? 'Clear'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Sidebar toggle button */}

@@ -1,0 +1,131 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.3493036,
+          47.6205131
+        ]
+      },
+      "properties": {
+        "post_id": "1",
+        "row_index": 1,
+        "lat_header": "Project main location.lat",
+        "lon_header": "Project main location.lon",
+        "city": "Seattle",
+        "state": "Washington",
+        "country": "United States",
+        "country_code": "US",
+        "display_name": "Seattle, King County, Washington, United States"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -120.212613,
+          47.2868352
+        ]
+      },
+      "properties": {
+        "post_id": "1",
+        "row_index": 1,
+        "lat_header": "Additional project location.lat",
+        "lon_header": "Additional project location.lon",
+        "city": "Chelan County",
+        "state": "Washington",
+        "country": "United States",
+        "country_code": "US",
+        "display_name": "Chelan County, Washington, United States"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.0342674,
+          47.5298384
+        ]
+      },
+      "properties": {
+        "post_id": "3",
+        "row_index": 2,
+        "lat_header": "Project main location.lat",
+        "lon_header": "Project main location.lon",
+        "city": "Issaquah",
+        "state": "Washington",
+        "country": "United States",
+        "country_code": "US",
+        "display_name": "Issaquah, King County, Washington, United States"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -120.212613,
+          47.2868352
+        ]
+      },
+      "properties": {
+        "post_id": "3",
+        "row_index": 2,
+        "lat_header": "Additional project location.lat",
+        "lon_header": "Additional project location.lon",
+        "city": "Chelan County",
+        "state": "Washington",
+        "country": "United States",
+        "country_code": "US",
+        "display_name": "Chelan County, Washington, United States"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.76165784895,
+          47.753359303285
+        ]
+      },
+      "properties": {
+        "post_id": "10",
+        "row_index": 3,
+        "lat_header": "Project main location.lat",
+        "lon_header": "Project main location.lon",
+        "city": "Lincoln County",
+        "state": "Washington",
+        "country": "United States",
+        "country_code": "US",
+        "display_name": "Lincoln County, Washington, United States"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -120.212613,
+          47.2868352
+        ]
+      },
+      "properties": {
+        "post_id": "10",
+        "row_index": 3,
+        "lat_header": "Additional project location.lat",
+        "lon_header": "Additional project location.lon",
+        "city": "Chelan County",
+        "state": "Washington",
+        "country": "United States",
+        "country_code": "US",
+        "display_name": "Chelan County, Washington, United States"
+      }
+    }
+  ]
+}
