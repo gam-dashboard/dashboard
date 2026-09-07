@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MapView from './components/MapView';
-import AltDashboard from './pages/AltDashboard';
+import AltDashboard from './pages/waDashboard';
 import './styles.css';
 
 export default function App() {
@@ -16,10 +16,10 @@ export default function App() {
     <div>
       <nav style={{ padding: 12, display: 'flex', gap: 12 }}>
         <a href="#/">Standard Dashboard</a>
-        <a href="#/alt">Alternate Dashboard</a>
+        <a href="#/WATracker">Alternate Dashboard</a>
       </nav>
 
-      {route === '#/alt' ? <AltDashboard /> : (
+      {route === '#/WATracker' ? <AltDashboard /> : (
         <div className="app">
           <header>
             <h1>Global Action Mosaic — Interactive Dashboard</h1>
