@@ -1,13 +1,13 @@
 import Papa from 'papaparse';
 
 /**
- * Load a CSV file from the public/data directory
- * @param filePath - The filename (e.g., 'analytics.csv')
+ * Load a CSV file from the src/data directory
+ * @param filePath - The filename (e.g., 'SDG_projects.csv')
  * @returns Promise resolving to an array of parsed CSV objects
  */
 export async function loadCSVFromRepo(filePath: string): Promise<any[]> {
   try {
-    const response = await fetch(`/dashboard/data/${filePath}`);
+    const response = await fetch(`/src/data/${filePath}`);
     if (!response.ok) {
       throw new Error(`Failed to load CSV: ${response.statusText}`);
     }
