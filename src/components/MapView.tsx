@@ -322,7 +322,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         console.groupEnd();
 
         // attach locations
-        Papa.parse<CsvRow>(locationsCsvUrl, {
+        console.log('MapView: loading locations from', locUrl);
+        Papa.parse<CsvRow>(locUrl, {
           download: true,
           header: true,
           skipEmptyLines: true,
