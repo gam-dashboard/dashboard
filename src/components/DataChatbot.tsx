@@ -9,22 +9,23 @@ interface Message {
 }
 
 interface DataChatbotProps {
-  csvFile: string;
+  csvFiles: string[];
   title?: string;
   systemPrompt?: string;
 }
 
 export const DataChatbot: React.FC<DataChatbotProps> = ({
-  csvFile,
+  csvFiles,
   title = 'Data Insights Assistant',
   systemPrompt,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [csvData, setCSVData] = useState<any[]>([]);
+  const [allData, setAllData] = useState<{ [key: string]: any[] }>({});
   const [csvLoaded, setCSVLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadedFiles, setLoadedFiles] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const clientRef = useRef<OpenAI | null>(null);
 
@@ -42,24 +43,49 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({
     });
   }, []);
 
-  // Load CSV on component mount or when csvFile changes
+  // Load all CSV files
   useEffect(() => {
     const loadData = async () => {
       try {
         setError(null);
-        const data = await loadCSVFromRepo(csvFile);
-        if (data.length === 0) {
-          setError(`Could not load CSV file: ${csvFile}`);
+        const dataMap: { [key: string]: any[] } = {};
+        const successful: string[] = [];
+
+        for (const file of csvFiles) {
+          try {
+            const data = await loadCSVFromRepo(file);
+            if (data && data.length > 0) {
+              dataMap[file] = data;
+              successful.push(file);
+            }
+          } catch (err) {
+            console.error(`Failed to load ${file}:`, err);
+            // Continue loading other files even if one fails
+          }
+        }
+
+        if (successful.length === 0) {
+          setError(`Could not load any CSV files. Attempted: ${csvFiles.join(', ')}`);
+          setCSVLoaded(false);
         } else {
-          setCSVData(data);
+          setAllData(dataMap);
+          setLoadedFiles(successful);
           setCSVLoaded(true);
+
+          if (successful.length < csvFiles.length) {
+            const failed = csvFiles.filter((f) => !successful.includes(f));
+            setError(
+              `Loaded ${successful.length}/${csvFiles.length} files. Failed: ${failed.join(', ')}`
+            );
+          }
         }
       } catch (err) {
-        setError(`Error loading CSV: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        setError(`Error loading CSVs: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        setCSVLoaded(false);
       }
     };
     loadData();
-  }, [csvFile]);
+  }, [csvFiles]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -68,6 +94,40 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  /**
+   * Format all loaded CSV data into a single context string for the LLM
+   */
+  const formatAllDataForPrompt = (): string => {
+    if (Object.keys(allData).length === 0) return 'No data available.';
+
+    let combined = '\n=== DATASETS ===\n';
+
+    for (const [filename, data] of Object.entries(allData)) {
+      combined += `\n--- Dataset: ${filename} ---\n`;
+      combined += `Total rows: ${data.length}\n`;
+      combined += `Columns: ${Object.keys(data[0]).join(', ')}\n`;
+      combined += `Sample (first 3 rows):\n${JSON.stringify(data.slice(0, 3), null, 2)}\n`;
+    }
+
+    combined +=
+      '\n\nYou have access to the full datasets above. Use them to answer questions and provide cross-dataset insights.';
+    return combined;
+  };
+
+  /**
+   * Get summary of all loaded datasets
+   */
+  const getAllDataSummary = (): string => {
+    if (Object.keys(allData).length === 0) return 'No data loaded';
+
+    const summaries = Object.entries(allData).map(
+      ([filename, data]) =>
+        `${filename}: ${data.length} rows, ${Object.keys(data[0]).length} columns`
+    );
+
+    return summaries.join(' | ');
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,28 +141,30 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({
     setError(null);
 
     try {
-      // Format CSV data for context
-      const csvContext = formatCSVForPrompt(csvData);
-      const csvSummary = getCSVSummary(csvData);
+      // Format all CSV data for context
+      const allDataContext = formatAllDataForPrompt();
+      const dataSummary = getAllDataSummary();
 
       // Build system prompt
-      const defaultSystemPrompt = `You are a data insights assistant for a dashboard. You help users understand and analyze their data.
+      const defaultSystemPrompt = `You are a data insights assistant for a dashboard with multiple interconnected datasets.
 
-Dataset Information:
-${csvSummary}
+Available Datasets:
+${dataSummary}
 
-${csvContext}
+${allDataContext}
 
 Guidelines:
 - Provide specific insights based on the data provided
+- When possible, draw correlations and insights across multiple datasets
 - Be concise and actionable
-- When making calculations or references, cite specific data points
+- When making calculations or references, cite specific data points and which dataset they come from
 - If you don't have enough data to answer a question, say so clearly
-- Ask clarifying questions if needed`;
+- Ask clarifying questions if needed
+- Identify patterns, trends, and anomalies in the data`;
 
       const finalSystemPrompt = systemPrompt || defaultSystemPrompt;
 
-      // Call OpenAI with CSV context
+      // Call OpenAI with all CSV contexts
       const response = await clientRef.current.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
@@ -114,7 +176,7 @@ Guidelines:
           userMessage,
         ],
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 800,
       });
 
       const assistantMessage: Message = {
@@ -144,7 +206,7 @@ Guidelines:
         <div className="chatbot-header">
           <h2>{title}</h2>
         </div>
-        <div className="chatbot-loading">Loading data...</div>
+        <div className="chatbot-loading">Loading {csvFiles.length} dataset(s)...</div>
       </div>
     );
   }
@@ -153,12 +215,14 @@ Guidelines:
     <div className="chatbot-container">
       <div className="chatbot-header">
         <h2>{title}</h2>
-        {csvLoaded && <span className="data-status">✓ Data loaded</span>}
+        {csvLoaded && (
+          <span className="data-status">✓ {loadedFiles.length} dataset(s) loaded</span>
+        )}
       </div>
 
       {error && (
         <div className="chatbot-error">
-          <strong>Error:</strong> {error}
+          <strong>⚠️ Warning:</strong> {error}
         </div>
       )}
 
@@ -166,12 +230,14 @@ Guidelines:
       <div className="chatbot-messages">
         {messages.length === 0 && csvLoaded && (
           <div className="chatbot-welcome">
-            <p>👋 Welcome! I can help you analyze the loaded data.</p>
+            <p>👋 Welcome! I can analyze data across {loadedFiles.length} datasets.</p>
+            <p>Loaded datasets: {loadedFiles.join(', ')}</p>
             <p>Try asking questions like:</p>
             <ul>
-              <li>"What are the main trends in this data?"</li>
-              <li>"What is the highest value and where does it occur?"</li>
-              <li>"Summarize the key insights"</li>
+              <li>"What patterns do you see across all datasets?"</li>
+              <li>"Compare [column] from [dataset1] with [dataset2]"</li>
+              <li>"What are the key insights across all data?"</li>
+              <li>"Which dataset has the highest [metric]?"</li>
             </ul>
           </div>
         )}
@@ -206,15 +272,13 @@ Guidelines:
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={csvLoaded ? 'Ask me about your data...' : 'Waiting for data...'}
+          placeholder={
+            csvLoaded ? 'Ask questions about your data...' : 'Waiting for data...'
+          }
           disabled={loading || !csvLoaded}
           className="chatbot-input"
         />
-        <button
-          type="submit"
-          disabled={loading || !csvLoaded}
-          className="chatbot-send-btn"
-        >
+        <button type="submit" disabled={loading || !csvLoaded} className="chatbot-send-btn">
           {loading ? '⏳' : '📤'}
         </button>
       </form>
