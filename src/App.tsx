@@ -15,8 +15,8 @@ export default function App() {
   return (
     <div>
       <nav style={{ padding: 12, display: 'flex', gap: 12 }}>
-        <a href="#/">Standard Dashboard</a>
-        <a href="#/WATracker">Alternate Dashboard</a>
+        <a href="#/">Global Action Mosaic</a>
+        <a href="#/WATracker">WA State Behavioral Health Tracker</a>
       </nav>
 
       {route === '#/WATracker' ? <AltDashboard /> : (
