@@ -578,6 +578,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     });
 
     mapRef.current = map;
+    (window as any).__MAP = map;
+    console.debug('MapView: map created; container rect=', mapContainerRef.current?.getBoundingClientRect());
 
     // Ensure the map lays out with the container's computed size — do this on next frame.
     requestAnimationFrame(() => {
@@ -783,6 +785,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
     const applyGeojson = () => {
       const map = mapRef.current;
+      try {
+        console.debug('MapView: before applyGeojson — containerRect=', map.getContainer().getBoundingClientRect(), 'canvasSize=', { width: map.getCanvas().width, height: map.getCanvas().height });
+      } catch { }
       if (!map) return;
 
       const geojson = {
@@ -1180,7 +1185,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
           {/* Map container */}
           <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 6 }}>
-            <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0 }} />
+            <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0, minHeight: 380 }} />/>
 
             {/* Hover tooltip */}
             {hoverInfo && (
