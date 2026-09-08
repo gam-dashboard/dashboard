@@ -710,7 +710,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         console.warn('Container has zero dimensions, retrying...');
         setTimeout(() => {
           // Retry after a small delay
-          this effect should re - run, but force it:
+          // this effect should re - run, but force it:
           mapContainerRef.current?.offsetHeight; // Force reflow
         }, 100);
         return;
