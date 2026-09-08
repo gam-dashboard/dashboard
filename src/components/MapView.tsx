@@ -762,45 +762,20 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     const map = mapRef.current;
     if (!map || filteredMarkers.length === 0) return;
 
-    const applyWhenReady = () => {
-      console.debug('MapView: map.idle fired, applying geojson with', filteredMarkers.length, 'markers');
+    // Simple approach: just call applyGeojson immediately, then force resize
+    applyGeojson();
 
+    // Force resize after a small delay to trigger render
+    const resizeTimer = setTimeout(() => {
       try {
-        // Force the container to recalculate its layout
-        const container = mapContainerRef.current;
-        if (container) {
-          const rect = container.getBoundingClientRect();
-          console.log('Container rect:', rect);
-
-          // Force a reflow to ensure the container's size is committed
-          void container.offsetHeight;
-        }
-
-        // Now apply the geojson and trigger render
-        applyGeojson();
-
-        // After applying geojson, force multiple resizes to ensure MapLibre picks up the geometry
-        for (let i = 0; i < 3; i++) {
-          setTimeout(() => {
-            try {
-              console.log('Force resize attempt', i + 1);
-              map.resize();
-              map.triggerRepaint?.();
-            } catch (err) { /* ignore */ }
-          }, i * 50);
-        }
+        map.resize();
+        console.log('Forced map.resize() after geojson applied');
       } catch (err) {
-        console.error('Error in applyWhenReady:', err);
+        console.error('Error on forced resize:', err);
       }
-    };
+    }, 100);
 
-    if (map.isIdle?.()) {
-      console.log('Map already idle, applying geojson immediately');
-      requestAnimationFrame(applyWhenReady);
-    } else {
-      console.log('Map not idle yet, waiting for idle event');
-      map.once('idle', applyWhenReady);
-    }
+    return () => clearTimeout(resizeTimer);
   }, [filteredMarkers]);
 
   useEffect(() => {
