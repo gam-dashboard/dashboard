@@ -717,9 +717,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     });
 
     // schedule applying geojson now that the map exists
-    requestAnimationFrame(() => {
-      try { applyGeojson(); } catch { /* ignore */ }
-    });
+    //requestAnimationFrame(() => {
+    //  try { applyGeojson(); } catch { /* ignore */ }
+    //});
     
     // Keep map size up-to-date on window resize
     const onWinResize = () => { try { mapRef.current?.resize(); } catch { /* ignore */ } };
@@ -740,14 +740,30 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    // If style isn't loaded yet, wait for it; otherwise apply immediately
-    try {
-      const styleLoaded = typeof (map as any).isStyleLoaded === 'function' ? (map as any).isStyleLoaded() : false;
-      if (styleLoaded) applyGeojson();
-      else map.once('load', applyGeojson);
-    } catch (err) {
-      try { map.once('load', applyGeojson); } catch { /* ignore */ }
+
+    // Always ensure the map's style is fully loaded before we try to add sources/layers
+    const onStyleLoad = () => {
+      try {
+        applyGeojson();
+      } catch (err) {
+        console.error('Error applying geojson after style load', err);
+      }
+    };
+
+    if (map.isStyleLoaded?.()) {
+      // Style is already loaded; schedule on next frame for safety
+      requestAnimationFrame(onStyleLoad);
+    } else {
+      // Wait for style to load
+      map.on('style.load', onStyleLoad);
     }
+
+    // Cleanup: remove listener if component unmounts
+    return () => {
+      try {
+        map.off('style.load', onStyleLoad);
+      } catch { /* ignore */ }
+    };
   }, [filteredMarkers, projects]);
 
   useEffect(() => {
