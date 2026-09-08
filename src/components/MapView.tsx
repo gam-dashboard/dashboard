@@ -765,15 +765,10 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     // Simple approach: just call applyGeojson immediately, then force resize
     applyGeojson();
 
-    // Force resize after a small delay to trigger render
-    const resizeTimer = setTimeout(() => {
-      try {
-        map.resize();
-        console.log('Forced map.resize() after geojson applied');
-      } catch (err) {
-        console.error('Error on forced resize:', err);
-      }
-    }, 100);
+    // Try multiple resize calls with staggered delays
+    setTimeout(() => map.resize?.(), 50);
+    setTimeout(() => map.resize?.(), 150);
+    setTimeout(() => map.triggerRepaint?.(), 200);
 
     return () => clearTimeout(resizeTimer);
   }, [filteredMarkers]);
