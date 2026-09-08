@@ -696,8 +696,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   useEffect(() => {
     if (mapRef.current || !mapContainerRef.current) return;
 
-    // Wait for the container to be properly laid out before creating the map
-    // This ensures flexbox has calculated the container's final size
     requestAnimationFrame(() => {
       const container = mapContainerRef.current;
       if (!container) return;
@@ -705,13 +703,10 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       const rect = container.getBoundingClientRect();
       console.log('Container ready with rect:', rect);
 
-      // Only create map if container has non-zero dimensions
       if (rect.width === 0 || rect.height === 0) {
         console.warn('Container has zero dimensions, retrying...');
         setTimeout(() => {
-          // Retry after a small delay
-          // this effect should re - run, but force it:
-          mapContainerRef.current?.offsetHeight; // Force reflow
+          mapContainerRef.current?.offsetHeight;
         }, 100);
         return;
       }
@@ -720,7 +715,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         container: container,
         style: 'https://demotiles.maplibre.org/style.json',
         center: [0, 0],
-        zoom: 1.5
+        zoom: 1.5,
+        pitch: 0,
+        bearing: 0
       });
 
       map.addControl(new (maplibregl as any).NavigationControl(), 'top-right');
@@ -736,6 +733,28 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       // Force initial resize
       map.resize();
 
+      // CRITICAL: Force the map to start rendering by calling repaint multiple times
+      // This activates the internal render loop
+      let paintCount = 0;
+      const forcePaint = () => {
+        try {
+          if (typeof (map as any).triggerRepaint === 'function') {
+            (map as any).triggerRepaint();
+            paintCount++;
+            console.log('Triggered repaint', paintCount);
+          }
+        } catch { /* ignore */ }
+      };
+
+      // Trigger repaint on a schedule to force the render loop to activate
+      const paintInterval = setInterval(forcePaint, 100);
+
+      // Stop forcing after 1 second - the loop should be active by then
+      const paintTimeout = setTimeout(() => {
+        clearInterval(paintInterval);
+        console.log('Stopped forcing repaints after', paintCount, 'attempts');
+      }, 1000);
+
       // Keep map size up-to-date on window resize
       const onWinResize = () => {
         try {
@@ -746,6 +765,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       window.addEventListener('resize', onWinResize);
 
       return () => {
+        clearTimeout(paintTimeout);
+        clearInterval(paintInterval);
         try {
           popupRef.current?.remove();
           map.remove();
@@ -762,20 +783,12 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     const map = mapRef.current;
     if (!map || filteredMarkers.length === 0) return;
 
-    // Simple approach: just call applyGeojson immediately, then force resize
     applyGeojson();
 
-    // Force resize after a small delay to trigger render
-    const resizeTimer = setTimeout(() => {
-      try {
-        map.resize();
-        console.log('Forced map.resize() after geojson applied');
-      } catch (err) {
-        console.error('Error on forced resize:', err);
-      }
-    }, 100);
-
-    return () => clearTimeout(resizeTimer);
+    // Ensure map is actively rendering
+    try {
+      map.triggerRepaint?.();
+    } catch { /* ignore */ }
   }, [filteredMarkers]);
 
   useEffect(() => {
