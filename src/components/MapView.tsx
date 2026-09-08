@@ -563,31 +563,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
           }
         });
 
-        // Force the map to render by toggling visibility
-        setTimeout(() => {
-          try {
-            map.setLayoutProperty(layerId, 'visibility', 'visible');
-            map.triggerRepaint?.();
-          } catch { /* ignore */ }
-        }, 50);
+        console.log('Layer added, triggering synthetic mouse move to force repaint');
 
-        console.log('Layer added, now forcing repaint');
-
-        // Force a repaint by triggering paint events
-        map.getCanvas().style.filter = 'brightness(1)';
-        map.getCanvas().style.filter = 'brightness(1.0)';
-
-        // Request animation frames to force the browser to repaint
-        requestAnimationFrame(() => {
-          try { map.resize(); } catch { /* ignore */ }
-        });
-
-        requestAnimationFrame(() => {
-          try { map.resize(); } catch { /* ignore */ }
-          try { map.triggerRepaint?.(); } catch { /* ignore */ }
-        });
-
-        // Set up interactions
+        // Set up interactions first
         map.on('mousemove', layerId, (e: any) => {
           if (e.features && e.features.length > 0) {
             map.getCanvas().style.cursor = 'pointer';
@@ -609,25 +587,38 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             })
             .filter(Boolean) as ProjectMarker[];
           if (matches.length === 0) return;
-          if (matches.length === 1) {
-            setSelected(matches[0].project);
-            setSelectedLocation(matches[0].location);
-          } else {
-            setSelected(matches[0].project);
-            setSelectedLocation(matches[0].location);
-          }
+          setSelected(matches[0].project);
+          setSelectedLocation(matches[0].location);
         });
 
-        // Fit bounds after the layer renders
+        // Fit bounds after layer is added
         if (filtered.length > 0) {
-          setTimeout(() => {
+          requestAnimationFrame(() => {
             try {
               const bounds = new (maplibregl as any).LngLatBounds(filtered[0].location.position, filtered[0].location.position);
               filtered.forEach((m) => bounds.extend(m.location.position));
               map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
             } catch (err) { /* ignore */ }
-          }, 100);
+          });
         }
+
+        // **KEY FIX**: Simulate a mouse move over the canvas to trigger MapLibre's internal repaint
+        setTimeout(() => {
+          const canvas = map.getCanvas();
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+
+          const evt = new MouseEvent('mousemove', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            clientX: centerX,
+            clientY: centerY
+          });
+
+          canvas.dispatchEvent(evt);
+          console.log('Synthetic mousemove dispatched to force repaint');
+        }, 150);
       }
 
       if (filtered.length > 0) {
