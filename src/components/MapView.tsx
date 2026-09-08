@@ -563,6 +563,14 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
           }
         });
 
+        // Force the map to render by toggling visibility
+        setTimeout(() => {
+          try {
+            map.setLayoutProperty(layerId, 'visibility', 'visible');
+            map.triggerRepaint?.();
+          } catch { /* ignore */ }
+        }, 50);
+
         console.log('Layer added, now forcing repaint');
 
         // Force a repaint by triggering paint events
