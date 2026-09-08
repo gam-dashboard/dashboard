@@ -564,6 +564,21 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         try {
           map.once('idle', () => { try { map.resize(); } catch { /* ignore */ } try { console.debug('MapView: map idle -> resized after adding layer'); } catch { /* ignore */ } });
         } catch { /* ignore */ }
+        try {
+          // toggle visibility to force a repaint in some MapLibre environments
+          if (map.getLayer && map.getLayer('projects-layer')) {
+            try {
+              map.setLayoutProperty('projects-layer', 'visibility', 'none');
+            } catch { }
+            try {
+              map.setLayoutProperty('projects-layer', 'visibility', 'visible');
+            } catch { }
+          }
+        } catch (e) { /* ignore */ }
+
+        // extra repaint attempts for different map builds
+        try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { }
+        try { if (typeof (map as any).repaint === 'function') (map as any).repaint(); } catch { }
         try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { /* ignore */ }
 
         // interactions (read projects from projectsRef)
