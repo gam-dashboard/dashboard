@@ -696,65 +696,110 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   useEffect(() => {
     if (mapRef.current || !mapContainerRef.current) return;
 
-    const map = new (maplibregl as any).Map({
-      container: mapContainerRef.current!,
-      style: 'https://demotiles.maplibre.org/style.json',
-      center: [0, 0],
-      zoom: 1.5
-    });
-
-    map.addControl(new (maplibregl as any).NavigationControl(), 'top-right');
-
-    map.on('error', (e: any) => {
-      console.warn('Map error', e);
-    });
-
-    mapRef.current = map;
-    (window as any).__MAP = map;
-    console.debug('MapView: map created; container rect=', mapContainerRef.current?.getBoundingClientRect());
-
-    // Ensure the map lays out with the container's computed size
+    // Wait for the container to be properly laid out before creating the map
+    // This ensures flexbox has calculated the container's final size
     requestAnimationFrame(() => {
-      try { map.resize(); } catch { /* ignore */ }
-    });
+      const container = mapContainerRef.current;
+      if (!container) return;
 
-    // Keep map size up-to-date on window resize
-    const onWinResize = () => { try { mapRef.current?.resize(); } catch { /* ignore */ } };
-    window.addEventListener('resize', onWinResize);
+      const rect = container.getBoundingClientRect();
+      console.log('Container ready with rect:', rect);
 
-    return () => {
-      try {
-        popupRef.current?.remove();
-        mapRef.current?.remove();
-        mapRef.current = null;
-      } catch (err) {
-        console.warn('Error removing map', err);
+      // Only create map if container has non-zero dimensions
+      if (rect.width === 0 || rect.height === 0) {
+        console.warn('Container has zero dimensions, retrying...');
+        setTimeout(() => {
+          // Retry after a small delay
+          this effect should re - run, but force it:
+          mapContainerRef.current?.offsetHeight; // Force reflow
+        }, 100);
+        return;
       }
-      window.removeEventListener('resize', onWinResize);
-    };
+
+      const map = new (maplibregl as any).Map({
+        container: container,
+        style: 'https://demotiles.maplibre.org/style.json',
+        center: [0, 0],
+        zoom: 1.5
+      });
+
+      map.addControl(new (maplibregl as any).NavigationControl(), 'top-right');
+
+      map.on('error', (e: any) => {
+        console.warn('Map error', e);
+      });
+
+      mapRef.current = map;
+      (window as any).__MAP = map;
+      console.debug('MapView: map created with container size', rect.width, 'x', rect.height);
+
+      // Force initial resize
+      map.resize();
+
+      // Keep map size up-to-date on window resize
+      const onWinResize = () => {
+        try {
+          map.resize();
+          map.triggerRepaint?.();
+        } catch { /* ignore */ }
+      };
+      window.addEventListener('resize', onWinResize);
+
+      return () => {
+        try {
+          popupRef.current?.remove();
+          map.remove();
+          mapRef.current = null;
+        } catch (err) {
+          console.warn('Error removing map', err);
+        }
+        window.removeEventListener('resize', onWinResize);
+      };
+    });
   }, []);
 
   useEffect(() => {
     const map = mapRef.current;
-    console.log('filteredMarkers effect:', { mapExists: !!map, markerCount: filteredMarkers.length, mapLoaded: map?.loaded?.() });
     if (!map || filteredMarkers.length === 0) return;
 
-    // Use 'load' event which fires after style AND initial data are ready
     const applyWhenReady = () => {
+      console.debug('MapView: map.idle fired, applying geojson with', filteredMarkers.length, 'markers');
+
       try {
-        console.debug('MapView: map.load fired, applying geojson with', filteredMarkers.length, 'markers');
+        // Force the container to recalculate its layout
+        const container = mapContainerRef.current;
+        if (container) {
+          const rect = container.getBoundingClientRect();
+          console.log('Container rect:', rect);
+
+          // Force a reflow to ensure the container's size is committed
+          void container.offsetHeight;
+        }
+
+        // Now apply the geojson and trigger render
         applyGeojson();
+
+        // After applying geojson, force multiple resizes to ensure MapLibre picks up the geometry
+        for (let i = 0; i < 3; i++) {
+          setTimeout(() => {
+            try {
+              console.log('Force resize attempt', i + 1);
+              map.resize();
+              map.triggerRepaint?.();
+            } catch (err) { /* ignore */ }
+          }, i * 50);
+        }
       } catch (err) {
-        console.error('Error applying geojson', err);
+        console.error('Error in applyWhenReady:', err);
       }
     };
 
-    if (map.loaded?.()) {
-      console.log('Map already loaded, scheduling applyGeojson on next frame');
+    if (map.isIdle?.()) {
+      console.log('Map already idle, applying geojson immediately');
       requestAnimationFrame(applyWhenReady);
     } else {
-      console.log('Map not loaded, waiting for load event');
-      map.once('load', applyWhenReady);
+      console.log('Map not idle yet, waiting for idle event');
+      map.once('idle', applyWhenReady);
     }
   }, [filteredMarkers]);
 
