@@ -701,13 +701,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       if (!container) return;
 
       const rect = container.getBoundingClientRect();
-      console.log('Container ready with rect:', rect);
-
       if (rect.width === 0 || rect.height === 0) {
         console.warn('Container has zero dimensions, retrying...');
-        setTimeout(() => {
-          mapContainerRef.current?.offsetHeight;
-        }, 100);
+        setTimeout(() => { mapContainerRef.current?.offsetHeight; }, 100);
         return;
       }
 
@@ -715,58 +711,37 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         container: container,
         style: 'https://demotiles.maplibre.org/style.json',
         center: [0, 0],
-        zoom: 1.5,
-        pitch: 0,
-        bearing: 0
+        zoom: 1.5
       });
 
       map.addControl(new (maplibregl as any).NavigationControl(), 'top-right');
-
-      map.on('error', (e: any) => {
-        console.warn('Map error', e);
-      });
+      map.on('error', (e: any) => console.warn('Map error', e));
 
       mapRef.current = map;
-      (window as any).__MAP = map;
-      console.debug('MapView: map created with container size', rect.width, 'x', rect.height);
+      console.debug('MapView: map created');
 
-      // Force initial resize
       map.resize();
 
-      // CRITICAL: Force the map to start rendering by calling repaint multiple times
-      // This activates the internal render loop
-      let paintCount = 0;
-      const forcePaint = () => {
-        try {
-          if (typeof (map as any).triggerRepaint === 'function') {
-            (map as any).triggerRepaint();
-            paintCount++;
-            console.log('Triggered repaint', paintCount);
-          }
-        } catch { /* ignore */ }
+      // IMMEDIATELY start the render loop before anything else happens
+      // This is the key - force continuous repainting
+      let isAnimating = true;
+      const animate = () => {
+        if (isAnimating) {
+          try {
+            map.triggerRepaint?.();
+          } catch { /* ignore */ }
+          requestAnimationFrame(animate);
+        }
       };
+      animate();
 
-      // Trigger repaint on a schedule to force the render loop to activate
-      const paintInterval = setInterval(forcePaint, 100);
-
-      // Stop forcing after 1 second - the loop should be active by then
-      const paintTimeout = setTimeout(() => {
-        clearInterval(paintInterval);
-        console.log('Stopped forcing repaints after', paintCount, 'attempts');
-      }, 1000);
-
-      // Keep map size up-to-date on window resize
       const onWinResize = () => {
-        try {
-          map.resize();
-          map.triggerRepaint?.();
-        } catch { /* ignore */ }
+        try { map.resize(); } catch { /* ignore */ }
       };
       window.addEventListener('resize', onWinResize);
 
       return () => {
-        clearTimeout(paintTimeout);
-        clearInterval(paintInterval);
+        isAnimating = false;
         try {
           popupRef.current?.remove();
           map.remove();
@@ -784,11 +759,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     if (!map || filteredMarkers.length === 0) return;
 
     applyGeojson();
-
-    // Ensure map is actively rendering
-    try {
-      map.triggerRepaint?.();
-    } catch { /* ignore */ }
   }, [filteredMarkers]);
 
   useEffect(() => {
