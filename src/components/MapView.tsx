@@ -734,6 +734,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
   useEffect(() => {
     const map = mapRef.current;
+    console.log('filteredMarkers effect:', { mapExists: !!map, markerCount: filteredMarkers.length, mapLoaded: map?.loaded?.() });
     if (!map || filteredMarkers.length === 0) return;
 
     // Use 'load' event which fires after style AND initial data are ready
@@ -747,10 +748,10 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     };
 
     if (map.loaded?.()) {
-      // Map is already fully loaded; apply immediately on next frame
+      console.log('Map already loaded, scheduling applyGeojson on next frame');
       requestAnimationFrame(applyWhenReady);
     } else {
-      // Map not yet fully loaded; wait for it
+      console.log('Map not loaded, waiting for load event');
       map.once('load', applyWhenReady);
     }
   }, [filteredMarkers]);
