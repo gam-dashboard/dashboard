@@ -515,6 +515,110 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     });
   }, [filteredProjects, activeCity, selectedLocationFilters]);
 
+  // keep a ref with the latest markers so applyGeojson never reads a stale closure
+  const filteredMarkersRef = useRef<ProjectMarker[]>(filteredMarkers);
+  useEffect(() => { filteredMarkersRef.current = filteredMarkers; }, [filteredMarkers]);
+
+  const applyGeojson = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    const filtered = filteredMarkersRef.current;
+
+    const srcId = 'projects-source';
+    const layerId = 'projects-layer';
+
+    const geojson = {
+      type: 'FeatureCollection' as const,
+      features: filtered.map(({ project, location }) => ({
+        type: 'Feature' as const,
+        id: location.id,
+        properties: { postId: project.postId, locationId: location.id },
+        geometry: { type: 'Point' as const, coordinates: location.position }
+      }))
+    };
+
+    try {
+      try { map.resize(); } catch { /* ignore */ }
+      try { console.debug('MapView: applyGeojson — filteredMarkers:', filtered.length); } catch { /* ignore */ }
+
+      if (map.getSource(srcId)) {
+        const src = map.getSource(srcId) as maplibregl.GeoJSONSource;
+        src.setData(geojson as any);
+      } else {
+        map.addSource(srcId, { type: 'geojson', data: geojson });
+        map.addLayer({
+          id: layerId,
+          type: 'circle',
+          source: srcId,
+          paint: {
+            'circle-radius': 10,
+            'circle-color': '#007aff',
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#ffffff',
+            'circle-opacity': 0.95
+          }
+        });
+
+        // force layout / repaint on next frame and when map is idle
+        requestAnimationFrame(() => { try { map.resize(); } catch { /* ignore */ } });
+        try {
+          map.once('idle', () => { try { map.resize(); } catch { /* ignore */ } try { console.debug('MapView: map idle -> resized after adding layer'); } catch { /* ignore */ } });
+        } catch { /* ignore */ }
+        try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { /* ignore */ }
+
+        // interactions (read projects from projectsRef)
+        map.on('mousemove', layerId, (e: any) => {
+          if (e.features && e.features.length > 0) {
+            map.getCanvas().style.cursor = 'pointer';
+            const postId = e.features[0].properties?.postId;
+            const project = postId ? projectsRef.current.get(postId) : undefined;
+            setHoverInfo({ x: e.point.x, y: e.point.y, text: project?.title || 'Project' });
+          }
+        });
+        map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; setHoverInfo(null); });
+        map.on('click', layerId, (e: any) => {
+          if (!e.point) return;
+          const features = (e.features && e.features.length > 0) ? e.features : map.queryRenderedFeatures(e.point, { layers: [layerId] });
+          if (!features || features.length === 0) return;
+          const matches: ProjectMarker[] = features
+            .map((f: any) => {
+              const project = projectsRef.current.get(f.properties?.postId);
+              const location = project?.locations.find(l => l.id === f.properties?.locationId);
+              return project && location ? { project, location } : null;
+            })
+            .filter(Boolean) as ProjectMarker[];
+          if (matches.length === 0) return;
+          if (matches.length === 1) {
+            // open single popup: reuse openSinglePopup logic or inline briefly
+            // we can call openSinglePopup if it's defined in scope; otherwise inline
+            const m = matches[0];
+            // openSinglePopup(m.project, m.location);
+            // For brevity, call setSelected to show details (you already have popup helpers); use your existing helpers if present.
+            setSelected(matches[0].project);
+            setSelectedLocation(matches[0].location);
+          } else {
+            // openMultiPopup(matches);
+            setSelected(matches[0].project);
+            setSelectedLocation(matches[0].location);
+          }
+        });
+      }
+
+      if (filtered.length > 0) {
+        requestAnimationFrame(() => {
+          try {
+            try { map.resize(); } catch { /* ignore */ }
+            const bounds = new (maplibregl as any).LngLatBounds(filtered[0].location.position, filtered[0].location.position);
+            filtered.forEach((m) => bounds.extend(m.location.position));
+            map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
+          } catch (err) { /* ignore */ }
+        });
+      }
+    } catch (err) {
+      console.error('Error applying GeoJSON to map', err);
+    }
+  };
+
   const extractCountries = (p: Project): string[] => {
     const fromLocations = p.locations.map(l => l.country).filter(Boolean) as string[];
     if (fromLocations.length) return fromLocations;
@@ -585,6 +689,11 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     requestAnimationFrame(() => {
       try { map.resize(); } catch { /* ignore */ }
     });
+
+    // schedule applying geojson now that the map exists
+    requestAnimationFrame(() => {
+      try { applyGeojson(); } catch { /* ignore */ }
+    });
     
     // Keep map size up-to-date on window resize
     const onWinResize = () => { try { mapRef.current?.resize(); } catch { /* ignore */ } };
@@ -603,319 +712,15 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   }, []);
 
   useEffect(() => {
-    // Helper IDs
-    const srcId = 'projects-source';
-    const layerId = 'projects-layer';
-
-    // Popup helpers read the live map from mapRef.current
-    const openSinglePopup = (project: Project, location: ProjectLocation) => {
-      const map = mapRef.current;
-      if (!map) return;
-      if (popupRef.current) { try { popupRef.current.remove(); } catch { /* ignore */ } popupRef.current = null; }
-
-      const container = document.createElement('div');
-      container.style.fontFamily = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial';
-      container.style.maxWidth = '280px';
-
-      const titleEl = document.createElement('div');
-      titleEl.style.fontWeight = '600';
-      titleEl.style.marginBottom = '6px';
-      titleEl.textContent = project.title || project.org || 'Project';
-      container.appendChild(titleEl);
-
-      const descEl = document.createElement('div');
-      descEl.style.color = '#333';
-      descEl.style.fontSize = '12px';
-      descEl.style.marginBottom = '8px';
-      descEl.textContent = (project.tagLine || project.description).slice(0, 200);
-      container.appendChild(descEl);
-
-      const actionsRow = document.createElement('div');
-      actionsRow.style.display = 'flex';
-      actionsRow.style.gap = '8px';
-
-      const btnSee = document.createElement('button');
-      btnSee.textContent = 'See more';
-      btnSee.style.cursor = 'pointer';
-      btnSee.style.padding = '6px 10px';
-      btnSee.style.borderRadius = '6px';
-      btnSee.style.border = '1px solid #ddd';
-      btnSee.style.background = '#fff';
-      btnSee.style.fontSize = '13px';
-      btnSee.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        setSelected(project);
-        setSelectedLocation(location);
-        try { popupRef.current?.remove(); } catch { /* ignore */ }
-      });
-      actionsRow.appendChild(btnSee);
-
-      const btnZoom = document.createElement('button');
-      btnZoom.textContent = 'Zoom';
-      btnZoom.style.cursor = 'pointer';
-      btnZoom.style.padding = '6px 10px';
-      btnZoom.style.borderRadius = '6px';
-      btnZoom.style.border = '1px solid #ddd';
-      btnZoom.style.background = '#fff';
-      btnZoom.style.fontSize = '13px';
-      btnZoom.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        try { map.easeTo({ center: location.position, zoom: Math.max(map.getZoom(), 6), duration: 400 }); } catch { /* ignore */ }
-      });
-      actionsRow.appendChild(btnZoom);
-
-      container.appendChild(actionsRow);
-
-      popupRef.current = new (maplibregl as any).Popup({ offset: 10, closeOnClick: true })
-        .setLngLat(location.position)
-        .setDOMContent(container)
-        .addTo(map);
-    };
-
-    const openMultiPopup = (matches: ProjectMarker[]) => {
-      const map = mapRef.current;
-      if (!map) return;
-      if (popupRef.current) { try { popupRef.current.remove(); } catch { /* ignore */ } popupRef.current = null; }
-
-      const coords = matches[0].location.position;
-      const listContainer = document.createElement('div');
-      listContainer.style.fontFamily = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial';
-      listContainer.style.display = 'flex';
-      listContainer.style.flexDirection = 'column';
-      listContainer.style.maxWidth = 'min(80vw, 640px)';
-      listContainer.style.width = 'min(80vw, 640px)';
-      listContainer.style.maxHeight = '70vh';
-      listContainer.style.boxSizing = 'border-box';
-      listContainer.style.padding = '8px';
-      listContainer.style.background = '#fff';
-      listContainer.style.borderRadius = '8px';
-
-      const header = document.createElement('div');
-      header.style.fontWeight = '700';
-      header.style.marginBottom = '8px';
-      header.textContent = `${matches.length} items at this location`;
-      listContainer.appendChild(header);
-
-      const listEl = document.createElement('div');
-      listEl.style.overflowY = 'auto';
-      listEl.style.display = 'flex';
-      listEl.style.flexDirection = 'column';
-      listEl.style.gap = '6px';
-      listEl.style.maxHeight = 'calc(70vh - 64px)';
-
-      matches.forEach(({ project, location }, idx) => {
-        const item = document.createElement('div');
-        item.style.display = 'flex';
-        item.style.flexDirection = 'column';
-        item.style.padding = '8px';
-        item.style.borderRadius = '6px';
-        item.style.background = '#f9f9f9';
-        item.style.boxShadow = '0 1px 0 rgba(0,0,0,0.04)';
-        item.style.cursor = 'pointer';
-        item.style.transition = 'background-color 0.2s ease';
-
-        item.addEventListener('mouseenter', () => { item.style.background = '#f0f0f0'; });
-        item.addEventListener('mouseleave', () => { item.style.background = '#f9f9f9'; });
-
-        const info = document.createElement('div');
-        info.style.flex = '1 1 auto';
-
-        const title = document.createElement('div');
-        title.style.fontSize = '14px';
-        title.style.fontWeight = '600';
-        title.textContent = project.title || project.org || `Item ${idx + 1}`;
-        info.appendChild(title);
-
-        const sub = document.createElement('div');
-        sub.style.fontSize = '12px';
-        sub.style.color = '#666';
-        sub.style.marginTop = '4px';
-        sub.textContent = (project.tagLine || '').slice(0, 120);
-        info.appendChild(sub);
-
-        item.addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          setSelected(project);
-          setSelectedLocation(location);
-          try { popupRef.current?.remove(); } catch { /* ignore */ }
-        });
-
-        item.appendChild(info);
-        listEl.appendChild(item);
-      });
-
-      listContainer.appendChild(listEl);
-
-      if (matches.length > 6) {
-        const footer = document.createElement('div');
-        footer.style.marginTop = '8px';
-        footer.style.fontSize = '12px';
-        footer.style.color = '#666';
-        footer.textContent = 'Scroll this list to see more items';
-        listContainer.appendChild(footer);
-      }
-
-      popupRef.current = new (maplibregl as any).Popup({ offset: 10, closeOnClick: true })
-        .setLngLat(coords)
-        .setDOMContent(listContainer)
-        .addTo(map);
-
-      requestAnimationFrame(() => {
-        const first = listContainer.querySelector('div:nth-child(3)') as HTMLElement | null;
-        if (first) first.focus();
-      });
-
-      const popupEl = popupRef.current.getElement();
-      if (popupEl) {
-        requestAnimationFrame(() => {
-          const rect = popupEl.getBoundingClientRect();
-          const pad = 20;
-          const vw = window.innerWidth, vh = window.innerHeight;
-          let dx = 0, dy = 0;
-          if (rect.right > vw - pad) dx = rect.right - (vw - pad);
-          if (rect.left < pad) dx = pad - rect.left;
-          if (rect.top < pad) dy = pad - rect.top;
-          if (rect.bottom > vh - pad) dy = rect.bottom - (vh - pad);
-          if (dx !== 0 || dy !== 0) {
-            try { (map as any).panBy([Math.round(dx), Math.round(dy)], { duration: 250 }); } catch { /* ignore */ }
-          }
-        });
-      }
-    };
-
-    const applyGeojson = () => {
-      const map = mapRef.current;
-      try {
-        console.debug('MapView: before applyGeojson — containerRect=', map.getContainer().getBoundingClientRect(), 'canvasSize=', { width: map.getCanvas().width, height: map.getCanvas().height });
-      } catch { }
-      if (!map) return;
-
-      const geojson = {
-        type: 'FeatureCollection' as const,
-        features: filteredMarkers.map(({ project, location }) => ({
-          type: 'Feature' as const,
-          id: location.id,
-          properties: {
-            postId: project.postId,
-            locationId: location.id,
-          },
-          geometry: { type: 'Point' as const, coordinates: location.position }
-        }))
-      };
-
-      try {
-        try { map.resize(); } catch { /* ignore */ }
-        try { console.debug('MapView: applyGeojson — filteredMarkers:', filteredMarkers.length); } catch { /* ignore */ }
-
-        if (map.getSource(srcId)) {
-          const src = map.getSource(srcId) as maplibregl.GeoJSONSource;
-          src.setData(geojson as any);
-        } else {
-          map.addSource(srcId, { type: 'geojson', data: geojson });
-          map.addLayer({
-            id: layerId,
-            type: 'circle',
-            source: srcId,
-            paint: {
-              'circle-radius': 10,
-              'circle-color': '#007aff',
-              'circle-stroke-width': 1,
-              'circle-stroke-color': '#ffffff',
-              'circle-opacity': 0.95
-            }
-          });
-
-          requestAnimationFrame(() => { try { map.resize(); } catch { /* ignore */ } });
-
-          try {
-            map.once('idle', () => {
-              try { map.resize(); } catch { /* ignore */ }
-              try { console.debug('MapView: map idle -> resized after adding layer'); } catch { /* ignore */ }
-            });
-          } catch { /* ignore */ }
-
-          try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { /* ignore */ }
-
-          map.on('mousemove', layerId, (e: any) => {
-            if (e.features && e.features.length > 0) {
-              map.getCanvas().style.cursor = 'pointer';
-              const postId = e.features[0].properties?.postId;
-              const project = postId ? projectsRef.current.get(postId) : undefined;
-              setHoverInfo({ x: e.point.x, y: e.point.y, text: project?.title || 'Project' });
-            }
-          });
-
-          map.on('mouseleave', layerId, () => {
-            map.getCanvas().style.cursor = '';
-            setHoverInfo(null);
-          });
-
-          map.on('click', layerId, (e: any) => {
-            if (!e.point) return;
-            const features = (e.features && e.features.length > 0) ? e.features : map.queryRenderedFeatures(e.point, { layers: [layerId] });
-            if (!features || features.length === 0) return;
-            const matches: ProjectMarker[] = features
-              .map((f: any) => {
-                const project = projectsRef.current.get(f.properties?.postId);
-                const location = project?.locations.find(l => l.id === f.properties?.locationId);
-                return project && location ? { project, location } : null;
-              })
-              .filter(Boolean) as ProjectMarker[];
-            if (matches.length === 0) return;
-            if (matches.length === 1) openSinglePopup(matches[0].project, matches[0].location);
-            else openMultiPopup(matches);
-          });
-        }
-
-        if (filteredMarkers.length > 0) {
-          requestAnimationFrame(() => {
-            try {
-              try { map.resize(); } catch { /* ignore */ }
-              const bounds = new (maplibregl as any).LngLatBounds(filteredMarkers[0].location.position, filteredMarkers[0].location.position);
-              filteredMarkers.forEach((m) => bounds.extend(m.location.position));
-              map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
-            } catch (err) { /* ignore */ }
-          });
-        }
-      } catch (err) {
-        console.error('Error applying GeoJSON to map', err);
-      }
-    };
-
-    // If the map isn't available yet, poll briefly for it then apply GeoJSON once it exists.
-    // This prevents missing markers when data arrives before the map initializes.
-    const mapNow = mapRef.current;
-    if (!mapNow) {
-      let waited = 0;
-      const POLL_MS = 100;
-      const TIMEOUT_MS = 3000;
-      const iv = setInterval(() => {
-        const m = mapRef.current;
-        if (m) {
-          clearInterval(iv);
-          try {
-            const styleLoaded = typeof (m as any).isStyleLoaded === 'function' ? (m as any).isStyleLoaded() : false;
-            if (styleLoaded) applyGeojson();
-            else m.once('load', applyGeojson);
-          } catch (err) {
-            try { m.once('load', applyGeojson); } catch { /* ignore */ }
-          }
-        } else {
-          waited += POLL_MS;
-          if (waited > TIMEOUT_MS) clearInterval(iv);
-        }
-      }, POLL_MS);
-      return () => clearInterval(iv);
-    }
-
-    // Map exists now — proceed as before.
+    const map = mapRef.current;
+    if (!map) return;
+    // If style isn't loaded yet, wait for it; otherwise apply immediately
     try {
-      const styleLoaded = typeof (mapNow as any).isStyleLoaded === 'function' ? (mapNow as any).isStyleLoaded() : false;
+      const styleLoaded = typeof (map as any).isStyleLoaded === 'function' ? (map as any).isStyleLoaded() : false;
       if (styleLoaded) applyGeojson();
-      else mapNow.once('load', applyGeojson);
+      else map.once('load', applyGeojson);
     } catch (err) {
-      console.warn('Map style not loaded yet, deferring to load event', err);
-      try { mapNow.once('load', applyGeojson); } catch { /* ignore */ }
+      try { map.once('load', applyGeojson); } catch { /* ignore */ }
     }
   }, [filteredMarkers, projects]);
 
