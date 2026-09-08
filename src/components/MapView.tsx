@@ -729,13 +729,22 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    // If style isn't loaded yet, wait for it; otherwise apply immediately
-    try {
-      const styleLoaded = typeof (map as any).isStyleLoaded === 'function' ? (map as any).isStyleLoaded() : false;
-      if (styleLoaded) applyGeojson();
-      else map.once('load', applyGeojson);
-    } catch (err) {
-      try { map.once('load', applyGeojson); } catch { /* ignore */ }
+
+    const applyWhenReady = () => {
+      try {
+        applyGeojson();
+      } catch (err) {
+        console.error('Error applying geojson', err);
+      }
+    };
+
+    // Always wait for 'style.load' to ensure the style is ready, regardless of initial state
+    if (map.isStyleLoaded?.()) {
+      // Style is already loaded; apply immediately but defer to next frame for safety
+      requestAnimationFrame(applyWhenReady);
+    } else {
+      // Style not loaded yet; wait for the event
+      map.once('style.load', applyWhenReady);
     }
   }, [filteredMarkers, projects]);
 
