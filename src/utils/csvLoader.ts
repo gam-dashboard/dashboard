@@ -5,32 +5,41 @@ import Papa from 'papaparse';
  * @param filePath - The filename (e.g., 'SDG_projects.csv')
  * @returns Promise resolving to an array of parsed CSV objects
  */
-export async function loadCSVFromRepo(filePath: string): Promise<any[]> {
-  try {
-    const response = await fetch(`/src/data/${filePath}`);
-    if (!response.ok) {
-      throw new Error(`Failed to load CSV: ${response.statusText}`);
-    }
-    const csv = await response.text();
 
-    return new Promise((resolve, reject) => {
-      Papa.parse(csv, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          if (results.errors.length > 0) {
-            reject(new Error(`CSV parsing error: ${results.errors[0].message}`));
-          } else {
-            resolve(results.data);
-          }
-        },
-        error: (error) => reject(error),
-      });
+export async function loadCSVFromRepo(filePathOrUrl: string): Promise<any[]> {
+  // Accept either:
+    //  - a resolved URL (https://... or starting with /)
+    //  - a simple filename (e.g. 'SDG_projects.csv') — in which case construct a URL under the built public path.
+    const isAbsolute = /^https?:\\/\\//i.test(filePathOrUrl) || filePathOrUrl.startsWith('/');
+  const url = isAbsolute ? filePathOrUrl : `${import.meta.env.BASE_URL ?? '/'}data/${filePathOrUrl}`;
+  
+    const resp = await fetch(url);
+  if (!resp.ok) {
+    const err = new Error(`Failed to load CSV: ${resp.status} ${resp.statusText} — ${url}`);
+    console.error(err);
+    throw err;
+    }
+  const csv = await resp.text();
+  
+  return new Promise((resolve, reject) => {
+    Papa.parse(csv, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        if ((results.errors || []).length > 0) {
+          const e = new Error(`CSV parsing error: ${results.errors[0]?.message || 'unknown'}`);
+          console.error(e, results.errors);
+          reject(e);
+        } else {
+          resolve(results.data);
+        }
+      },
+      error: (error) => {
+        console.error('Papa.parse error', error);
+        reject(error);
+      },
     });
-  } catch (error) {
-    console.error('Error loading CSV:', error);
-    return [];
-  }
+  });
 }
 
 /**

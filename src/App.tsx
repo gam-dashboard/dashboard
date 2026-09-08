@@ -4,6 +4,12 @@ import AltDashboard from './pages/waDashboard';
 import DataChatbot from './components/DataChatbot';
 import './styles.css';
 
+import SDG_CSV_URL from './data/SDG_projects.csv?url';
+import LOC_CSV_URL from './data/locations.csv?url';
+import CAT_CSV_URL from './data/project_categories.csv?url';
+import WA_TRACKER_URL from './data/WA_tracker_entries.csv?url';
+import WA_LOC_URL from './data/WA_locations.csv?url';
+
 export default function App() {
   const [route, setRoute] = useState<string>(() => window.location.hash || '#/');
 
@@ -27,7 +33,7 @@ export default function App() {
           {/* WA State Chatbot - analyzes health tracker and location data */}
           <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
             <DataChatbot 
-              csvFiles={['WA_tracker_entries.csv', 'WA_locations.csv']}
+              csvFiles={[WA_TRACKER_URL, WA_LOC_URL]}
               title="WA State Health Data Assistant"
             />
           </section>
@@ -44,7 +50,7 @@ export default function App() {
           {/* Global Projects Chatbot - analyzes cross-dataset patterns */}
           <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
             <DataChatbot 
-              csvFiles={['SDG_projects.csv', 'locations.csv', 'project_categories.csv']}
+              csvFiles={[SDG_CSV_URL, LOC_CSV_URL, CAT_CSV_URL]}
               title="Global Projects Intelligence"
             />
           </section>

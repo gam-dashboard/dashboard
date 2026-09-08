@@ -8,6 +8,8 @@ import locationsCsvUrl from '../data/locations.csv?url';
 import projectCategoriesCsvUrl from '../data/project_categories.csv?url';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 
+const WORKER_PUBLIC_PATH = `${import.meta.env.BASE_URL ?? '/'}maplibre-gl-worker.mjs`;
+
 // New: configuration interface for MapView so the same component can be reused for multiple pages
 export type MapViewConfig = {
   sdgProjectsCsvUrl?: string;
@@ -127,8 +129,6 @@ const makeFieldGetter = (row: CsvRow, headerNormToOrig: Map<string, string[]>) =
 
 const derivePlace = (l?: { city?: string; state?: string; display_name?: string; country?: string }): string | undefined =>
   l ? (l.city || l.state || l.display_name || l.country || undefined) : undefined;
-
-const WORKER_PUBLIC_PATH = '/maplibre-gl-worker.mjs';
 
 export default function MapView({ config }: { config?: MapViewConfig }): JSX.Element {
   const sdgUrl = config?.sdgProjectsCsvUrl ?? sdgProjectsCsvUrl;
@@ -792,6 +792,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       };
 
       try {
+        try { map.resize(); } catch { /* ignore */ }
         if (map.getSource(srcId)) {
           const src = map.getSource(srcId) as maplibregl.GeoJSONSource;
           src.setData(geojson as any);
@@ -808,6 +809,10 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               'circle-stroke-color': '#ffffff',
               'circle-opacity': 0.95
             }
+          });
+
+          requestAnimationFrame(() => {
+            try { map.resize(); } catch { /* ignore */ }
           });
 
           map.on('mousemove', layerId, (e: any) => {
@@ -846,12 +851,16 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         }
 
         if (filteredMarkers.length > 0) {
-          const bounds = new (maplibregl as any).LngLatBounds(filteredMarkers[0].location.position, filteredMarkers[0].location.position);
-          filteredMarkers.forEach((m) => bounds.extend(m.location.position));
-          try {
-            map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
-          } catch (err) { /* ignore */ }
-        }
+          // Wait a frame to allow the map to layout then fit bounds so markers become visible immediately
+            requestAnimationFrame(() => {
+              try {
+                try { map.resize(); } catch { /* ignore */ }
+                const bounds = new (maplibregl as any).LngLatBounds(filteredMarkers[0].location.position, filteredMarkers[0].location.position);
+                filteredMarkers.forEach((m) => bounds.extend(m.location.position));
+                map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
+                } catch (err) { /* ignore */ }
+              });
+          }
       } catch (err) {
         console.error('Error applying GeoJSON to map', err);
       }
