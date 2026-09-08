@@ -10,7 +10,7 @@ export async function loadCSVFromRepo(filePathOrUrl: string): Promise<any[]> {
   // Accept either:
     //  - a resolved URL (https://... or starting with /)
     //  - a simple filename (e.g. 'SDG_projects.csv') — in which case construct a URL under the built public path.
-    const isAbsolute = /^https?:\\/\\//i.test(filePathOrUrl) || filePathOrUrl.startsWith('/');
+    const isAbsolute = /^https?:\/\//i.test(filePathOrUrl) || filePathOrUrl.startsWith('/');
   const url = isAbsolute ? filePathOrUrl : `${import.meta.env.BASE_URL ?? '/'}data/${filePathOrUrl}`;
   
     const resp = await fetch(url);
