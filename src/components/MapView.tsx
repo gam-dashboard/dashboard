@@ -601,13 +601,14 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   }, []);
 
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
+    // Helper IDs
     const srcId = 'projects-source';
     const layerId = 'projects-layer';
 
+    // Popup helpers read the live map from mapRef.current
     const openSinglePopup = (project: Project, location: ProjectLocation) => {
+      const map = mapRef.current;
+      if (!map) return;
       if (popupRef.current) { try { popupRef.current.remove(); } catch { /* ignore */ } popupRef.current = null; }
 
       const container = document.createElement('div');
@@ -670,6 +671,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     };
 
     const openMultiPopup = (matches: ProjectMarker[]) => {
+      const map = mapRef.current;
+      if (!map) return;
       if (popupRef.current) { try { popupRef.current.remove(); } catch { /* ignore */ } popupRef.current = null; }
 
       const coords = matches[0].location.position;
@@ -709,13 +712,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         item.style.cursor = 'pointer';
         item.style.transition = 'background-color 0.2s ease';
 
-        // Hover effect
-        item.addEventListener('mouseenter', () => {
-          item.style.background = '#f0f0f0';
-        });
-        item.addEventListener('mouseleave', () => {
-          item.style.background = '#f9f9f9';
-        });
+        item.addEventListener('mouseenter', () => { item.style.background = '#f0f0f0'; });
+        item.addEventListener('mouseleave', () => { item.style.background = '#f9f9f9'; });
 
         const info = document.createElement('div');
         info.style.flex = '1 1 auto';
@@ -733,7 +731,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         sub.textContent = (project.tagLine || '').slice(0, 120);
         info.appendChild(sub);
 
-        // Make the entire item clickable to open details
         item.addEventListener('click', (ev) => {
           ev.stopPropagation();
           setSelected(project);
@@ -766,7 +763,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         if (first) first.focus();
       });
 
-      // Adjust popup position to ensure it fits on screen
       const popupEl = popupRef.current.getElement();
       if (popupEl) {
         requestAnimationFrame(() => {
@@ -774,12 +770,10 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
           const pad = 20;
           const vw = window.innerWidth, vh = window.innerHeight;
           let dx = 0, dy = 0;
-
           if (rect.right > vw - pad) dx = rect.right - (vw - pad);
           if (rect.left < pad) dx = pad - rect.left;
           if (rect.top < pad) dy = pad - rect.top;
           if (rect.bottom > vh - pad) dy = rect.bottom - (vh - pad);
-
           if (dx !== 0 || dy !== 0) {
             try { (map as any).panBy([Math.round(dx), Math.round(dy)], { duration: 250 }); } catch { /* ignore */ }
           }
@@ -788,6 +782,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     };
 
     const applyGeojson = () => {
+      const map = mapRef.current;
+      if (!map) return;
+
       const geojson = {
         type: 'FeatureCollection' as const,
         features: filteredMarkers.map(({ project, location }) => ({
@@ -804,6 +801,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       try {
         try { map.resize(); } catch { /* ignore */ }
         try { console.debug('MapView: applyGeojson — filteredMarkers:', filteredMarkers.length); } catch { /* ignore */ }
+
         if (map.getSource(srcId)) {
           const src = map.getSource(srcId) as maplibregl.GeoJSONSource;
           src.setData(geojson as any);
@@ -822,19 +820,15 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             }
           });
 
-          requestAnimationFrame(() => {
-            try { map.resize(); } catch { /* ignore */ }
-          });
+          requestAnimationFrame(() => { try { map.resize(); } catch { /* ignore */ } });
 
-          // After the layer is added, wait until the map is idle then resize again to force a repaint.
-          // This addresses cases where the renderer hasn't yet displayed newly added layers.
           try {
             map.once('idle', () => {
               try { map.resize(); } catch { /* ignore */ }
               try { console.debug('MapView: map idle -> resized after adding layer'); } catch { /* ignore */ }
-              });
-            } catch { /* ignore */ }
-          // If MapLibre exposes a triggerRepaint implementation, call it as a final fallback.
+            });
+          } catch { /* ignore */ }
+
           try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { /* ignore */ }
 
           map.on('mousemove', layerId, (e: any) => {
@@ -853,11 +847,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
           map.on('click', layerId, (e: any) => {
             if (!e.point) return;
-            const features = (e.features && e.features.length > 0)
-              ? e.features
-              : map.queryRenderedFeatures(e.point, { layers: [layerId] });
+            const features = (e.features && e.features.length > 0) ? e.features : map.queryRenderedFeatures(e.point, { layers: [layerId] });
             if (!features || features.length === 0) return;
-
             const matches: ProjectMarker[] = features
               .map((f: any) => {
                 const project = projectsRef.current.get(f.properties?.postId);
@@ -865,7 +856,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 return project && location ? { project, location } : null;
               })
               .filter(Boolean) as ProjectMarker[];
-
             if (matches.length === 0) return;
             if (matches.length === 1) openSinglePopup(matches[0].project, matches[0].location);
             else openMultiPopup(matches);
@@ -873,28 +863,54 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         }
 
         if (filteredMarkers.length > 0) {
-          // Wait a frame to allow the map to layout then fit bounds so markers become visible immediately
           requestAnimationFrame(() => {
             try {
               try { map.resize(); } catch { /* ignore */ }
               const bounds = new (maplibregl as any).LngLatBounds(filteredMarkers[0].location.position, filteredMarkers[0].location.position);
               filteredMarkers.forEach((m) => bounds.extend(m.location.position));
               map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
-              } catch (err) { /* ignore */ }
-            });
-          }
+            } catch (err) { /* ignore */ }
+          });
+        }
       } catch (err) {
         console.error('Error applying GeoJSON to map', err);
       }
     };
 
+    // If the map isn't available yet, poll briefly for it then apply GeoJSON once it exists.
+    // This prevents missing markers when data arrives before the map initializes.
+    const mapNow = mapRef.current;
+    if (!mapNow) {
+      let waited = 0;
+      const POLL_MS = 100;
+      const TIMEOUT_MS = 3000;
+      const iv = setInterval(() => {
+        const m = mapRef.current;
+        if (m) {
+          clearInterval(iv);
+          try {
+            const styleLoaded = typeof (m as any).isStyleLoaded === 'function' ? (m as any).isStyleLoaded() : false;
+            if (styleLoaded) applyGeojson();
+            else m.once('load', applyGeojson);
+          } catch (err) {
+            try { m.once('load', applyGeojson); } catch { /* ignore */ }
+          }
+        } else {
+          waited += POLL_MS;
+          if (waited > TIMEOUT_MS) clearInterval(iv);
+        }
+      }, POLL_MS);
+      return () => clearInterval(iv);
+    }
+
+    // Map exists now — proceed as before.
     try {
-      const styleLoaded = typeof (map as any).isStyleLoaded === 'function' ? (map as any).isStyleLoaded() : false;
+      const styleLoaded = typeof (mapNow as any).isStyleLoaded === 'function' ? (mapNow as any).isStyleLoaded() : false;
       if (styleLoaded) applyGeojson();
-      else map.once('load', applyGeojson);
+      else mapNow.once('load', applyGeojson);
     } catch (err) {
       console.warn('Map style not loaded yet, deferring to load event', err);
-      map.once('load', applyGeojson);
+      try { mapNow.once('load', applyGeojson); } catch { /* ignore */ }
     }
   }, [filteredMarkers, projects]);
 
