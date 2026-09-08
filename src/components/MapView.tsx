@@ -579,6 +579,15 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
     mapRef.current = map;
 
+    // Ensure the map lays out with the container's computed size — do this on next frame.
+    requestAnimationFrame(() => {
+      try { map.resize(); } catch { /* ignore */ }
+    });
+    
+    // Keep map size up-to-date on window resize
+    const onWinResize = () => { try { mapRef.current?.resize(); } catch { /* ignore */ } };
+    window.addEventListener('resize', onWinResize);
+
     return () => {
       try {
         popupRef.current?.remove();
