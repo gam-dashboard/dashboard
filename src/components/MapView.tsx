@@ -208,173 +208,177 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
   useEffect(() => {
     // load SDG, UN civic, and project categories CSVs (allow overrides via config)
-    Promise.all([parseCsv(sdgUrl), parseCsv(unCivicUrl), parseCsv(categoriesUrl)])
-      .then(([a, b, c]) => {
-        const rows = [...a.rows, ...b.rows];
-        const allHeaders = Array.from(new Set([...(a.headers || []), ...(b.headers || [])]));
+    const parseTimeout = setTimeout(() => {
+      Promise.all([parseCsv(sdgUrl), parseCsv(unCivicUrl), parseCsv(categoriesUrl)])
+        .then(([a, b, c]) => {
+          const rows = [...a.rows, ...b.rows];
+          const allHeaders = Array.from(new Set([...(a.headers || []), ...(b.headers || [])]));
 
-        const headerNormToOrig = new Map<string, string[]>();
-        for (const h of allHeaders) {
-          const n = normalize(h);
-          const cur = headerNormToOrig.get(n) || [];
-          cur.push(h);
-          headerNormToOrig.set(n, cur);
-        }
-
-        const sdgHeaders = allHeaders.filter(h => {
-          const n = normalize(h);
-          return n.includes('sustainable development goal') || n.includes('sdg');
-        });
-
-        const byPostId = new Map<string, Project>();
-        const missingPostId: number[] = [];
-        const duplicatePostId = new Set<string>();
-
-        rows.forEach((r, rowIndex) => {
-          const getField = makeFieldGetter(r, headerNormToOrig);
-
-          const postId = getField(['post id', 'postid']) || String(r['Post ID'] ?? r['post_id'] ?? '').trim();
-          if (!postId) { missingPostId.push(rowIndex); return; }
-          if (byPostId.has(postId)) { duplicatePostId.add(postId); return; }
-
-          const title = getField(['project', 'project name', 'title', 'project title', 'name']) || getField(['organization name', 'organization']) || postId;
-          const description = getField(['description', 'unstructured description', 'summary', 'abstract']);
-          const tagLine = getField(['project tag line', 'tagline', 'tag line']);
-          const org = getField(['organization name', 'organization', 'partner']);
-
-          let goals: string[] = [];
-          for (const h of sdgHeaders) {
-            const raw = r[h];
-            if (raw && String(raw).trim() !== '') goals.push(...parseGoals(raw));
+          const headerNormToOrig = new Map<string, string[]>();
+          for (const h of allHeaders) {
+            const n = normalize(h);
+            const cur = headerNormToOrig.get(n) || [];
+            cur.push(h);
+            headerNormToOrig.set(n, cur);
           }
-          goals = Array.from(new Set(goals));
 
-          const dateStr = getField(['post date (utc)', 'post date', 'created (utc)', 'created', 'date']);
-          const postDate = dateStr ? tryParseDate(dateStr) : null;
-
-          const searchText = [postId, title, description, tagLine, org, Object.values(r).join(' ')]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
-
-          const projectStartDate = getField(['project start date']);
-
-          byPostId.set(postId, {
-            postId,
-            title,
-            description,
-            tagLine,
-            org,
-            goals,
-            categories: [],
-            searchText,
-            postDate,
-            // Add new fields
-            orgWebsite: getField(['organization website']),
-            supportingSites: getField(['supporting sites']),
-            video: getField(['video']),
-            video2: getField(['video 2']),
-            projectStartDate,
-            row: r,
-            locations: []
+          const sdgHeaders = allHeaders.filter(h => {
+            const n = normalize(h);
+            return n.includes('sustainable development goal') || n.includes('sdg');
           });
-        });
 
-        // Attach categories from project_categories.csv (c.rows)
-        const catRows = c.rows || [];
-        const orphanCatRows: number[] = [];
-        catRows.forEach((cr, idx) => {
-          const postId = String(cr['Post ID'] ?? cr['post_id'] ?? cr['postId'] ?? cr['postid'] ?? '').trim();
-          if (!postId) { orphanCatRows.push(idx); return; }
-          const project = byPostId.get(postId);
-          if (!project) { orphanCatRows.push(idx); return; }
-          const raw = String(cr['Categories'] ?? cr['categories'] ?? cr['Category'] ?? '').trim();
-          if (!raw) return;
-          const parts = raw.split(/[,;|]+/).map(s => s.trim()).filter(Boolean);
-          const existing = new Set(project.categories.map(x => x.toLowerCase()));
-          for (const p of parts) {
-            if (!existing.has(p.toLowerCase())) {
-              project.categories.push(p);
-              existing.add(p.toLowerCase());
+          const byPostId = new Map<string, Project>();
+          const missingPostId: number[] = [];
+          const duplicatePostId = new Set<string>();
+
+          rows.forEach((r, rowIndex) => {
+            const getField = makeFieldGetter(r, headerNormToOrig);
+
+            const postId = getField(['post id', 'postid']) || String(r['Post ID'] ?? r['post_id'] ?? '').trim();
+            if (!postId) { missingPostId.push(rowIndex); return; }
+            if (byPostId.has(postId)) { duplicatePostId.add(postId); return; }
+
+            const title = getField(['project', 'project name', 'title', 'project title', 'name']) || getField(['organization name', 'organization']) || postId;
+            const description = getField(['description', 'unstructured description', 'summary', 'abstract']);
+            const tagLine = getField(['project tag line', 'tagline', 'tag line']);
+            const org = getField(['organization name', 'organization', 'partner']);
+
+            let goals: string[] = [];
+            for (const h of sdgHeaders) {
+              const raw = r[h];
+              if (raw && String(raw).trim() !== '') goals.push(...parseGoals(raw));
             }
-          }
-          // also add categories to searchText
-          if (project.categories.length > 0) {
-            project.searchText = [project.searchText, project.categories.join(' ')].filter(Boolean).join(' ').toLowerCase();
-          }
-        });
+            goals = Array.from(new Set(goals));
 
-        const allGoals = new Set<string>();
-        byPostId.forEach(p => p.goals.forEach(g => allGoals.add(g)));
-        setUniqueGoals(Array.from(allGoals).sort(goalSort));
+            const dateStr = getField(['post date (utc)', 'post date', 'created (utc)', 'created', 'date']);
+            const postDate = dateStr ? tryParseDate(dateStr) : null;
 
-        // unique categories
-        const allCategories = new Set<string>();
-        byPostId.forEach(p => p.categories.forEach(cg => allCategories.add(cg)));
-        setUniqueCategories(Array.from(allCategories).sort((a, b) => String(a).localeCompare(b)));
+            const searchText = [postId, title, description, tagLine, org, Object.values(r).join(' ')]
+              .filter(Boolean)
+              .join(' ')
+              .toLowerCase();
 
-        console.group('SDG_projects.csv + un_civic_2024.csv + project_categories.csv → projects');
-        console.log(`parsed rows: ${rows.length}`);
-        console.log(`projects: ${byPostId.size}`);
-        if (missingPostId.length) console.warn(`rows with no Post ID (skipped): ${missingPostId.length}`, missingPostId);
-        if (duplicatePostId.size) console.warn(`duplicate Post IDs (kept first row): ${duplicatePostId.size}`, Array.from(duplicatePostId));
-        if (orphanCatRows.length) console.warn(`category rows with no matching project post_id: ${orphanCatRows.length}`, orphanCatRows);
-        console.groupEnd();
+            const projectStartDate = getField(['project start date']);
 
-        // attach locations
-        console.log('MapView: loading locations from', locUrl);
-        Papa.parse<CsvRow>(locUrl, {
-          download: true,
-          header: true,
-          skipEmptyLines: true,
-          complete: (locResults) => {
-            const locRows = (locResults.data || []) as CsvRow[];
-            const orphanRows: number[] = [];
-            const badCoordRows: number[] = [];
-
-            locRows.forEach((lr, idx) => {
-              const postId = String(lr['post_id'] ?? lr['Post ID'] ?? lr['PostID'] ?? '').trim();
-              const project = postId ? byPostId.get(postId) : undefined;
-              if (!project) { orphanRows.push(idx); return; }
-
-              const lat = parseNum(lr['lat'] ?? lr['latitude'] ?? lr['Latitude']);
-              const lon = parseNum(lr['lon'] ?? lr['longitude'] ?? lr['Longitude']);
-              if (lat == null || lon == null) { badCoordRows.push(idx); return; }
-
-              project.locations.push({
-                id: `${postId}::${project.locations.length}`,
-                postId,
-                position: [lon, lat],
-                city: (lr['city'] ?? '').toString().trim() || undefined,
-                state: (lr['state'] ?? '').toString().trim() || undefined,
-                country: (lr['country'] ?? '').toString().trim() || undefined,
-                country_code: (lr['country_code'] ?? '').toString().toUpperCase() || undefined,
-                display_name: (lr['display_name'] ?? '').toString().trim() || undefined,
-              });
+            byPostId.set(postId, {
+              postId,
+              title,
+              description,
+              tagLine,
+              org,
+              goals,
+              categories: [],
+              searchText,
+              postDate,
+              // Add new fields
+              orgWebsite: getField(['organization website']),
+              supportingSites: getField(['supporting sites']),
+              video: getField(['video']),
+              video2: getField(['video 2']),
+              projectStartDate,
+              row: r,
+              locations: []
             });
+          });
 
-            console.group('locations.csv → attached to projects');
-            console.log(`parsed rows: ${locRows.length}`);
-            if (orphanRows.length) console.warn(`rows with a post_id not found in projects CSVs: ${orphanRows.length}`, orphanRows);
-            if (badCoordRows.length) console.warn(`rows with non-numeric coordinates: ${badCoordRows.length}`, badCoordRows);
-            console.groupEnd();
+          // Attach categories from project_categories.csv (c.rows)
+          const catRows = c.rows || [];
+          const orphanCatRows: number[] = [];
+          catRows.forEach((cr, idx) => {
+            const postId = String(cr['Post ID'] ?? cr['post_id'] ?? cr['postId'] ?? cr['postid'] ?? '').trim();
+            if (!postId) { orphanCatRows.push(idx); return; }
+            const project = byPostId.get(postId);
+            if (!project) { orphanCatRows.push(idx); return; }
+            const raw = String(cr['Categories'] ?? cr['categories'] ?? cr['Category'] ?? '').trim();
+            if (!raw) return;
+            const parts = raw.split(/[,;|]+/).map(s => s.trim()).filter(Boolean);
+            const existing = new Set(project.categories.map(x => x.toLowerCase()));
+            for (const p of parts) {
+              if (!existing.has(p.toLowerCase())) {
+                project.categories.push(p);
+                existing.add(p.toLowerCase());
+              }
+            }
+            // also add categories to searchText
+            if (project.categories.length > 0) {
+              project.searchText = [project.searchText, project.categories.join(' ')].filter(Boolean).join(' ').toLowerCase();
+            }
+          });
 
-            setProjects(new Map(byPostId));
+          const allGoals = new Set<string>();
+          byPostId.forEach(p => p.goals.forEach(g => allGoals.add(g)));
+          setUniqueGoals(Array.from(allGoals).sort(goalSort));
 
-            const allCities = Array.from(new Set(
-              Array.from(byPostId.values()).flatMap(p => p.locations.map(l => l.city).filter(Boolean) as string[])
-            )).sort((a, b) => a.localeCompare(b));
-            setUniqueCities(allCities);
-          },
-          error: (err) => {
-            console.warn('Could not load locations.csv — projects will have no locations', err);
-            setProjects(new Map(byPostId));
-          }
+          // unique categories
+          const allCategories = new Set<string>();
+          byPostId.forEach(p => p.categories.forEach(cg => allCategories.add(cg)));
+          setUniqueCategories(Array.from(allCategories).sort((a, b) => String(a).localeCompare(b)));
+
+          console.group('SDG_projects.csv + un_civic_2024.csv + project_categories.csv → projects');
+          console.log(`parsed rows: ${rows.length}`);
+          console.log(`projects: ${byPostId.size}`);
+          if (missingPostId.length) console.warn(`rows with no Post ID (skipped): ${missingPostId.length}`, missingPostId);
+          if (duplicatePostId.size) console.warn(`duplicate Post IDs (kept first row): ${duplicatePostId.size}`, Array.from(duplicatePostId));
+          if (orphanCatRows.length) console.warn(`category rows with no matching project post_id: ${orphanCatRows.length}`, orphanCatRows);
+          console.groupEnd();
+
+          // attach locations
+          console.log('MapView: loading locations from', locUrl);
+          Papa.parse<CsvRow>(locUrl, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: (locResults) => {
+              const locRows = (locResults.data || []) as CsvRow[];
+              const orphanRows: number[] = [];
+              const badCoordRows: number[] = [];
+
+              locRows.forEach((lr, idx) => {
+                const postId = String(lr['post_id'] ?? lr['Post ID'] ?? lr['PostID'] ?? '').trim();
+                const project = postId ? byPostId.get(postId) : undefined;
+                if (!project) { orphanRows.push(idx); return; }
+
+                const lat = parseNum(lr['lat'] ?? lr['latitude'] ?? lr['Latitude']);
+                const lon = parseNum(lr['lon'] ?? lr['longitude'] ?? lr['Longitude']);
+                if (lat == null || lon == null) { badCoordRows.push(idx); return; }
+
+                project.locations.push({
+                  id: `${postId}::${project.locations.length}`,
+                  postId,
+                  position: [lon, lat],
+                  city: (lr['city'] ?? '').toString().trim() || undefined,
+                  state: (lr['state'] ?? '').toString().trim() || undefined,
+                  country: (lr['country'] ?? '').toString().trim() || undefined,
+                  country_code: (lr['country_code'] ?? '').toString().toUpperCase() || undefined,
+                  display_name: (lr['display_name'] ?? '').toString().trim() || undefined,
+                });
+              });
+
+              console.group('locations.csv → attached to projects');
+              console.log(`parsed rows: ${locRows.length}`);
+              if (orphanRows.length) console.warn(`rows with a post_id not found in projects CSVs: ${orphanRows.length}`, orphanRows);
+              if (badCoordRows.length) console.warn(`rows with non-numeric coordinates: ${badCoordRows.length}`, badCoordRows);
+              console.groupEnd();
+
+              setProjects(new Map(byPostId));
+
+              const allCities = Array.from(new Set(
+                Array.from(byPostId.values()).flatMap(p => p.locations.map(l => l.city).filter(Boolean) as string[])
+              )).sort((a, b) => a.localeCompare(b));
+              setUniqueCities(allCities);
+            },
+            error: (err) => {
+              console.warn('Could not load locations.csv — projects will have no locations', err);
+              setProjects(new Map(byPostId));
+            }
+          });
+        })
+        .catch(err => {
+          console.error('Error loading project CSVs', err);
         });
-      })
-      .catch(err => {
-        console.error('Error loading project CSVs', err);
-      });
+    }, 500);
+
+    return () => clearTimeout(parseTimeout);
   }, []);
 
   useEffect(() => {
