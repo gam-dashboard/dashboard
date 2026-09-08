@@ -545,7 +545,11 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         const src = map.getSource(srcId) as maplibregl.GeoJSONSource;
         src.setData(geojson as any);
       } else {
+        // Layer doesn't exist yet; create it
+        console.log('Adding source and layer for the first time');
+
         map.addSource(srcId, { type: 'geojson', data: geojson });
+
         map.addLayer({
           id: layerId,
           type: 'circle',
@@ -559,29 +563,23 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
           }
         });
 
-        // force layout / repaint on next frame and when map is idle
-        requestAnimationFrame(() => { try { map.resize(); } catch { /* ignore */ } });
-        try {
-          map.once('idle', () => { try { map.resize(); } catch { /* ignore */ } try { console.debug('MapView: map idle -> resized after adding layer'); } catch { /* ignore */ } });
-        } catch { /* ignore */ }
-        try {
-          // toggle visibility to force a repaint in some MapLibre environments
-          if (map.getLayer && map.getLayer('projects-layer')) {
-            try {
-              map.setLayoutProperty('projects-layer', 'visibility', 'none');
-            } catch { }
-            try {
-              map.setLayoutProperty('projects-layer', 'visibility', 'visible');
-            } catch { }
-          }
-        } catch (e) { /* ignore */ }
+        console.log('Layer added, now forcing repaint');
 
-        // extra repaint attempts for different map builds
-        try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { }
-        try { if (typeof (map as any).repaint === 'function') (map as any).repaint(); } catch { }
-        try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { /* ignore */ }
+        // Force a repaint by triggering paint events
+        map.getCanvas().style.filter = 'brightness(1)';
+        map.getCanvas().style.filter = 'brightness(1.0)';
 
-        // interactions (read projects from projectsRef)
+        // Request animation frames to force the browser to repaint
+        requestAnimationFrame(() => {
+          try { map.resize(); } catch { /* ignore */ }
+        });
+
+        requestAnimationFrame(() => {
+          try { map.resize(); } catch { /* ignore */ }
+          try { map.triggerRepaint?.(); } catch { /* ignore */ }
+        });
+
+        // Set up interactions
         map.on('mousemove', layerId, (e: any) => {
           if (e.features && e.features.length > 0) {
             map.getCanvas().style.cursor = 'pointer';
@@ -604,19 +602,24 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             .filter(Boolean) as ProjectMarker[];
           if (matches.length === 0) return;
           if (matches.length === 1) {
-            // open single popup: reuse openSinglePopup logic or inline briefly
-            // we can call openSinglePopup if it's defined in scope; otherwise inline
-            const m = matches[0];
-            // openSinglePopup(m.project, m.location);
-            // For brevity, call setSelected to show details (you already have popup helpers); use your existing helpers if present.
             setSelected(matches[0].project);
             setSelectedLocation(matches[0].location);
           } else {
-            // openMultiPopup(matches);
             setSelected(matches[0].project);
             setSelectedLocation(matches[0].location);
           }
         });
+
+        // Fit bounds after the layer renders
+        if (filtered.length > 0) {
+          setTimeout(() => {
+            try {
+              const bounds = new (maplibregl as any).LngLatBounds(filtered[0].location.position, filtered[0].location.position);
+              filtered.forEach((m) => bounds.extend(m.location.position));
+              map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
+            } catch (err) { /* ignore */ }
+          }, 100);
+        }
       }
 
       if (filtered.length > 0) {
