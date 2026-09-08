@@ -596,6 +596,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       } catch (err) {
         console.warn('Error removing map', err);
       }
+      window.removeEventListener('resize', onWinResize);
     };
   }, []);
 
