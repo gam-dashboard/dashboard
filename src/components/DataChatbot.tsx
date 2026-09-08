@@ -229,6 +229,7 @@ Guidelines:
       {/* Chat Messages */}
       <div className="chatbot-messages">
         {messages.length === 0 && csvLoaded && (
+          /*
           <div className="chatbot-welcome">
             <p>👋 Welcome! I can analyze data across {loadedFiles.length} datasets.</p>
             <p>Loaded datasets: {loadedFiles.join(', ')}</p>
@@ -239,6 +240,12 @@ Guidelines:
               <li>"What are the key insights across all data?"</li>
               <li>"Which dataset has the highest [metric]?"</li>
             </ul>
+          </div>
+          */
+          <div className="chatbot-welcome">
+            <p>👋 Welcome! I can analyze data across {loadedFiles.length} datasets.</p>
+            <p>Loaded datasets: {loadedFiles.join(', ')}</p>
+            <p>This feature is currently inactive!</p>
           </div>
         )}
 
