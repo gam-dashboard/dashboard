@@ -803,6 +803,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
       try {
         try { map.resize(); } catch { /* ignore */ }
+        try { console.debug('MapView: applyGeojson — filteredMarkers:', filteredMarkers.length); } catch { /* ignore */ }
         if (map.getSource(srcId)) {
           const src = map.getSource(srcId) as maplibregl.GeoJSONSource;
           src.setData(geojson as any);
@@ -824,6 +825,17 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
           requestAnimationFrame(() => {
             try { map.resize(); } catch { /* ignore */ }
           });
+
+          // After the layer is added, wait until the map is idle then resize again to force a repaint.
+          // This addresses cases where the renderer hasn't yet displayed newly added layers.
+          try {
+            map.once('idle', () => {
+              try { map.resize(); } catch { /* ignore */ }
+              try { console.debug('MapView: map idle -> resized after adding layer'); } catch { /* ignore */ }
+              });
+            } catch { /* ignore */ }
+          // If MapLibre exposes a triggerRepaint implementation, call it as a final fallback.
+          try { if (typeof (map as any).triggerRepaint === 'function') (map as any).triggerRepaint(); } catch { /* ignore */ }
 
           map.on('mousemove', layerId, (e: any) => {
             if (e.features && e.features.length > 0) {
@@ -862,14 +874,14 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
         if (filteredMarkers.length > 0) {
           // Wait a frame to allow the map to layout then fit bounds so markers become visible immediately
-            requestAnimationFrame(() => {
-              try {
-                try { map.resize(); } catch { /* ignore */ }
-                const bounds = new (maplibregl as any).LngLatBounds(filteredMarkers[0].location.position, filteredMarkers[0].location.position);
-                filteredMarkers.forEach((m) => bounds.extend(m.location.position));
-                map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
-                } catch (err) { /* ignore */ }
-              });
+          requestAnimationFrame(() => {
+            try {
+              try { map.resize(); } catch { /* ignore */ }
+              const bounds = new (maplibregl as any).LngLatBounds(filteredMarkers[0].location.position, filteredMarkers[0].location.position);
+              filteredMarkers.forEach((m) => bounds.extend(m.location.position));
+              map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
+              } catch (err) { /* ignore */ }
+            });
           }
       } catch (err) {
         console.error('Error applying GeoJSON to map', err);
