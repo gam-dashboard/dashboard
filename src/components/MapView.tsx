@@ -711,16 +711,11 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     (window as any).__MAP = map;
     console.debug('MapView: map created; container rect=', mapContainerRef.current?.getBoundingClientRect());
 
-    // Ensure the map lays out with the container's computed size — do this on next frame.
+    // Ensure the map lays out with the container's computed size
     requestAnimationFrame(() => {
       try { map.resize(); } catch { /* ignore */ }
     });
 
-    // schedule applying geojson now that the map exists
-    //requestAnimationFrame(() => {
-    //  try { applyGeojson(); } catch { /* ignore */ }
-    //});
-    
     // Keep map size up-to-date on window resize
     const onWinResize = () => { try { mapRef.current?.resize(); } catch { /* ignore */ } };
     window.addEventListener('resize', onWinResize);
@@ -739,32 +734,26 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || filteredMarkers.length === 0) return;
 
-    // Always ensure the map's style is fully loaded before we try to add sources/layers
-    const onStyleLoad = () => {
+    // Use 'load' event which fires after style AND initial data are ready
+    const applyWhenReady = () => {
       try {
+        console.debug('MapView: map.load fired, applying geojson with', filteredMarkers.length, 'markers');
         applyGeojson();
       } catch (err) {
-        console.error('Error applying geojson after style load', err);
+        console.error('Error applying geojson', err);
       }
     };
 
-    if (map.isStyleLoaded?.()) {
-      // Style is already loaded; schedule on next frame for safety
-      requestAnimationFrame(onStyleLoad);
+    if (map.loaded?.()) {
+      // Map is already fully loaded; apply immediately on next frame
+      requestAnimationFrame(applyWhenReady);
     } else {
-      // Wait for style to load
-      map.on('style.load', onStyleLoad);
+      // Map not yet fully loaded; wait for it
+      map.once('load', applyWhenReady);
     }
-
-    // Cleanup: remove listener if component unmounts
-    return () => {
-      try {
-        map.off('style.load', onStyleLoad);
-      } catch { /* ignore */ }
-    };
-  }, [filteredMarkers, projects]);
+  }, [filteredMarkers]);
 
   useEffect(() => {
     if (selected) {
