@@ -1185,7 +1185,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
           {/* Map container */}
           <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 6 }}>
-            <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0, minHeight: 380 }} />/>
+            <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0, minHeight: 380 }} />
 
             {/* Hover tooltip */}
             {hoverInfo && (
