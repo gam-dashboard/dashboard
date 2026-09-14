@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MapView from './components/MapView';
 import AltDashboard from './pages/waDashboard';
+import SyrDashboard from './pages/syrDashboard';
 import DataChatbot from './components/DataChatbot';
 import './styles.css';
 
@@ -9,6 +10,8 @@ import LOC_CSV_URL from './data/locations.csv?url';
 import CAT_CSV_URL from './data/project_categories.csv?url';
 import WA_TRACKER_URL from './data/WA_tracker_entries.csv?url';
 import WA_LOC_URL from './data/WA_locations.csv?url';
+import SY_CSV_URL from './data/SY_projects.csv?url';
+import SY_LOC_URL from './data/SY_locations.csv?url';
 
 export default function App() {
   const [route, setRoute] = useState<string>(() => window.location.hash || '#/');
@@ -24,6 +27,7 @@ export default function App() {
       <nav style={{ padding: 12, display: 'flex', gap: 12 }}>
         <a href="#/">Global Action Mosaic</a>
         <a href="#/WATracker">WA State Behavioral Health Tracker</a>
+        <a href="#/SYProjects">Projects For Syria (temp)</a>
       </nav>
 
       {route === '#/WATracker' ? (
@@ -35,6 +39,18 @@ export default function App() {
             <DataChatbot 
               csvFiles={[WA_TRACKER_URL, WA_LOC_URL]}
               title="WA State Health Data Assistant"
+            />
+          </section>
+        </div>
+      ) : route === '#/SYProjects' ? (
+        <div>
+          <SyrDashboard />
+
+          {/* Projects for Syria Chatbot */}
+          <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
+            <DataChatbot
+              csvFiles={[SY_CSV_URL, SY_LOC_URL]}
+              title="Syria Projects Intelligence"
             />
           </section>
         </div>
