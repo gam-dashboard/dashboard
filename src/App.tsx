@@ -26,8 +26,9 @@ export default function App() {
     <div>
       <nav style={{ padding: 12, display: 'flex', gap: 12 }}>
         <a href="#/">Global Action Mosaic</a>
-        <a href="#/WATracker">WA State Behavioral Health Tracker</a>
-        <a href="#/SYProjects">Projects For Syria (temp)</a>
+        <a href="#/WATracker">Washington State Tracker</a>
+        <a href="#/SYProjects">Syria Projects</a>
+        <a href="https://globalactionmosaic.ushahidi.io/map">Submit Your Project Here!</a>
       </nav>
 
       {route === '#/WATracker' ? (
