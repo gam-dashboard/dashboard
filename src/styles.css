@@ -2,9 +2,30 @@
   --app-header-height: 88px;
 }
 
-body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin: 0; padding: 1rem; background: #f8fafc; color: #0f172a; }
+body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin: 0; padding: clamp(0.75rem, 2vw, 1rem); background: #f8fafc; color: #0f172a; overflow-x: hidden; }
 
-.app { max-width: 900px; margin: 0 auto; }
+.app { width: min(100%, 900px); margin: 0 auto; }
+
+.app-nav {
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.app-nav a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.chatbot-section {
+  padding: clamp(12px, 3vw, 20px);
+  width: min(100%, 1200px);
+  box-sizing: border-box;
+  margin: 20px auto;
+}
 
 /* Break out of centered container and use full viewport width.
    Keeps an inner padding so content aligns with body padding (1rem). */
@@ -23,14 +44,15 @@ body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neu
 }
 
   /* Responsive: on narrow screens stack sidebar under map */
-  .breakout .map-layout {
-    display: flex;
-    gap: 8px;
-    align-items: stretch;
-    height: calc(100vh - var(--app-header-height, 0px));
-    box-sizing: border-box;
-    width: 100%;
-  }
+.breakout .map-layout {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  height: calc(100dvh - var(--app-header-height, 0px));
+  min-height: 38rem;
+  box-sizing: border-box;
+  width: 100%;
+}
 
   /* map column grows, sidebar fixed */
   .breakout .map-column {
@@ -44,35 +66,56 @@ body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neu
   }
 
   /* wider sidebar by default */
-  .breakout .page-sidebar {
-    width: 420px; /* increase/decrease as you like */
-    max-width: 36vw; /* optional */
-    max-height: calc(100vh - var(--app-header-height, 0px) - 24px);
-    overflow-y: auto;
-    background: white;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    border-radius: 8px;
-    padding: 10px;
-  }
+.breakout .page-sidebar {
+  width: clamp(320px, 32vw, 420px);
+  max-width: 36vw;
+  max-height: calc(100dvh - var(--app-header-height, 0px) - 24px);
+  overflow-y: auto;
+  background: white;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+}
 
 /* Mobile: stack vertically and make sidebar full width below 900px */
 @media (max-width: 900px) {
   .breakout .map-layout {
-    flex-direction: column;
-    height: auto;
+    height: min(75dvh, 46rem);
+    min-height: 28rem;
   }
 
   .breakout .page-sidebar {
-    width: 100%;
-    max-width: none;
-    border-radius: 8px;
-    margin-top: 12px;
+    max-width: min(26rem, calc(100vw - 1.5rem));
   }
 
   .breakout .map-column {
-    height: calc(60vh - var(--app-header-height, 0px));
+    min-height: 0;
   }
-  /* keep map visible */
 }
 
 header h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+
+@media (max-width: 600px) {
+  body {
+    padding: 0.75rem;
+  }
+
+  .app-nav {
+    padding: 8px 0 12px;
+    gap: 8px 12px;
+  }
+
+  .app-nav a {
+    line-height: 1.3;
+  }
+
+  .chatbot-section {
+    padding: 12px 0 0;
+    margin: 16px auto 0;
+  }
+
+  header h1 {
+    font-size: 1.1rem;
+  }
+}

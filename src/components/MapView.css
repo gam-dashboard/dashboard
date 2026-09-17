@@ -1,0 +1,377 @@
+.mapview-toolbar {
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 20;
+}
+
+.mapview-toolbar-inner {
+  width: min(980px, 96%);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.mapview-search {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.mapview-location-controls {
+  width: min(100%, 380px);
+  flex: 1 1 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mapview-location-row,
+.mapview-toggle-group,
+.mapview-summary {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.mapview-location-input {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.mapview-toggle-group {
+  flex: 0 1 240px;
+  position: relative;
+  justify-content: flex-end;
+}
+
+.mapview-dropdown-wrapper {
+  position: relative;
+}
+
+.mapview-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  z-index: 50;
+}
+
+.mapview-dropdown-panel {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  width: min(22rem, calc(100vw - 2rem));
+  max-width: min(400px, 90vw);
+  max-height: min(50vh, 24rem);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mapview-dropdown-option {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  min-height: 44px;
+}
+
+.mapview-dropdown-option input {
+  margin-right: 8px;
+}
+
+.mapview-control-input,
+.mapview-action-button,
+.mapview-sidebar-toggle,
+.mapview-chip-remove,
+.mapview-detail-close {
+  min-height: 44px;
+}
+
+.mapview-control-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.mapview-action-button,
+.mapview-sidebar-toggle {
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mapview-sidebar-toggle {
+  align-self: stretch;
+}
+
+.mapview-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mapview-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f7ff;
+  border: 1px solid #d6e8ff;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  min-height: 36px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.mapview-chip-label {
+  max-width: min(180px, 45vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapview-chip-remove {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+}
+
+.mapview-map-shell {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.mapview-map-container {
+  position: absolute;
+  inset: 0;
+  min-height: 100%;
+}
+
+.mapview-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(255,255,255,0.95);
+  padding: 6px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  font-size: 12px;
+  max-width: min(300px, calc(100vw - 2rem));
+  z-index: 15;
+}
+
+.mapview-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.mapview-detail-panel {
+  width: min(1100px, calc(100vw - 1rem));
+  max-height: min(92dvh, calc(100dvh - 1rem));
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background: white;
+  padding: clamp(16px, 4vw, 20px);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.mapview-detail-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  width: 44px;
+  min-width: 44px;
+}
+
+.mapview-media-frame {
+  margin-top: 8px;
+  aspect-ratio: 16 / 9;
+  width: min(100%, 500px);
+}
+
+.mapview-summary {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  z-index: 15;
+  justify-content: center;
+  max-width: calc(100% - 24px);
+}
+
+.mapview-summary-pill {
+  background: rgba(255,255,255,0.95);
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  font-size: 13px;
+}
+
+.mapview-sidebar-backdrop {
+  display: none;
+}
+
+.page-sidebar {
+  -webkit-overflow-scrolling: touch;
+}
+
+.mapview-sidebar-header {
+  padding: 6px 4px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
+.mapview-sidebar-item {
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .mapview-toolbar {
+    padding: 8px 0 12px;
+  }
+
+  .mapview-toolbar-inner {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mapview-location-controls,
+  .mapview-toggle-group,
+  .mapview-sidebar-toggle,
+  .mapview-dropdown-wrapper {
+    width: 100%;
+    max-width: none;
+  }
+
+  .mapview-toggle-group {
+    justify-content: stretch;
+  }
+
+  .mapview-dropdown {
+    position: static;
+  }
+
+  .mapview-dropdown-panel {
+    width: 100%;
+    max-width: none;
+    max-height: min(40dvh, 20rem);
+  }
+
+  .mapview-summary {
+    left: 12px;
+    right: 12px;
+    transform: none;
+    max-width: none;
+  }
+
+  .mapview-summary-pill {
+    flex: 1 1 9rem;
+    text-align: center;
+  }
+
+  .mapview-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    border: none;
+    padding: 0;
+    z-index: 24;
+  }
+
+  .breakout .page-sidebar {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    top: auto;
+    width: auto;
+    max-width: none;
+    max-height: min(70dvh, 36rem);
+    border-radius: 12px;
+    z-index: 25;
+  }
+}
+
+@media (max-width: 600px) {
+  .mapview-location-row {
+    flex-direction: column;
+  }
+
+  .mapview-action-button,
+  .mapview-sidebar-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mapview-toggle-group {
+    flex-direction: column;
+  }
+
+  .mapview-detail-overlay {
+    padding: 0;
+  }
+
+  .mapview-detail-panel {
+    width: 100vw;
+    max-height: 100dvh;
+    border-radius: 0;
+    padding-top: 56px;
+  }
+
+  .mapview-summary {
+    gap: 6px;
+    bottom: 8px;
+  }
+
+  .mapview-summary-pill {
+    flex-basis: calc(50% - 3px);
+  }
+}

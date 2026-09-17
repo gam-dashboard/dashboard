@@ -1,5 +1,6 @@
 // src/components/MapView.tsx
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './MapView.css';
 import * as maplibregl from 'maplibre-gl';
 import Papa from 'papaparse';
 import sdgProjectsCsvUrl from '../data/SDG_projects.csv?url';
@@ -739,10 +740,20 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       };
       animate();
 
-      const onWinResize = () => {
-        try { map.resize(); } catch { /* ignore */ }
+      const resizeMap = () => {
+        requestAnimationFrame(() => {
+          try { map.resize(); } catch { /* ignore */ }
+          setTimeout(() => {
+            try { map.resize(); } catch { /* ignore */ }
+          }, 150);
+        });
       };
-      window.addEventListener('resize', onWinResize);
+      const viewport = window.visualViewport;
+
+      window.addEventListener('resize', resizeMap);
+      window.addEventListener('orientationchange', resizeMap);
+      viewport?.addEventListener('resize', resizeMap);
+      viewport?.addEventListener('scroll', resizeMap);
 
       return () => {
         isAnimating = false;
@@ -753,7 +764,10 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         } catch (err) {
           console.warn('Error removing map', err);
         }
-        window.removeEventListener('resize', onWinResize);
+        window.removeEventListener('resize', resizeMap);
+        window.removeEventListener('orientationchange', resizeMap);
+        viewport?.removeEventListener('resize', resizeMap);
+        viewport?.removeEventListener('scroll', resizeMap);
       };
     });
   }, []);
@@ -786,23 +800,22 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     <div className="breakout">
       <div className="map-layout">
         <div className="map-column">
-          {/* Header above the map: keyword search, location input, goals toggle */}
-          <div style={{ padding: '12px', display: 'flex', justifyContent: 'center' }}>
-            <div style={{ width: 'min(980px, 96%)', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <div className="mapview-toolbar">
+            <div className="mapview-toolbar-inner">
               {/* Keyword search */}
-              <div style={{ flex: '1 1 0' }}>
+              <div className="mapview-search">
                 <input
                   type="search"
                   placeholder="Filter by keyword (any text)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ width: '100%', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
+                  className="mapview-control-input"
                 />
               </div>
 
               {/* Location input + add/reset */}
-              <div style={{ width: 380, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ display: 'flex', gap: 8 }}>
+              <div className="mapview-location-controls">
+                <div className="mapview-location-row">
                   <input
                     list="locations-datalist"
                     value={locationInput}
@@ -832,7 +845,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                       }
                     }}
                     placeholder='City, state, or country filtering'
-                    style={{ flex: '1 1 auto', padding: '8px', borderRadius: 6, border: '1px solid #ddd', boxSizing: 'border-box' }}
+                    className="mapview-control-input mapview-location-input"
                   />
                   <datalist id="locations-datalist">
                     {uniqueLocationOptions.map(o => <option key={o.label} value={o.label} />)}
@@ -840,7 +853,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
                   <button
                     onClick={() => addSelectedLocation(locationInput)}
-                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                    className="mapview-action-button"
                     title="Add location filter"
                   >
                     Add
@@ -851,7 +864,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                       setLocationInput('');
                       setSelectedLocationFilters([]);
                     }}
-                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                    className="mapview-action-button"
                     title="Reset location filters"
                   >
                     Reset
@@ -859,27 +872,18 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 </div>
 
                 {/* chips */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                <div className="mapview-chip-list">
                   {selectedLocationFilters.length === 0 && <div style={{ color: '#666', fontSize: 12 }}>No location filters</div>}
                   {selectedLocationFilters.map((f) => (
                     <div
                       key={f.label}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        background: '#f1f7ff',
-                        border: '1px solid #d6e8ff',
-                        padding: '6px 8px',
-                        borderRadius: 999,
-                        fontSize: 13
-                      }}
+                      className="mapview-chip"
                     >
                       <input type="checkbox" checked readOnly style={{ width: 14, height: 14 }} />
-                      <div style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={f.label}>
+                      <div className="mapview-chip-label" title={f.label}>
                         {f.label}
                       </div>
-                      <button onClick={() => removeSelectedLocation(f.label)} aria-label={`Remove ${f.label}`} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={() => removeSelectedLocation(f.label)} aria-label={`Remove ${f.label}`} className="mapview-chip-remove">
                         ✕
                       </button>
                     </div>
@@ -887,43 +891,26 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 </div>
               </div>
 
-              {/* Goals and Categories toggle - with positioned dropdowns */}
-              <div style={{ width: 240, position: 'relative', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-                <div style={{ position: 'relative' }}>
+              <div className="mapview-toggle-group">
+                <div className="mapview-dropdown-wrapper">
                   <button
                     onClick={() => setCategoriesMinimized(v => !v)}
-                    style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                    className="mapview-action-button"
                     title="Open Categories"
                   >
                     {categoriesMinimized ? 'Open Categories' : 'Close Categories'}
                   </button>
 
-                  {/* Categories panel - positioned below button */}
                   {!categoriesMinimized && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      marginTop: 8,
-                      zIndex: 50,
-                    }}>
-                      <div style={{
-                        background: 'white',
-                        padding: 12,
-                        borderRadius: 8,
-                        boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                        maxWidth: '400px',
-                        maxHeight: '50vh',
-                        overflow: 'auto',
-                        whiteSpace: 'nowrap'
-                      }}>
+                    <div className="mapview-dropdown">
+                      <div className="mapview-dropdown-panel">
                         {uniqueCategories.length === 0 ? (
                           <div style={{ fontSize: 12, color: '#666' }}>Loading categories…</div>
                         ) : (
                           uniqueCategories.map((c) => {
                             const checked = activeCategories.includes(c);
                             return (
-                              <label key={c} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
+                              <label key={c} className="mapview-dropdown-option">
                                 <input
                                   type="checkbox"
                                   checked={checked}
@@ -933,7 +920,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                                       return [...prev, c];
                                     });
                                   }}
-                                  style={{ marginRight: 8 }}
                                 />
                                 {c}
                               </label>
@@ -942,7 +928,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                         )}
                         {uniqueCategories.length > 0 && (
                           <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
-                            <button onClick={() => setActiveCategories([])} style={{ fontSize: 12, padding: '6px 8px' }}>
+                            <button onClick={() => setActiveCategories([])} className="mapview-action-button">
                               Clear
                             </button>
                           </div>
@@ -953,41 +939,25 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 </div>
 
                 {(config?.showGoals ?? true) && (
-                  <div style={{ position: 'relative' }}>
+                  <div className="mapview-dropdown-wrapper">
                     <button
                       onClick={() => setFilterMinimized(v => !v)}
-                      style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13 }}
+                      className="mapview-action-button"
                       title={filterMinimized ? (config?.goalsOpenLabel ?? 'Open Goals') : (config?.goalsCloseLabel ?? 'Close Goals')}
                     >
                       {filterMinimized ? (config?.goalsOpenLabel ?? 'Open Goals') : (config?.goalsCloseLabel ?? 'Close Goals')}
                     </button>
 
-                    {/* Goals panel - positioned below button */}
                     {!filterMinimized && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        marginTop: 8,
-                        zIndex: 50,
-                      }}>
-                        <div style={{
-                          background: 'white',
-                          padding: 12,
-                          borderRadius: 8,
-                          boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
-                          maxWidth: '400px',
-                          maxHeight: '50vh',
-                          overflow: 'auto',
-                          whiteSpace: 'nowrap'
-                        }}>
+                      <div className="mapview-dropdown">
+                        <div className="mapview-dropdown-panel">
                           {uniqueGoals.length === 0 ? (
                             <div style={{ fontSize: 12, color: '#666' }}>Loading goals…</div>
                           ) : (
                             uniqueGoals.map((g) => {
                               const checked = activeGoals.includes(g);
                               return (
-                                <label key={g} style={{ display: 'block', fontSize: 13, marginBottom: 4 }}>
+                                <label key={g} className="mapview-dropdown-option">
                                   <input
                                     type="checkbox"
                                     checked={checked}
@@ -997,7 +967,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                                         return [...prev, g];
                                       });
                                     }}
-                                    style={{ marginRight: 8 }}
                                   />
                                   {g}
                                 </label>
@@ -1006,7 +975,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                           )}
                           {uniqueGoals.length > 0 && (
                             <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
-                              <button onClick={() => setActiveGoals([])} style={{ fontSize: 12, padding: '6px 8px' }}>
+                              <button onClick={() => setActiveGoals([])} className="mapview-action-button">
                                 {config?.clearLabel ?? 'Clear'}
                               </button>
                             </div>
@@ -1021,7 +990,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               {/* Sidebar toggle button */}
               <button
                 onClick={() => setSidebarMinimized(v => !v)}
-                style={{ padding: '8px 10px', borderRadius: 6, fontSize: 13, whiteSpace: 'nowrap' }}
+                className="mapview-sidebar-toggle"
                 title="Toggle sidebar"
               >
                 {sidebarMinimized ? 'Open Sidebar' : 'Close Sidebar'}
@@ -1029,25 +998,16 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             </div>
           </div>
 
-          {/* Map container */}
-          <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 6 }}>
-            <div ref={mapContainerRef} style={{ position: 'absolute', inset: 0, minHeight: 380 }} />
+          <div className="mapview-map-shell">
+            <div ref={mapContainerRef} className="mapview-map-container" />
 
             {/* Hover tooltip */}
             {hoverInfo && (
               <div
+                className="mapview-tooltip"
                 style={{
-                  position: 'absolute',
                   left: hoverInfo.x + 12,
-                  top: hoverInfo.y + 12,
-                  pointerEvents: 'none',
-                  background: 'rgba(255,255,255,0.95)',
-                  padding: '6px 8px',
-                  borderRadius: 4,
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
-                  fontSize: 12,
-                  maxWidth: 300,
-                  zIndex: 15
+                  top: hoverInfo.y + 12
                 }}
               >
                 {hoverInfo.text}
@@ -1057,41 +1017,16 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             {/* Details overlay and bottom summary bars*/}
             {selected && (
               <div
-                style={{
-                  position: 'fixed',
-                  inset: 0,
-                  background: 'rgba(0,0,0,0.55)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 99999
-                }}
+                className="mapview-detail-overlay"
                 onClick={() => { setSelected(null); setSelectedLocation(null); }}
               >
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  style={{
-                    width: 'min(90%, 1100px)',
-                    maxHeight: '90vh',
-                    overflow: 'auto',
-                    background: 'white',
-                    padding: 20,
-                    borderRadius: 10,
-                    boxShadow: '0 12px 40px rgba(0,0,0,0.35)',
-                    position: 'relative'
-                  }}
+                  className="mapview-detail-panel"
                 >
                   <button
                     onClick={() => { setSelected(null); setSelectedLocation(null); }}
-                    style={{
-                      position: 'absolute',
-                      right: 12,
-                      top: 12,
-                      background: 'transparent',
-                      border: 'none',
-                      fontSize: 16,
-                      cursor: 'pointer'
-                    }}
+                    className="mapview-detail-close"
                     aria-label="Close details"
                   >
                     ✕
@@ -1200,7 +1135,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                   {selected.video && (
                     <div style={{ marginTop: 12 }}>
                       <strong>Video:</strong>
-                      <div style={{ marginTop: 8, aspectRatio: '16 / 9', width: '100%', maxWidth: '500px' }}>
+                      <div className="mapview-media-frame">
                         <iframe
                           width="100%"
                           height="100%"
@@ -1218,7 +1153,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                   {selected.video2 && (
                     <div style={{ marginTop: 12 }}>
                       <strong>Video 2:</strong>
-                      <div style={{ marginTop: 8, aspectRatio: '16 / 9', width: '100%', maxWidth: '500px' }}>
+                      <div className="mapview-media-frame">
                         <iframe
                           width="100%"
                           height="100%"
@@ -1242,38 +1177,34 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               </div>
             )}
 
-            {/* Bottom summary bar */}
-            <div
-              style={{
-                position: 'absolute',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                bottom: 12,
-                display: 'flex',
-                gap: 10,
-                zIndex: 15,
-                alignItems: 'center'
-              }}
-            >
-              <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
+            <div className="mapview-summary">
+              <div className="mapview-summary-pill">
                 Showing <strong>{showingCount}</strong> of <strong>{totalCount}</strong> points
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
+              <div className="mapview-summary-pill">
                 Countries: <strong>{showingCountriesCount}</strong> of <strong>{totalCountriesCount}</strong>
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 6px 18px rgba(0,0,0,0.08)', fontSize: 13 }}>
+              <div className="mapview-summary-pill">
                 Projects: <strong>{showingProjectsCount}</strong> of <strong>{totalProjectsCount}</strong>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sidebar */}
+        {!sidebarMinimized && (
+          <button
+            type="button"
+            className="mapview-sidebar-backdrop"
+            onClick={() => setSidebarMinimized(true)}
+            aria-label="Close sidebar"
+          />
+        )}
+
         {!sidebarMinimized && (
           <aside className="page-sidebar">
-            <div style={{ padding: '6px 4px', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="mapview-sidebar-header">
               <div style={{ fontWeight: 700 }}>Filtered Projects</div>
               <div style={{ fontSize: 12, color: '#666' }}>{filteredProjects.length} shown</div>
             </div>
@@ -1289,14 +1220,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                     role="button"
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentClick(project); } }}
                     onClick={() => handleRecentClick(project)}
-                    style={{
-                      padding: '10px',
-                      marginBottom: 10,
-                      borderRadius: 8,
-                      cursor: 'pointer',
-                      background: '#fff',
-                      boxShadow: '0 1px 0 rgba(0,0,0,0.04)'
-                    }}
+                    className="mapview-sidebar-item"
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '1.2' }}>{project.title || project.org || project.postId}</div>
