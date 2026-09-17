@@ -290,18 +290,30 @@
     max-width: none;
   }
 
+  .mapview-search,
+  .mapview-location-controls,
+  .mapview-toggle-group {
+    flex: 0 0 auto;
+  }
+
   .mapview-toggle-group {
     justify-content: stretch;
   }
 
   .mapview-dropdown {
-    position: static;
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    top: auto;
+    margin-top: 0;
+    z-index: 35;
   }
 
   .mapview-dropdown-panel {
-    width: 100%;
+    width: auto;
     max-width: none;
-    max-height: min(40dvh, 20rem);
+    max-height: min(60dvh, 24rem);
   }
 
   .mapview-summary {
@@ -341,18 +353,12 @@
 }
 
 @media (max-width: 600px) {
-  .mapview-location-row {
-    flex-direction: column;
+  .mapview-location-row .mapview-action-button {
+    flex: 0 0 auto;
   }
 
-  .mapview-action-button,
-  .mapview-sidebar-toggle {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .mapview-toggle-group {
-    flex-direction: column;
+  .mapview-dropdown-wrapper {
+    flex: 1 1 calc(50% - 4px);
   }
 
   .mapview-detail-overlay {

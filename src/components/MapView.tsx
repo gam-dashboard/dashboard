@@ -9,8 +9,6 @@ import locationsCsvUrl from '../data/locations.csv?url';
 import projectCategoriesCsvUrl from '../data/project_categories.csv?url';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 
-const WORKER_PUBLIC_PATH = `${import.meta.env.BASE_URL ?? '/'}maplibre-gl-worker.mjs`;
-
 // New: configuration interface for MapView so the same component can be reused for multiple pages
 export type MapViewConfig = {
   sdgProjectsCsvUrl?: string;
@@ -172,26 +170,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
   const [uniqueCities, setUniqueCities] = useState<string[]>([]);
   const [activeCity, setActiveCity] = useState<string | null>(null);
-
-  // set worker url defensively
-  try {
-    (maplibregl as any).workerUrl = WORKER_PUBLIC_PATH;
-  } catch {
-    try {
-      Object.defineProperty(maplibregl as any, 'workerUrl', {
-        value: WORKER_PUBLIC_PATH,
-        configurable: true,
-        enumerable: false,
-        writable: false
-      });
-    } catch {
-      try {
-        (globalThis as any).__MAPLIBRE_WORKER_URL = WORKER_PUBLIC_PATH;
-      } catch {
-        console.warn('Could not set maplibre worker url; worker may load from default path');
-      }
-    }
-  }
 
   const parseCsv = (url: string) => new Promise<{ rows: CsvRow[]; headers: string[] }>((resolve, reject) => {
     Papa.parse<CsvRow>(url, {
