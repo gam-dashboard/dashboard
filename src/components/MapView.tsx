@@ -113,6 +113,34 @@ const parseNum = (v?: string): number | undefined => {
   return Number.isFinite(n) ? n : undefined;
 };
 
+const toHttpUrl = (raw?: string): string | null => {
+  if (!raw) return null;
+  const trimmed = String(raw).trim();
+  if (!trimmed) return null;
+  const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+};
+
+const isAllowedVideoEmbedHost = (url: string): boolean => {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    return host === 'youtu.be'
+      || host === 'youtube.com'
+      || host.endsWith('.youtube.com')
+      || host === 'vimeo.com'
+      || host.endsWith('.vimeo.com');
+  } catch {
+    return false;
+  }
+};
+
 const makeFieldGetter = (row: CsvRow, headerNormToOrig: Map<string, string[]>) =>
   (candidates: string[]): string => {
     for (const c of candidates) {
@@ -1135,45 +1163,73 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                       </div>
                     )}
 
-                    {selected.video && (
-                      <div style={{ marginTop: 12 }}>
-                        <strong>Video:</strong>
-                        <div className="mapview-media-frame">
-                          <iframe
-                            width="100%"
-                            height="100%"
-                            src={selected.video}
-                            title="Project Video"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
-                            referrerPolicy="no-referrer"
-                            allowFullScreen
-                            style={{ borderRadius: 6 }}
-                          />
+                    {(() => {
+                      const videoUrl = toHttpUrl(selected.video);
+                      if (!videoUrl) return null;
+                      if (!isAllowedVideoEmbedHost(videoUrl)) {
+                        return (
+                          <p style={{ marginTop: 12 }}>
+                            <strong>Video:</strong>{' '}
+                            <a href={videoUrl} target="_blank" rel="noopener noreferrer">
+                              Open video link
+                            </a>
+                          </p>
+                        );
+                      }
+                      return (
+                        <div style={{ marginTop: 12 }}>
+                          <strong>Video:</strong>
+                          <div className="mapview-media-frame">
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={videoUrl}
+                              title="Project Video"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+                              referrerPolicy="no-referrer"
+                              allowFullScreen
+                              style={{ borderRadius: 6 }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
 
-                    {selected.video2 && (
-                      <div style={{ marginTop: 12 }}>
-                        <strong>Video 2:</strong>
-                        <div className="mapview-media-frame">
-                          <iframe
-                            width="100%"
-                            height="100%"
-                            src={selected.video2}
-                            title="Project Video 2"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
-                            referrerPolicy="no-referrer"
-                            allowFullScreen
-                            style={{ borderRadius: 6 }}
-                          />
+                    {(() => {
+                      const videoUrl = toHttpUrl(selected.video2);
+                      if (!videoUrl) return null;
+                      if (!isAllowedVideoEmbedHost(videoUrl)) {
+                        return (
+                          <p style={{ marginTop: 12 }}>
+                            <strong>Video 2:</strong>{' '}
+                            <a href={videoUrl} target="_blank" rel="noopener noreferrer">
+                              Open video link
+                            </a>
+                          </p>
+                        );
+                      }
+                      return (
+                        <div style={{ marginTop: 12 }}>
+                          <strong>Video 2:</strong>
+                          <div className="mapview-media-frame">
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={videoUrl}
+                              title="Project Video 2"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+                              referrerPolicy="no-referrer"
+                              allowFullScreen
+                              style={{ borderRadius: 6 }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
 
                     {selected.projectStartDate && (
                       <p>
