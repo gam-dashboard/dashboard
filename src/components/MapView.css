@@ -184,6 +184,18 @@
   z-index: 15;
 }
 
+.mapview-tooltip--interactive {
+  pointer-events: auto;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
 .mapview-detail-overlay {
   position: fixed;
   inset: 0;
