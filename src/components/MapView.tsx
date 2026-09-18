@@ -113,6 +113,34 @@ const parseNum = (v?: string): number | undefined => {
   return Number.isFinite(n) ? n : undefined;
 };
 
+const toHttpUrl = (raw?: string): string | null => {
+  if (!raw) return null;
+  const trimmed = String(raw).trim();
+  if (!trimmed) return null;
+  const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+};
+
+const isAllowedVideoEmbedHost = (url: string): boolean => {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    return host === 'youtu.be'
+      || host === 'youtube.com'
+      || host.endsWith('.youtube.com')
+      || host === 'vimeo.com'
+      || host.endsWith('.vimeo.com');
+  } catch {
+    return false;
+  }
+};
+
 const makeFieldGetter = (row: CsvRow, headerNormToOrig: Map<string, string[]>) =>
   (candidates: string[]): string => {
     for (const c of candidates) {
@@ -155,6 +183,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   const [uniqueCategories, setUniqueCategories] = useState<string[]>([]);
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [categoriesMinimized, setCategoriesMinimized] = useState<boolean>(true);
+  const categoriesDropdownRef = useRef<HTMLDivElement | null>(null);
+  const goalsDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
@@ -774,6 +804,28 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     return;
   }, [selected]);
 
+  useEffect(() => {
+    if (categoriesMinimized && filterMinimized) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+
+      if (!categoriesMinimized && categoriesDropdownRef.current && !categoriesDropdownRef.current.contains(target)) {
+        setCategoriesMinimized(true);
+      }
+
+      if (!filterMinimized && goalsDropdownRef.current && !goalsDropdownRef.current.contains(target)) {
+        setFilterMinimized(true);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [categoriesMinimized, filterMinimized]);
+
   return (
     <div className="breakout">
       <div className="map-layout">
@@ -870,7 +922,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               </div>
 
               <div className="mapview-toggle-group">
-                <div className="mapview-dropdown-wrapper">
+                <div className="mapview-dropdown-wrapper" ref={categoriesDropdownRef}>
                   <button
                     onClick={() => setCategoriesMinimized(v => !v)}
                     className="mapview-action-button"
@@ -917,7 +969,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 </div>
 
                 {(config?.showGoals ?? true) && (
-                  <div className="mapview-dropdown-wrapper">
+                  <div className="mapview-dropdown-wrapper" ref={goalsDropdownRef}>
                     <button
                       onClick={() => setFilterMinimized(v => !v)}
                       className="mapview-action-button"
@@ -977,183 +1029,217 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
           </div>
 
           <div className="mapview-map-shell">
-            <div ref={mapContainerRef} className="mapview-map-container" />
+            <div className="mapview-map-frame">
+              <div ref={mapContainerRef} className="mapview-map-container" />
 
-            {/* Hover tooltip */}
-            {hoverInfo && (
-              <div
-                className="mapview-tooltip"
-                style={{
-                  left: hoverInfo.x + 12,
-                  top: hoverInfo.y + 12
-                }}
-              >
-                {hoverInfo.text}
-              </div>
-            )}
-
-            {/* Details overlay and bottom summary bars*/}
-            {selected && (
-              <div
-                className="mapview-detail-overlay"
-                onClick={() => { setSelected(null); setSelectedLocation(null); }}
-              >
+              {/* Hover tooltip */}
+              {hoverInfo && (
                 <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="mapview-detail-panel"
+                  className="mapview-tooltip"
+                  style={{
+                    left: hoverInfo.x + 12,
+                    top: hoverInfo.y + 12
+                  }}
                 >
-                  <button
-                    onClick={() => { setSelected(null); setSelectedLocation(null); }}
-                    className="mapview-detail-close"
-                    aria-label="Close details"
-                  >
-                    ✕
-                  </button>
-
-                  <h2 style={{ marginTop: 4 }}>{selected.title || selected.org || 'Details'}</h2>
-
-                  <p>
-                    <strong>Post ID:</strong> {selected.postId}
-                  </p>
-                  <p>
-                    <strong>Organization:</strong> {selected.org}
-                  </p>
-
-                  {(selectedPlace || selectedLocation?.display_name || selectedLocation?.state || selectedLocation?.country) && (
-                    <p>
-                      <strong>Location:</strong>{' '}
-                      {selectedLocation?.display_name
-                        ? selectedLocation.display_name
-                        : selectedPlace
-                          ? selectedPlace
-                          : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
-                    </p>
-                  )}
-
-                  {selectedLocation && (
-                    <p>
-                      <strong>Coordinates:</strong> {selectedLocation.position[1]}, {selectedLocation.position[0]}
-                    </p>
-                  )}
-
-                  <div style={{ whiteSpace: 'pre-wrap', marginTop: 8 }}>
-                    <strong>Description</strong>
-                    <div>{selected.description || ''}</div>
-                  </div>
-
-                  {selected.locations.length > 0 && (
-                    <div style={{ marginTop: 12 }}>
-                      <strong>All locations</strong>
-                      <ul>
-                        {selected.locations.map((loc) => {
-                          const place = derivePlace(loc);
-                          return (
-                            <li key={loc.id} style={{ marginBottom: 6 }}>
-                              <div style={{ fontSize: 13 }}>
-                                {(loc.display_name || place || loc.state || loc.country) ? (
-                                  <span> {loc.display_name ? loc.display_name : place ? place : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)} —  </span>
-                                ) : null}
-                                {loc.position[1]}, {loc.position[0]}
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  )}
-
-                  {selected.goals.length > 0 && (
-                    <div style={{ marginTop: 12 }}>
-                      <strong>Goals</strong>
-                      <ul>
-                        {selected.goals.map((g) => (
-                          <li key={g}>{g}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {selected.categories && selected.categories.length > 0 && (
-                    <div style={{ marginTop: 12 }}>
-                      <strong>Categories</strong>
-                      <ul>
-                        {selected.categories.map((c) => (
-                          <li key={c}>{c}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {selected.orgWebsite && (
-                    <p>
-                      <strong>Organization Website:</strong>{' '}
-                      <a
-                        href={
-                          selected.orgWebsite.startsWith('http://') || selected.orgWebsite.startsWith('https://')
-                            ? selected.orgWebsite
-                            : `https://${selected.orgWebsite}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {selected.orgWebsite}
-                      </a>
-                    </p>
-                  )}
-
-                  {selected.supportingSites && (
-                    <p>
-                      <strong>Supporting Sites:</strong>
-                      <div style={{ whiteSpace: 'pre-wrap', marginTop: 4 }}>
-                        {selected.supportingSites}
-                      </div>
-                    </p>
-                  )}
-
-                  {selected.video && (
-                    <div style={{ marginTop: 12 }}>
-                      <strong>Video:</strong>
-                      <div className="mapview-media-frame">
-                        <iframe
-                          width="100%"
-                          height="100%"
-                          src={selected.video}
-                          title="Project Video"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          style={{ borderRadius: 6 }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {selected.video2 && (
-                    <div style={{ marginTop: 12 }}>
-                      <strong>Video 2:</strong>
-                      <div className="mapview-media-frame">
-                        <iframe
-                          width="100%"
-                          height="100%"
-                          src={selected.video2}
-                          title="Project Video 2"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          style={{ borderRadius: 6 }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {selected.projectStartDate && (
-                    <p>
-                      <strong>Project Start Date:</strong> {selected.projectStartDate}
-                    </p>
-                  )}
+                  {hoverInfo.text}
                 </div>
-              </div>
-            )}
+              )}
+
+              {/* Details overlay and bottom summary bars*/}
+              {selected && (
+                <div
+                  className="mapview-detail-overlay"
+                  onClick={() => { setSelected(null); setSelectedLocation(null); }}
+                >
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="mapview-detail-panel"
+                  >
+                    <button
+                      onClick={() => { setSelected(null); setSelectedLocation(null); }}
+                      className="mapview-detail-close"
+                      aria-label="Close details"
+                    >
+                      ✕
+                    </button>
+
+                    <h2 style={{ marginTop: 4 }}>{selected.title || selected.org || 'Details'}</h2>
+
+                    <p>
+                      <strong>Post ID:</strong> {selected.postId}
+                    </p>
+                    <p>
+                      <strong>Organization:</strong> {selected.org}
+                    </p>
+
+                    {(selectedPlace || selectedLocation?.display_name || selectedLocation?.state || selectedLocation?.country) && (
+                      <p>
+                        <strong>Location:</strong>{' '}
+                        {selectedLocation?.display_name
+                          ? selectedLocation.display_name
+                          : selectedPlace
+                            ? selectedPlace
+                            : (selectedLocation?.state ? `${selectedLocation.state}${selectedLocation.country ? ` — ${selectedLocation.country}` : ''}` : selectedLocation?.country)}
+                      </p>
+                    )}
+
+                    {selectedLocation && (
+                      <p>
+                        <strong>Coordinates:</strong> {selectedLocation.position[1]}, {selectedLocation.position[0]}
+                      </p>
+                    )}
+
+                    <div style={{ whiteSpace: 'pre-wrap', marginTop: 8 }}>
+                      <strong>Description</strong>
+                      <div>{selected.description || ''}</div>
+                    </div>
+
+                    {selected.locations.length > 0 && (
+                      <div style={{ marginTop: 12 }}>
+                        <strong>All locations</strong>
+                        <ul>
+                          {selected.locations.map((loc) => {
+                            const place = derivePlace(loc);
+                            return (
+                              <li key={loc.id} style={{ marginBottom: 6 }}>
+                                <div style={{ fontSize: 13 }}>
+                                  {(loc.display_name || place || loc.state || loc.country) ? (
+                                    <span> {loc.display_name ? loc.display_name : place ? place : (loc.state ? `${loc.state}${loc.country ? `, ${loc.country}` : ''}` : loc.country)} —  </span>
+                                  ) : null}
+                                  {loc.position[1]}, {loc.position[0]}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+
+                    {selected.goals.length > 0 && (
+                      <div style={{ marginTop: 12 }}>
+                        <strong>Goals</strong>
+                        <ul>
+                          {selected.goals.map((g) => (
+                            <li key={g}>{g}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {selected.categories && selected.categories.length > 0 && (
+                      <div style={{ marginTop: 12 }}>
+                        <strong>Categories</strong>
+                        <ul>
+                          {selected.categories.map((c) => (
+                            <li key={c}>{c}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {selected.orgWebsite && (
+                      <p>
+                        <strong>Organization Website:</strong>{' '}
+                        <a
+                          href={
+                            selected.orgWebsite.startsWith('http://') || selected.orgWebsite.startsWith('https://')
+                              ? selected.orgWebsite
+                              : `https://${selected.orgWebsite}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {selected.orgWebsite}
+                        </a>
+                      </p>
+                    )}
+
+                    {selected.supportingSites && (
+                      <div>
+                        <strong>Supporting Sites:</strong>
+                        <div style={{ whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                          {selected.supportingSites}
+                        </div>
+                      </div>
+                    )}
+
+                    {(() => {
+                      const videoUrl = toHttpUrl(selected.video);
+                      if (!videoUrl) return null;
+                      if (!isAllowedVideoEmbedHost(videoUrl)) {
+                        return (
+                          <p style={{ marginTop: 12 }}>
+                            <strong>Video:</strong>{' '}
+                            <a href={videoUrl} target="_blank" rel="noopener noreferrer">
+                              Open video link
+                            </a>
+                          </p>
+                        );
+                      }
+                      return (
+                        <div style={{ marginTop: 12 }}>
+                          <strong>Video:</strong>
+                          <div className="mapview-media-frame">
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={videoUrl}
+                              title="Project Video"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+                              referrerPolicy="no-referrer"
+                              allowFullScreen
+                              style={{ borderRadius: 6 }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {(() => {
+                      const videoUrl = toHttpUrl(selected.video2);
+                      if (!videoUrl) return null;
+                      if (!isAllowedVideoEmbedHost(videoUrl)) {
+                        return (
+                          <p style={{ marginTop: 12 }}>
+                            <strong>Video 2:</strong>{' '}
+                            <a href={videoUrl} target="_blank" rel="noopener noreferrer">
+                              Open video link
+                            </a>
+                          </p>
+                        );
+                      }
+                      return (
+                        <div style={{ marginTop: 12 }}>
+                          <strong>Video 2:</strong>
+                          <div className="mapview-media-frame">
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={videoUrl}
+                              title="Project Video 2"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+                              referrerPolicy="no-referrer"
+                              allowFullScreen
+                              style={{ borderRadius: 6 }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {selected.projectStartDate && (
+                      <p>
+                        <strong>Project Start Date:</strong> {selected.projectStartDate}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="mapview-summary">
               <div className="mapview-summary-pill">
