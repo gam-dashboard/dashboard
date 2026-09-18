@@ -68,6 +68,12 @@ type MarkerIdentity = {
 };
 
 const markerIdentityKey = ({ postId, locationId }: MarkerIdentity): string => `${postId}::${locationId}`;
+const markerLocationIdentity = (location: ProjectLocation): string =>
+  String(location.id || `${location.position[0]}:${location.position[1]}`);
+const markerIdentityFromMarker = (marker: ProjectMarker): MarkerIdentity => ({
+  postId: marker.project.postId,
+  locationId: markerLocationIdentity(marker.location),
+});
 
 const normalize = (s: string) =>
   String(s || '')
@@ -190,6 +196,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   });
   const isMobileViewportRef = useRef<boolean>(isMobileViewport);
   useEffect(() => { isMobileViewportRef.current = isMobileViewport; }, [isMobileViewport]);
+  const skipNextMapBackgroundDismissRef = useRef<boolean>(false);
+  const mapInteractionsBoundRef = useRef<boolean>(false);
+  const mapBackgroundClickHandlerRef = useRef<((e: any) => void) | null>(null);
 
   const [uniqueGoals, setUniqueGoals] = useState<string[]>([]);
   const [activeGoals, setActiveGoals] = useState<string[]>([]);
@@ -626,54 +635,64 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
         console.log('Layer added, triggering synthetic mouse move to force repaint');
 
-        // Set up interactions first
-        map.on('mousemove', layerId, (e: any) => {
-          if (e.features && e.features.length > 0) {
-            map.getCanvas().style.cursor = 'pointer';
-            const postId = e.features[0].properties?.postId;
-            const project = postId ? projectsRef.current.get(postId) : undefined;
-            setHoverInfo({ x: e.point.x, y: e.point.y, text: project?.title || 'Project' });
-          }
-        });
-        map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; setHoverInfo(null); });
-        map.on('click', layerId, (e: any) => {
-          if (!e.point) return;
-          const features = (e.features && e.features.length > 0) ? e.features : map.queryRenderedFeatures(e.point, { layers: [layerId] });
-          if (!features || features.length === 0) return;
-          const matches: ProjectMarker[] = features
-            .map((f: any) => {
-              const project = projectsRef.current.get(f.properties?.postId);
-              const location = project?.locations.find(l => l.id === f.properties?.locationId);
-              return project && location ? { project, location } : null;
-            })
-            .filter(Boolean) as ProjectMarker[];
-          if (matches.length === 0) return;
-          const marker = matches[0];
-          if (!isMobileViewportRef.current) {
-            openMarkerDetails(marker);
-            return;
-          }
+        if (!mapInteractionsBoundRef.current) {
+          // Set up interactions first
+          map.on('mousemove', layerId, (e: any) => {
+            if (e.features && e.features.length > 0) {
+              map.getCanvas().style.cursor = 'pointer';
+              const postId = e.features[0].properties?.postId;
+              const project = postId ? projectsRef.current.get(postId) : undefined;
+              setHoverInfo({ x: e.point.x, y: e.point.y, text: project?.title || 'Project' });
+            }
+          });
+          map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; setHoverInfo(null); });
+          map.on('click', layerId, (e: any) => {
+            if (!e.point) return;
+            const features = (e.features && e.features.length > 0) ? e.features : map.queryRenderedFeatures(e.point, { layers: [layerId] });
+            if (!features || features.length === 0) return;
+            const matches: ProjectMarker[] = features
+              .map((f: any) => {
+                const project = projectsRef.current.get(f.properties?.postId);
+                const location = project?.locations.find(l => l.id === f.properties?.locationId);
+                return project && location ? { project, location } : null;
+              })
+              .filter(Boolean) as ProjectMarker[];
+            if (matches.length === 0) return;
+            const marker = matches[0];
+            if (!isMobileViewportRef.current) {
+              openMarkerDetails(marker);
+              return;
+            }
 
-          const tappedIdentity: MarkerIdentity = { postId: marker.project.postId, locationId: marker.location.id };
-          const currentTappedIdentity = mobileTappedMarkerRef.current
-            ? { postId: mobileTappedMarkerRef.current.project.postId, locationId: mobileTappedMarkerRef.current.location.id }
-            : null;
+            skipNextMapBackgroundDismissRef.current = true;
+            const tappedIdentity = markerIdentityFromMarker(marker);
+            const currentTappedIdentity = mobileTappedMarkerRef.current
+              ? markerIdentityFromMarker(mobileTappedMarkerRef.current)
+              : null;
 
-          if (currentTappedIdentity && markerIdentityKey(currentTappedIdentity) === markerIdentityKey(tappedIdentity)) {
-            openMarkerDetails(marker);
-            return;
-          }
+            if (currentTappedIdentity && markerIdentityKey(currentTappedIdentity) === markerIdentityKey(tappedIdentity)) {
+              openMarkerDetails(marker);
+              return;
+            }
 
-          setMobileTappedMarker(marker);
-          setHoverInfo({ x: e.point.x, y: e.point.y, text: marker.project.title || 'Project' });
-        });
-        map.on('click', (e: any) => {
-          if (!isMobileViewportRef.current || !e.point) return;
-          const features = map.queryRenderedFeatures(e.point, { layers: [layerId] });
-          if (features && features.length > 0) return;
-          setMobileTappedMarker(null);
-          setHoverInfo(null);
-        });
+            setMobileTappedMarker(marker);
+            setHoverInfo({ x: e.point.x, y: e.point.y, text: marker.project.title || 'Project' });
+          });
+          const handleMapBackgroundClick = (e: any) => {
+            if (!isMobileViewportRef.current || !e.point) return;
+            if (skipNextMapBackgroundDismissRef.current) {
+              skipNextMapBackgroundDismissRef.current = false;
+              return;
+            }
+            const features = map.queryRenderedFeatures(e.point, { layers: [layerId] });
+            if (features && features.length > 0) return;
+            setMobileTappedMarker(null);
+            setHoverInfo(null);
+          };
+          mapBackgroundClickHandlerRef.current = handleMapBackgroundClick;
+          map.on('click', handleMapBackgroundClick);
+          mapInteractionsBoundRef.current = true;
+        }
 
         // Fit bounds after layer is added
         if (filtered.length > 0) {
@@ -835,6 +854,11 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
       return () => {
         isAnimating = false;
+        mapInteractionsBoundRef.current = false;
+        if (mapBackgroundClickHandlerRef.current) {
+          try { map.off('click', mapBackgroundClickHandlerRef.current); } catch { /* ignore */ }
+          mapBackgroundClickHandlerRef.current = null;
+        }
         try {
           popupRef.current?.remove();
           map.remove();
@@ -1112,7 +1136,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                       left: hoverInfo.x + 12,
                       top: hoverInfo.y + 12
                     }}
-                    aria-label={`Open details for ${mobileTappedMarker.project.title || mobileTappedMarker.project.org || mobileTappedMarker.project.postId}`}
+                    aria-label={`Open details for ${hoverInfo.text}`}
                     onPointerDown={(e) => e.stopPropagation()}
                     onClick={(e) => {
                       e.stopPropagation();
