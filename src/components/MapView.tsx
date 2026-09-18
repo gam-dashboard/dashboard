@@ -67,6 +67,12 @@ type MarkerIdentity = {
   locationId: string;
 };
 
+type MarkerChooserState = {
+  x: number;
+  y: number;
+  markers: ProjectMarker[];
+};
+
 const markerIdentityKey = ({ postId, locationId }: MarkerIdentity): string => `${postId}::${locationId}`;
 const markerLocationIdentity = (location: ProjectLocation): string =>
   String(location.id || `${location.position[0]}:${location.position[1]}`);
@@ -74,6 +80,13 @@ const markerIdentityFromMarker = (marker: ProjectMarker): MarkerIdentity => ({
   postId: marker.project.postId,
   locationId: markerLocationIdentity(marker.location),
 });
+const dedupeMarkers = (markers: ProjectMarker[]): ProjectMarker[] => {
+  const unique = new Map<string, ProjectMarker>();
+  markers.forEach((marker) => {
+    unique.set(markerIdentityKey(markerIdentityFromMarker(marker)), marker);
+  });
+  return Array.from(unique.values());
+};
 
 const normalize = (s: string) =>
   String(s || '')
@@ -188,6 +201,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   const [selectedLocation, setSelectedLocation] = useState<ProjectLocation | null>(null);
   const [hoverInfo, setHoverInfo] = useState<{ x: number; y: number; text: string } | null>(null);
   const [mobileTappedMarker, setMobileTappedMarker] = useState<ProjectMarker | null>(null);
+  const [markerChooser, setMarkerChooser] = useState<MarkerChooserState | null>(null);
   const mobileTappedMarkerRef = useRef<ProjectMarker | null>(mobileTappedMarker);
   useEffect(() => { mobileTappedMarkerRef.current = mobileTappedMarker; }, [mobileTappedMarker]);
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
@@ -582,11 +596,18 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     setSelected(project);
     setSelectedLocation(location);
     setMobileTappedMarker(null);
+    setMarkerChooser(null);
     setHoverInfo(null);
   };
 
   const openMarkerDetails = (marker: ProjectMarker) => {
     openProjectDetails(marker.project, marker.location);
+  };
+
+  const markerChooserLabel = (marker: ProjectMarker): string => {
+    const title = marker.project.title || marker.project.org || 'Project';
+    const place = derivePlace(marker.location) || marker.location.country;
+    return place ? `${title} — ${place}` : title;
   };
 
   const applyGeojson = () => {
@@ -650,15 +671,23 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             if (!e.point) return;
             const features = (e.features && e.features.length > 0) ? e.features : map.queryRenderedFeatures(e.point, { layers: [layerId] });
             if (!features || features.length === 0) return;
-            const matches: ProjectMarker[] = features
+            const matches = dedupeMarkers(features
               .map((f: any) => {
                 const project = projectsRef.current.get(f.properties?.postId);
                 const location = project?.locations.find(l => l.id === f.properties?.locationId);
                 return project && location ? { project, location } : null;
               })
-              .filter(Boolean) as ProjectMarker[];
+              .filter(Boolean) as ProjectMarker[]);
             if (matches.length === 0) return;
+            if (matches.length > 1) {
+              skipNextMapBackgroundDismissRef.current = true;
+              setMobileTappedMarker(null);
+              setHoverInfo(null);
+              setMarkerChooser({ x: e.point.x, y: e.point.y, markers: matches });
+              return;
+            }
             const marker = matches[0];
+            setMarkerChooser(null);
             if (!isMobileViewportRef.current) {
               openMarkerDetails(marker);
               return;
@@ -679,13 +708,15 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             setHoverInfo({ x: e.point.x, y: e.point.y, text: marker.project.title || 'Project' });
           });
           const handleMapBackgroundClick = (e: any) => {
-            if (!isMobileViewportRef.current || !e.point) return;
+            if (!e.point) return;
             if (skipNextMapBackgroundDismissRef.current) {
               skipNextMapBackgroundDismissRef.current = false;
               return;
             }
             const features = map.queryRenderedFeatures(e.point, { layers: [layerId] });
             if (features && features.length > 0) return;
+            setMarkerChooser(null);
+            if (!isMobileViewportRef.current) return;
             setMobileTappedMarker(null);
             setHoverInfo(null);
           };
@@ -900,7 +931,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   }, [selected]);
 
   useEffect(() => {
-    if (categoriesMinimized && filterMinimized) return;
+    if (categoriesMinimized && filterMinimized && !markerChooser) return;
 
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target as Node | null;
@@ -913,13 +944,17 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       if (!filterMinimized && goalsDropdownRef.current && !goalsDropdownRef.current.contains(target)) {
         setFilterMinimized(true);
       }
+
+      if (markerChooser) {
+        setMarkerChooser(null);
+      }
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [categoriesMinimized, filterMinimized]);
+  }, [categoriesMinimized, filterMinimized, markerChooser]);
 
   return (
     <div className="breakout">
@@ -1157,6 +1192,34 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                     {hoverInfo.text}
                   </div>
                 )
+              )}
+
+              {markerChooser && (
+                <div
+                  className="mapview-marker-chooser"
+                  style={{
+                    left: markerChooser.x + 12,
+                    top: markerChooser.y + 12
+                  }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                >
+                  {markerChooser.markers.map((marker) => {
+                    const key = markerIdentityKey(markerIdentityFromMarker(marker));
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        className="mapview-marker-chooser-item"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openMarkerDetails(marker);
+                        }}
+                      >
+                        {markerChooserLabel(marker)}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
 
               {/* Details overlay and bottom summary bars*/}
