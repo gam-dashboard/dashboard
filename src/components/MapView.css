@@ -196,6 +196,39 @@
   text-align: left;
 }
 
+.mapview-marker-chooser {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: min(320px, calc(100vw - 2rem));
+  max-height: min(40vh, 18rem);
+  overflow: auto;
+  padding: 8px;
+  background: rgba(255,255,255,0.98);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  z-index: 16;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mapview-marker-chooser-item {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #f8fafc;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mapview-marker-chooser-item:hover,
+.mapview-marker-chooser-item:focus-visible {
+  background: #eef4ff;
+}
+
 .mapview-detail-overlay {
   position: fixed;
   inset: 0;
