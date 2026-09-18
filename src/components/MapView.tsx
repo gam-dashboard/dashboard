@@ -811,7 +811,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
       const map = new (maplibregl as any).Map({
         container: container,
-        style: 'https://demotiles.maplibre.org/style.json',
+        style: 'https://tiles.openfreemap.org/styles/liberty',
         center: [0, 0],
         zoom: 1.5
       });
