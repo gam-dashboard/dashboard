@@ -700,7 +700,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             try {
               const bounds = new (maplibregl as any).LngLatBounds(filtered[0].location.position, filtered[0].location.position);
               filtered.forEach((m) => bounds.extend(m.location.position));
-              map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
+              map.fitBounds(bounds, { padding: 60, maxZoom: 15, duration: 800 });
             } catch (err) { /* ignore */ }
           });
         }
@@ -730,7 +730,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             try { map.resize(); } catch { /* ignore */ }
             const bounds = new (maplibregl as any).LngLatBounds(filtered[0].location.position, filtered[0].location.position);
             filtered.forEach((m) => bounds.extend(m.location.position));
-            map.fitBounds(bounds, { padding: 60, maxZoom: 8, duration: 800 });
+            map.fitBounds(bounds, { padding: 60, maxZoom: 15, duration: 800 });
           } catch (err) { /* ignore */ }
         });
       }
@@ -787,7 +787,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       const bounds = new (maplibregl as any).LngLatBounds(positions[0], positions[0]);
       positions.forEach(pos => bounds.extend(pos));
       try {
-        map.fitBounds(bounds, { padding: 80, maxZoom: 9, duration: 600 });
+        map.fitBounds(bounds, { padding: 80, maxZoom: 15, duration: 600 });
       } catch { /* ignore */ }
     }
     openProjectDetails(rp, rp.locations[0]);
@@ -813,7 +813,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         container: container,
         style: 'https://tiles.openfreemap.org/styles/liberty',
         center: [0, 0],
-        zoom: 1.5
+        zoom: 1.5,
+        maxZoom: 19
       });
 
       map.addControl(new (maplibregl as any).NavigationControl(), 'top-right');
