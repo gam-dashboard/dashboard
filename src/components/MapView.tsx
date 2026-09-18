@@ -7,7 +7,7 @@ import sdgProjectsCsvUrl from '../data/SDG_projects.csv?url';
 import unCivicCsvUrl from '../data/un_civic_2024.csv?url';
 import locationsCsvUrl from '../data/locations.csv?url';
 import projectCategoriesCsvUrl from '../data/project_categories.csv?url';
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 
 // New: configuration interface for MapView so the same component can be reused for multiple pages
 export type MapViewConfig = {
@@ -202,6 +202,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   const [hoverInfo, setHoverInfo] = useState<{ x: number; y: number; text: string } | null>(null);
   const [mobileTappedMarker, setMobileTappedMarker] = useState<ProjectMarker | null>(null);
   const [markerChooser, setMarkerChooser] = useState<MarkerChooserState | null>(null);
+  const [markerChooserPosition, setMarkerChooserPosition] = useState<{ left: number; top: number } | null>(null);
+  const markerChooserRef = useRef<HTMLDivElement | null>(null);
   const mobileTappedMarkerRef = useRef<ProjectMarker | null>(mobileTappedMarker);
   useEffect(() => { mobileTappedMarkerRef.current = mobileTappedMarker; }, [mobileTappedMarker]);
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
@@ -260,6 +262,67 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       setMobileTappedMarker(null);
     }
   }, [isMobileViewport]);
+
+  useLayoutEffect(() => {
+    if (!markerChooser) {
+      setMarkerChooserPosition(null);
+      return;
+    }
+
+    const chooserEl = markerChooserRef.current;
+    const mapContainerEl = mapContainerRef.current;
+    if (!chooserEl || !mapContainerEl) return;
+
+    const clickOffset = 12;
+    const edgePadding = 8;
+    const chooserRect = chooserEl.getBoundingClientRect();
+    const mapRect = mapContainerEl.getBoundingClientRect();
+    const panelWidth = chooserRect.width;
+    const panelHeight = chooserRect.height;
+
+    let left = markerChooser.x + clickOffset;
+    let top = markerChooser.y + clickOffset;
+
+    const mapMinLeft = edgePadding;
+    const mapMinTop = edgePadding;
+    const mapMaxLeft = mapRect.width - panelWidth - edgePadding;
+    const mapMaxTop = mapRect.height - panelHeight - edgePadding;
+
+    if (left > mapMaxLeft) {
+      left = markerChooser.x - panelWidth - clickOffset;
+    }
+    if (top > mapMaxTop) {
+      top = markerChooser.y - panelHeight - clickOffset;
+    }
+
+    let minLeft = mapMinLeft;
+    let maxLeft = mapMaxLeft;
+    let minTop = mapMinTop;
+    let maxTop = mapMaxTop;
+
+    if (isMobileViewport) {
+      const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+      const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+      minLeft = Math.max(minLeft, edgePadding - mapRect.left);
+      maxLeft = Math.min(maxLeft, viewportWidth - mapRect.left - panelWidth - edgePadding);
+      minTop = Math.max(minTop, edgePadding - mapRect.top);
+      maxTop = Math.min(maxTop, viewportHeight - mapRect.top - panelHeight - edgePadding);
+    }
+
+    if (maxLeft < minLeft) {
+      maxLeft = minLeft;
+    }
+    if (maxTop < minTop) {
+      maxTop = minTop;
+    }
+
+    left = Math.min(Math.max(left, minLeft), maxLeft);
+    top = Math.min(Math.max(top, minTop), maxTop);
+
+    setMarkerChooserPosition((prev) => (
+      prev && prev.left === left && prev.top === top ? prev : { left, top }
+    ));
+  }, [isMobileViewport, markerChooser]);
 
   const parseCsv = (url: string) => new Promise<{ rows: CsvRow[]; headers: string[] }>((resolve, reject) => {
     Papa.parse<CsvRow>(url, {
@@ -658,12 +721,24 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         if (!mapInteractionsBoundRef.current) {
           // Set up interactions first
           map.on('mousemove', layerId, (e: any) => {
-            if (e.features && e.features.length > 0) {
-              map.getCanvas().style.cursor = 'pointer';
-              const postId = e.features[0].properties?.postId;
-              const project = postId ? projectsRef.current.get(postId) : undefined;
-              setHoverInfo({ x: e.point.x, y: e.point.y, text: project?.title || 'Project' });
+            const features = (e.features && e.features.length > 0) ? e.features : map.queryRenderedFeatures(e.point, { layers: [layerId] });
+            if (!features || features.length === 0) return;
+
+            const matches = dedupeMarkers(features
+              .map((f: any) => {
+                const project = projectsRef.current.get(f.properties?.postId);
+                const location = project?.locations.find(l => l.id === f.properties?.locationId);
+                return project && location ? { project, location } : null;
+              })
+              .filter(Boolean) as ProjectMarker[]);
+            if (matches.length === 0) return;
+
+            map.getCanvas().style.cursor = 'pointer';
+            if (matches.length === 1) {
+              setHoverInfo({ x: e.point.x, y: e.point.y, text: matches[0].project.title || 'Project' });
+              return;
             }
+            setHoverInfo({ x: e.point.x, y: e.point.y, text: `${matches.length} projects here — click to choose` });
           });
           map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; setHoverInfo(null); });
           map.on('click', layerId, (e: any) => {
@@ -1195,10 +1270,11 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
               {markerChooser && (
                 <div
+                  ref={markerChooserRef}
                   className="mapview-marker-chooser"
                   style={{
-                    left: markerChooser.x + 12,
-                    top: markerChooser.y + 12
+                    left: markerChooserPosition?.left ?? markerChooser.x + 12,
+                    top: markerChooserPosition?.top ?? markerChooser.y + 12
                   }}
                   onPointerDown={(e) => e.stopPropagation()}
                 >
