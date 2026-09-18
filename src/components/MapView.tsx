@@ -1127,12 +1127,12 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                     )}
 
                     {selected.supportingSites && (
-                      <p>
+                      <div>
                         <strong>Supporting Sites:</strong>
                         <div style={{ whiteSpace: 'pre-wrap', marginTop: 4 }}>
                           {selected.supportingSites}
                         </div>
-                      </p>
+                      </div>
                     )}
 
                     {selected.video && (
