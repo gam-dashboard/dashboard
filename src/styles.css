@@ -81,8 +81,8 @@ body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neu
 /* Mobile: stack vertically and make sidebar full width below 900px */
 @media (max-width: 900px) {
   .breakout .map-layout {
-    height: min(75dvh, 46rem);
-    min-height: 28rem;
+    height: auto;
+    min-height: 0;
   }
 
   .breakout .page-sidebar {
@@ -91,6 +91,7 @@ body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neu
 
   .breakout .map-column {
     min-height: 0;
+    overflow: visible;
   }
 }
 
