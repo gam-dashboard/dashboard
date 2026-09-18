@@ -156,8 +156,14 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   padding: 6px;
+}
+
+.mapview-map-frame {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
 }
 
 .mapview-map-container {
@@ -316,11 +322,18 @@
     max-height: min(60dvh, 24rem);
   }
 
+  .mapview-map-frame {
+    min-height: clamp(500px, 64dvh, 700px);
+  }
+
   .mapview-summary {
-    left: 12px;
-    right: 12px;
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
     transform: none;
     max-width: none;
+    margin-top: 10px;
   }
 
   .mapview-summary-pill {
@@ -374,10 +387,14 @@
 
   .mapview-summary {
     gap: 6px;
-    bottom: 8px;
+    margin-top: 8px;
   }
 
   .mapview-summary-pill {
     flex-basis: calc(50% - 3px);
+  }
+
+  .mapview-map-frame {
+    min-height: clamp(520px, 68dvh, 760px);
   }
 }
