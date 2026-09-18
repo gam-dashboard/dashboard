@@ -8,6 +8,7 @@ import unCivicCsvUrl from '../data/un_civic_2024.csv?url';
 import locationsCsvUrl from '../data/locations.csv?url';
 import projectCategoriesCsvUrl from '../data/project_categories.csv?url';
 import React, { useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
+import { fetchCompatibleProjectsFromApi, isProjectApiEnabled } from '../utils/projectApi';
 
 // New: configuration interface for MapView so the same component can be reused for multiple pages
 export type MapViewConfig = {
@@ -338,10 +339,34 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     });
   });
 
+  const applyLoadedProjects = (loadedProjects: Project[]) => {
+    const byPostId = new Map<string, Project>();
+    loadedProjects.forEach((project) => {
+      byPostId.set(project.postId, project);
+    });
+
+    const allGoals = new Set<string>();
+    const allCategories = new Set<string>();
+    const allCities = new Set<string>();
+
+    byPostId.forEach((project) => {
+      project.goals.forEach((goal) => allGoals.add(goal));
+      project.categories.forEach((category) => allCategories.add(category));
+      project.locations.forEach((location) => {
+        if (location.city) allCities.add(location.city);
+      });
+    });
+
+    setUniqueGoals(Array.from(allGoals).sort(goalSort));
+    setUniqueCategories(Array.from(allCategories).sort((a, b) => String(a).localeCompare(b)));
+    setUniqueCities(Array.from(allCities).sort((a, b) => a.localeCompare(b)));
+    setProjects(byPostId);
+  };
+
   useEffect(() => {
     // load SDG, UN civic, and project categories CSVs (allow overrides via config)
     const parseTimeout = setTimeout(() => {
-      Promise.all([parseCsv(sdgUrl), parseCsv(unCivicUrl), parseCsv(categoriesUrl)])
+      const loadFromCsv = () => Promise.all([parseCsv(sdgUrl), parseCsv(unCivicUrl), parseCsv(categoriesUrl)])
         .then(([a, b, c]) => {
           const rows = [...a.rows, ...b.rows];
           const allHeaders = Array.from(new Set([...(a.headers || []), ...(b.headers || [])]));
@@ -492,26 +517,41 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               if (badCoordRows.length) console.warn(`rows with non-numeric coordinates: ${badCoordRows.length}`, badCoordRows);
               console.groupEnd();
 
-              setProjects(new Map(byPostId));
-
-              const allCities = Array.from(new Set(
-                Array.from(byPostId.values()).flatMap(p => p.locations.map(l => l.city).filter(Boolean) as string[])
-              )).sort((a, b) => a.localeCompare(b));
-              setUniqueCities(allCities);
+              applyLoadedProjects(Array.from(byPostId.values()));
             },
             error: (err) => {
               console.warn('Could not load locations.csv — projects will have no locations', err);
-              setProjects(new Map(byPostId));
+              applyLoadedProjects(Array.from(byPostId.values()));
             }
           });
         })
         .catch(err => {
           console.error('Error loading project CSVs', err);
         });
+
+      if (isProjectApiEnabled()) {
+        fetchCompatibleProjectsFromApi()
+          .then((apiProjects) => {
+            if (apiProjects !== null) {
+              console.log(`MapView: loaded ${apiProjects.length} project(s) from /api/projects`);
+              applyLoadedProjects(apiProjects as Project[]);
+              return;
+            }
+            console.warn('MapView: DB API unavailable, falling back to CSV data');
+            loadFromCsv();
+          })
+          .catch((err) => {
+            console.warn('MapView: failed to load DB API, falling back to CSV data', err);
+            loadFromCsv();
+          });
+        return;
+      }
+
+      loadFromCsv();
     }, 500);
 
     return () => clearTimeout(parseTimeout);
-  }, []);
+  }, [categoriesUrl, locUrl, sdgUrl, unCivicUrl]);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(searchQuery.trim().toLowerCase()), 300);
