@@ -1146,6 +1146,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                             title="Project Video"
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+                            referrerPolicy="no-referrer"
                             allowFullScreen
                             style={{ borderRadius: 6 }}
                           />
@@ -1164,6 +1166,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                             title="Project Video 2"
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+                            referrerPolicy="no-referrer"
                             allowFullScreen
                             style={{ borderRadius: 6 }}
                           />
