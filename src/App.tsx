@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <div>
-      <nav style={{ padding: 12, display: 'flex', gap: 12 }}>
+      <nav className="app-nav">
         <a href="#/">Global Action Mosaic</a>
         <a href="#/WATracker">Washington State Tracker</a>
         <a href="#/SYProjects">Syria Projects</a>
@@ -36,7 +36,7 @@ export default function App() {
           <AltDashboard />
           
           {/* WA State Chatbot - analyzes health tracker and location data */}
-          <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
+          <section className="chatbot-section">
             <DataChatbot 
               csvFiles={[WA_TRACKER_URL, WA_LOC_URL]}
               title="WA State Health Data Assistant"
@@ -48,7 +48,7 @@ export default function App() {
           <SyrDashboard />
 
           {/* Projects for Syria Chatbot */}
-          <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
+          <section className="chatbot-section">
             <DataChatbot
               csvFiles={[SY_CSV_URL, SY_LOC_URL]}
               title="Syria Projects Intelligence"
@@ -65,7 +65,7 @@ export default function App() {
           </main>
           
           {/* Global Projects Chatbot - analyzes cross-dataset patterns */}
-          <section style={{ padding: '20px', maxWidth: '1200px', margin: '20px auto' }}>
+          <section className="chatbot-section">
             <DataChatbot 
               csvFiles={[SDG_CSV_URL, LOC_CSV_URL, CAT_CSV_URL]}
               title="Global Projects Intelligence"
