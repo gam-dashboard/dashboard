@@ -876,7 +876,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                     className="mapview-action-button"
                     title="Open Categories"
                   >
-                    {categoriesMinimized ? 'Open Categories' : 'Close Categories'}
+                    {categoriesMinimized ? 'Filter by Category' : 'Filter by Category'}
                   </button>
 
                   {!categoriesMinimized && (
@@ -921,9 +921,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                     <button
                       onClick={() => setFilterMinimized(v => !v)}
                       className="mapview-action-button"
-                      title={filterMinimized ? (config?.goalsOpenLabel ?? 'Open Goals') : (config?.goalsCloseLabel ?? 'Close Goals')}
+                      title={filterMinimized ? (config?.goalsOpenLabel ?? 'Filter by SDG') : (config?.goalsCloseLabel ?? 'Filter by SDG')}
                     >
-                      {filterMinimized ? (config?.goalsOpenLabel ?? 'Open Goals') : (config?.goalsCloseLabel ?? 'Close Goals')}
+                      {filterMinimized ? (config?.goalsOpenLabel ?? 'Filter by SDG') : (config?.goalsCloseLabel ?? 'Filter by SDG')}
                     </button>
 
                     {!filterMinimized && (
@@ -971,7 +971,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 className="mapview-sidebar-toggle"
                 title="Toggle sidebar"
               >
-                {sidebarMinimized ? 'Open Sidebar' : 'Close Sidebar'}
+                {sidebarMinimized ? 'Show Results' : 'Hide Results'}
               </button>
             </div>
           </div>

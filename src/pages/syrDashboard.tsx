@@ -12,10 +12,10 @@ const altConfig: MapViewConfig = {
   unCivicCsvUrl: altUnCivicCsvUrl,
   projectCategoriesCsvUrl: altCategoriesCsvUrl,
   locationsCsvUrl: altLocationsCsvUrl,
-  showGoals: false,
+  showGoals: true,
   pageTitle: 'Projects For Syria',
-  goalsOpenLabel: 'Open Targets', // won't show because showGoals is false, but left as example
-  goalsCloseLabel: 'Close Targets',
+  goalsOpenLabel: 'Filter by SDG', // won't show because showGoals is false, but left as example
+  goalsCloseLabel: 'Filter by SDG',
   clearLabel: 'Clear selection',
 };
 
