@@ -7,7 +7,7 @@
 }
 
 .mapview-toolbar-inner {
-  width: min(980px, 96%);
+  width: min(1280px, 96%);
   display: flex;
   gap: 12px;
   align-items: flex-start;
