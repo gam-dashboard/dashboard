@@ -606,8 +606,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
   const markerChooserLabel = (marker: ProjectMarker): string => {
     const title = marker.project.title || marker.project.org || 'Project';
-    const place = derivePlace(marker.location) || marker.location.country;
-    return place ? `${title} — ${place}` : title;
+    return title;
   };
 
   const applyGeojson = () => {
