@@ -35,12 +35,14 @@ CREATE TABLE IF NOT EXISTS project_locations (
 
 CREATE TABLE IF NOT EXISTS project_taxonomy (
   post_id TEXT NOT NULL REFERENCES projects(post_id) ON DELETE CASCADE,
-  taxonomy_type TEXT NOT NULL CHECK (taxonomy_type IN ('goal', 'category', 'tag')),
+  taxonomy_type TEXT NOT NULL,
   value TEXT NOT NULL,
   raw_value JSONB,
   imported_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (post_id, taxonomy_type, value)
 );
+
+ALTER TABLE project_taxonomy DROP CONSTRAINT IF EXISTS project_taxonomy_taxonomy_type_check;
 
 CREATE TABLE IF NOT EXISTS project_raw_payloads (
   post_id TEXT PRIMARY KEY REFERENCES projects(post_id) ON DELETE CASCADE,
