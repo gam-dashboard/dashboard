@@ -5,14 +5,6 @@ import SyrDashboard from './pages/syrDashboard';
 import DataChatbot from './components/DataChatbot';
 import './styles.css';
 
-import SDG_CSV_URL from './data/SDG_projects.csv?url';
-import LOC_CSV_URL from './data/locations.csv?url';
-import CAT_CSV_URL from './data/project_categories.csv?url';
-import WA_TRACKER_URL from './data/WA_tracker_entries.csv?url';
-import WA_LOC_URL from './data/WA_locations.csv?url';
-import SY_CSV_URL from './data/SY_projects.csv?url';
-import SY_LOC_URL from './data/SY_locations.csv?url';
-
 const globalConfig: MapViewConfig = {
   allowedFormIds: [3, 5],
 };
@@ -38,25 +30,15 @@ export default function App() {
       {route === '#/WATracker' ? (
         <div>
           <AltDashboard />
-          
-          {/* WA State Chatbot - analyzes health tracker and location data */}
           <section className="chatbot-section">
-            <DataChatbot 
-              csvFiles={[WA_TRACKER_URL, WA_LOC_URL]}
-              title="WA State Health Data Assistant"
-            />
+            <DataChatbot routeKey="wa" title="WA State Health Data Assistant" />
           </section>
         </div>
       ) : route === '#/SYProjects' ? (
         <div>
           <SyrDashboard />
-
-          {/* Projects for Syria Chatbot */}
           <section className="chatbot-section">
-            <DataChatbot
-              csvFiles={[SY_CSV_URL, SY_LOC_URL]}
-              title="Syria Projects Intelligence"
-            />
+            <DataChatbot routeKey="syria" title="Syria Projects Intelligence" />
           </section>
         </div>
       ) : (
@@ -67,13 +49,8 @@ export default function App() {
           <main>
             <MapView config={globalConfig} />
           </main>
-          
-          {/* Global Projects Chatbot - analyzes cross-dataset patterns */}
           <section className="chatbot-section">
-            <DataChatbot 
-              csvFiles={[SDG_CSV_URL, LOC_CSV_URL, CAT_CSV_URL]}
-              title="Global Projects Intelligence"
-            />
+            <DataChatbot routeKey="global" title="Global Projects Intelligence" />
           </section>
         </div>
       )}

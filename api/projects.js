@@ -25,6 +25,7 @@ export default async function handler(req, res) {
     const includeRaw = String(req.query?.includeRaw || '').toLowerCase() === 'true';
     const projects = await listProjects({
       postIds: req.query?.postId,
+      formIds: req.query?.formId,
       includeRaw,
       limit: req.query?.limit,
     });

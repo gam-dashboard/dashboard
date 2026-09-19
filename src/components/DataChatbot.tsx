@@ -1,91 +1,65 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { OpenAI } from 'openai';
-import { loadCSVFromRepo, formatCSVForPrompt, getCSVSummary } from '../utils/csvLoader';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/DataChatbot.css';
 
-interface Message {
+type RouteKey = 'global' | 'wa' | 'syria';
+
+type Message = {
   role: 'user' | 'assistant';
   content: string;
-}
+};
+
+type ChatResponse = {
+  ok?: boolean;
+  message?: string;
+  answer?: string;
+  dataAvailable?: boolean;
+  contextSummary?: {
+    totalProjects?: number;
+  };
+};
 
 interface DataChatbotProps {
-  csvFiles: string[];
+  routeKey: RouteKey;
   title?: string;
-  systemPrompt?: string;
 }
 
-export const DataChatbot: React.FC<DataChatbotProps> = ({
-  csvFiles,
-  title = 'Data Insights Assistant',
-  systemPrompt,
-}) => {
+const MAX_HISTORY_MESSAGES = 8;
+const getApiBaseUrl = () => String(import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+
+const welcomeExamples: Record<RouteKey, string[]> = {
+  global: [
+    'Which countries or regions appear most often in this dashboard?',
+    'What goals show up most frequently in the visible projects?',
+    'What recent themes stand out across the global projects?',
+  ],
+  wa: [
+    'What data is currently available for this dashboard?',
+    'Are there any database-backed records for this route yet?',
+    'What should I ask once this dashboard data is available in the external database?',
+  ],
+  syria: [
+    'What patterns stand out across the Syria projects?',
+    'Which goals or categories appear most often in the Syria scope?',
+    'What recent Syria projects should I look at first?',
+  ],
+};
+
+const routeNotes: Record<RouteKey, string> = {
+  global: 'Ask about the DB-backed projects visible on the main dashboard.',
+  wa: 'This assistant only uses database-backed data. If this route has not been migrated yet, it may report that no records are available.',
+  syria: 'Ask about the DB-backed projects visible on the Syria dashboard.',
+};
+
+export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Data Insights Assistant' }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [allData, setAllData] = useState<{ [key: string]: any[] }>({});
-  const [csvLoaded, setCSVLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loadedFiles, setLoadedFiles] = useState<string[]>([]);
+  const [dataStatus, setDataStatus] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const clientRef = useRef<OpenAI | null>(null);
 
-  // Initialize OpenAI client
-  useEffect(() => {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-    if (!apiKey) {
-      setError('OpenAI API key not configured. Please set VITE_OPENAI_API_KEY.');
-      return;
-    }
-
-    clientRef.current = new OpenAI({
-      apiKey,
-      dangerouslyAllowBrowser: true, // ⚠️ For demo only; use backend proxy in production
-    });
-  }, []);
-
-  // Load all CSV files
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setError(null);
-        const dataMap: { [key: string]: any[] } = {};
-        const successful: string[] = [];
-
-        for (const file of csvFiles) {
-          try {
-            const data = await loadCSVFromRepo(file);
-            if (data && data.length > 0) {
-              dataMap[file] = data;
-              successful.push(file);
-            }
-          } catch (err) {
-            console.error(`Failed to load ${file}:`, err);
-            // Continue loading other files even if one fails
-          }
-        }
-
-        if (successful.length === 0) {
-          setError(`Could not load any CSV files. Attempted: ${csvFiles.join(', ')}`);
-          setCSVLoaded(false);
-        } else {
-          setAllData(dataMap);
-          setLoadedFiles(successful);
-          setCSVLoaded(true);
-
-          if (successful.length < csvFiles.length) {
-            const failed = csvFiles.filter((f) => !successful.includes(f));
-            setError(
-              `Loaded ${successful.length}/${csvFiles.length} files. Failed: ${failed.join(', ')}`
-            );
-          }
-        }
-      } catch (err) {
-        setError(`Error loading CSVs: ${err instanceof Error ? err.message : 'Unknown error'}`);
-        setCSVLoaded(false);
-      }
-    };
-    loadData();
-  }, [csvFiles]);
+  const examples = useMemo(() => welcomeExamples[routeKey], [routeKey]);
+  const routeNote = useMemo(() => routeNotes[routeKey], [routeKey]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -93,168 +67,116 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, loading]);
 
-  /**
-   * Format all loaded CSV data into a single context string for the LLM
-   */
-  const formatAllDataForPrompt = (): string => {
-    if (Object.keys(allData).length === 0) return 'No data available.';
+  useEffect(() => {
+    setMessages([]);
+    setInput('');
+    setError(null);
+    setDataStatus(null);
+  }, [routeKey]);
 
-    let combined = '\n=== DATASETS ===\n';
+  const handleSendMessage = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const question = input.trim();
+    if (!question || loading) return;
 
-    for (const [filename, data] of Object.entries(allData)) {
-      combined += `\n--- Dataset: ${filename} ---\n`;
-      combined += `Total rows: ${data.length}\n`;
-      combined += `Columns: ${Object.keys(data[0]).join(', ')}\n`;
-      combined += `Sample (first 3 rows):\n${JSON.stringify(data.slice(0, 3), null, 2)}\n`;
-    }
-
-    combined +=
-      '\n\nYou have access to the full datasets above. Use them to answer questions and provide cross-dataset insights.';
-    return combined;
-  };
-
-  /**
-   * Get summary of all loaded datasets
-   */
-  const getAllDataSummary = (): string => {
-    if (Object.keys(allData).length === 0) return 'No data loaded';
-
-    const summaries = Object.entries(allData).map(
-      ([filename, data]) =>
-        `${filename}: ${data.length} rows, ${Object.keys(data[0]).length} columns`
-    );
-
-    return summaries.join(' | ');
-  };
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || loading || !csvLoaded || !clientRef.current) return;
-
-    // Add user message
-    const userMessage: Message = { role: 'user', content: input };
+    const history = messages.slice(-MAX_HISTORY_MESSAGES);
+    const userMessage: Message = { role: 'user', content: question };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
     setError(null);
 
     try {
-      // Format all CSV data for context
-      const allDataContext = formatAllDataForPrompt();
-      const dataSummary = getAllDataSummary();
-
-      // Build system prompt
-      const defaultSystemPrompt = `You are a data insights assistant for a dashboard with multiple interconnected datasets.
-
-Available Datasets:
-${dataSummary}
-
-${allDataContext}
-
-Guidelines:
-- Provide specific insights based on the data provided
-- When possible, draw correlations and insights across multiple datasets
-- Be concise and actionable
-- When making calculations or references, cite specific data points and which dataset they come from
-- If you don't have enough data to answer a question, say so clearly
-- Ask clarifying questions if needed
-- Identify patterns, trends, and anomalies in the data`;
-
-      const finalSystemPrompt = systemPrompt || defaultSystemPrompt;
-
-      // Call OpenAI with all CSV contexts
-      const response = await clientRef.current.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: finalSystemPrompt,
-          },
-          ...messages,
-          userMessage,
-        ],
-        temperature: 0.7,
-        max_tokens: 800,
+      const response = await fetch(`${getApiBaseUrl()}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          routeKey,
+          question,
+          messages: history,
+        }),
       });
 
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: response.choices[0].message.content || 'No response generated',
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
+      let payload: ChatResponse | null = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+
+      if (!response.ok || !payload?.ok || !payload.answer) {
+        const message = payload?.message
+          || (response.status === 404
+            ? 'The chat API endpoint is unavailable. Configure VITE_API_BASE_URL to a deployed API server.'
+            : `The chatbot request failed with status ${response.status}.`);
+        setError(message);
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: `Sorry, I hit a server error: ${message}` },
+        ]);
+        return;
+      }
+
+      const totalProjects = payload.contextSummary?.totalProjects;
+      if (payload.dataAvailable === false) {
+        setDataStatus('No DB-backed records are currently available for this route.');
+      } else if (typeof totalProjects === 'number') {
+        setDataStatus(`DB-backed scope: ${totalProjects} project${totalProjects === 1 ? '' : 's'}`);
+      } else {
+        setDataStatus('Connected to the DB-backed chat scope.');
+      }
+
+      setMessages((prev) => [...prev, { role: 'assistant', content: payload.answer || 'No response generated.' }]);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Error calling OpenAI:', err);
-      setError(`Error: ${errorMsg}`);
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
       setMessages((prev) => [
         ...prev,
-        {
-          role: 'assistant',
-          content: `Sorry, I encountered an error: ${errorMsg}`,
-        },
+        { role: 'assistant', content: `Sorry, I couldn\'t reach the chat service: ${message}` },
       ]);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!csvLoaded && !error) {
-    return (
-      <div className="chatbot-container">
-        <div className="chatbot-header">
-          <h2>{title}</h2>
-        </div>
-        <div className="chatbot-loading">Loading {csvFiles.length} dataset(s)...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="chatbot-container">
       <div className="chatbot-header">
         <h2>{title}</h2>
-        {csvLoaded && (
-          <span className="data-status">✓ {loadedFiles.length} dataset(s) loaded</span>
-        )}
+        {dataStatus && <span className="data-status">{dataStatus}</span>}
       </div>
 
       {error && (
         <div className="chatbot-error">
-          <strong>⚠️ Warning:</strong> {error}
+          <strong>⚠️ Chat issue:</strong> {error}
         </div>
       )}
 
-      {/* Chat Messages */}
       <div className="chatbot-messages">
-        {messages.length === 0 && csvLoaded && (
-          /*
+        {messages.length === 0 && (
           <div className="chatbot-welcome">
-            <p>👋 Welcome! I can analyze data across {loadedFiles.length} datasets.</p>
-            <p>Loaded datasets: {loadedFiles.join(', ')}</p>
-            <p>Try asking questions like:</p>
+            <p>👋 Welcome! I can help summarize the external DB-backed data for this dashboard.</p>
+            <p>{routeNote}</p>
+            <p>Try asking:</p>
             <ul>
-              <li>"What patterns do you see across all datasets?"</li>
-              <li>"Compare [column] from [dataset1] with [dataset2]"</li>
-              <li>"What are the key insights across all data?"</li>
-              <li>"Which dataset has the highest [metric]?"</li>
+              {examples.map((example) => (
+                <li key={example}>{example}</li>
+              ))}
             </ul>
-          </div>
-          */
-          <div className="chatbot-welcome">
-            <p>👋 Welcome! I can analyze data across {loadedFiles.length} datasets.</p>
-            <p>Loaded datasets: {loadedFiles.join(', ')}</p>
-            <p>This feature is currently inactive!</p>
           </div>
         )}
 
-        {messages.map((msg, idx) => (
+        {messages.map((message, index) => (
           <div
-            key={idx}
-            className={`chatbot-message ${msg.role === 'user' ? 'user' : 'assistant'}`}
+            key={`${message.role}-${index}`}
+            className={`chatbot-message ${message.role === 'user' ? 'user' : 'assistant'}`}
           >
-            <div className="message-content">{msg.content}</div>
+            <div className="message-content">{message.content}</div>
           </div>
         ))}
 
@@ -273,19 +195,17 @@ Guidelines:
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
       <form onSubmit={handleSendMessage} className="chatbot-input-form">
         <input
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={
-            csvLoaded ? 'Ask questions about your data...' : 'Waiting for data...'
-          }
-          disabled={loading || !csvLoaded}
+          onChange={(event) => setInput(event.target.value)}
+          placeholder="Ask questions about this dashboard's DB-backed data..."
+          disabled={loading}
           className="chatbot-input"
+          maxLength={600}
         />
-        <button type="submit" disabled={loading || !csvLoaded} className="chatbot-send-btn">
+        <button type="submit" disabled={loading || !input.trim()} className="chatbot-send-btn">
           {loading ? '⏳' : '📤'}
         </button>
       </form>
