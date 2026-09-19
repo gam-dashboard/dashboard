@@ -66,7 +66,9 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
   }, [messages, loading]);
 
   useEffect(() => {
@@ -162,12 +164,7 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
           <div className="chatbot-welcome">
             <p>👋 Welcome! I can help summarize the external DB-backed data for this dashboard.</p>
             <p>{routeNote}</p>
-            <p>Try asking:</p>
-            <ul>
-              {examples.map((example) => (
-                <li key={example}>{example}</li>
-              ))}
-            </ul>
+            
           </div>
         )}
 
