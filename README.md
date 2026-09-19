@@ -22,7 +22,7 @@ This repository still works with the existing CSV files by default. The new data
 
 ### What was added
 
-- `scripts/project-data-schema.sql` defines normalized Postgres tables for projects, locations, flexible taxonomy values, and raw JSON payload storage.
+- `scripts/project-data-schema.sql` defines normalized Postgres tables for projects, locations, flexible taxonomy values, raw JSON payload storage, and periodic sync cursor state.
 - `scripts/import-json-to-postgres.mjs` reads per-post JSON files, normalizes them, and upserts by `post_id`.
 - `api/projects.js` and `api/locations.js` expose database-backed endpoints with safe stub responses when Postgres is not configured yet.
 - `src/utils/projectApi.ts` provides a frontend compatibility helper, and `MapView` can use it when `VITE_USE_DB_API=true`.
@@ -35,6 +35,9 @@ Copy `.env.local.example` to `.env.local` and fill in the values you need:
 - `PGSSLMODE=require`: recommended for Render-hosted Postgres.
 - `PROJECT_JSON_DATA_DIR`: absolute or repo-relative directory containing `{post_id}.json` files.
 - `PROJECT_LOCATIONS_CSV_DIR`: optional directory containing `*locations.csv` files used to enrich city/state/country/display_name metadata.
+- `USHAHIDI_POSTS_API_URL`: optional override for the Ushahidi posts endpoint used by periodic sync (defaults to `https://globalactionmosaic.api.ushahidi.io/api/v5/posts/`).
+- `USHAHIDI_PAGE_SIZE`: optional page size for periodic sync (default `50`).
+- `USHAHIDI_MAX_PAGES`: optional max pages fetched per run (default `20`).
 - `VITE_USE_DB_API=false`: keep `false` until the API and DB are ready.
 - `VITE_API_BASE_URL`: optional separate API origin for Render deployments.
 
@@ -68,6 +71,58 @@ The importer is safe to re-run:
 - `result.form_id` is imported into `projects.form_id`
 - taxonomy values are imported with flexible `taxonomy_type` (e.g. `goal`, `category`, `tag`, `seeking_resources`, `providing_resources`)
 - location metadata (city/state/country/display_name) is enriched from repository `*locations.csv` rows matched by `post_id` and coordinate proximity
+
+### Periodic sync for new Ushahidi posts
+
+Use the periodic sync script to fetch newly created posts from the Ushahidi API, stage them as JSON payloads, and reuse the existing DB importer/upsert flow:
+
+```bash
+npm run sync:ushahidi
+```
+
+Useful options:
+
+```bash
+# parse and stage new posts, but do not commit DB rows
+npm run sync:ushahidi -- --dry-run
+
+# ignore stored cursor and backfill newest pages
+npm run sync:ushahidi -- --force-full
+
+# override page controls for one run
+npm run sync:ushahidi -- --page-size 100 --max-pages 40
+```
+
+The sync cursor is persisted in `project_sync_state` (`sync_key='ushahidi_posts'`) so periodic runs only import posts newer than the most recently synced `post_id`.
+
+### Render Cron Job (primary scheduler)
+
+`render.yaml` defines the supported scheduler for periodic Ushahidi sync:
+
+- service type: Render Cron Job (`ushahidi-post-sync`)
+- command: `npm run sync:ushahidi`
+- schedule: every 3 minutes (`*/3 * * * *`)
+
+Required environment variables in Render:
+
+- `DATABASE_URL` (secret; do not commit it). The Blueprint keeps this as `sync: false`, so set it in the Render dashboard when creating/importing the service.
+- `PGSSLMODE=require`
+- `USHAHIDI_POSTS_API_URL` (defaults to `https://globalactionmosaic.api.ushahidi.io/api/v5/posts/`)
+
+Deployment/import steps:
+
+1. In Render, choose **New +** → **Blueprint** and select this repository.
+2. Confirm the `ushahidi-post-sync` Cron Job from `render.yaml` is detected.
+3. Set `DATABASE_URL` in the Render dashboard (Environment) to your existing Render Postgres connection string.
+   - If your existing database is outside this Blueprint, keep this as a manual secret value; do not attempt to commit credentials.
+4. Ensure `PGSSLMODE` is set to `require`.
+5. Deploy the Blueprint and verify the Cron Job runs on the every-3-minutes schedule.
+
+Operational notes:
+
+- `project_sync_state` persists the cursor (`last_post_id`), so reruns continue from the last successful sync.
+- The sync script includes retry logic for transient API failures and is designed to be idempotent with importer upserts.
+- Avoid overlapping duplicate schedulers (for example, do not run a second periodic GitHub Actions cron for the same job).
 
 If your database was created before `form_id` support was added, re-run either:
 
