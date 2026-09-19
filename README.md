@@ -22,7 +22,7 @@ This repository still works with the existing CSV files by default. The new data
 
 ### What was added
 
-- `scripts/project-data-schema.sql` defines normalized Postgres tables for projects, locations, flexible taxonomy values, and raw JSON payload storage.
+- `scripts/project-data-schema.sql` defines normalized Postgres tables for projects, locations, flexible taxonomy values, raw JSON payload storage, and periodic sync cursor state.
 - `scripts/import-json-to-postgres.mjs` reads per-post JSON files, normalizes them, and upserts by `post_id`.
 - `api/projects.js` and `api/locations.js` expose database-backed endpoints with safe stub responses when Postgres is not configured yet.
 - `src/utils/projectApi.ts` provides a frontend compatibility helper, and `MapView` can use it when `VITE_USE_DB_API=true`.
@@ -35,6 +35,9 @@ Copy `.env.local.example` to `.env.local` and fill in the values you need:
 - `PGSSLMODE=require`: recommended for Render-hosted Postgres.
 - `PROJECT_JSON_DATA_DIR`: absolute or repo-relative directory containing `{post_id}.json` files.
 - `PROJECT_LOCATIONS_CSV_DIR`: optional directory containing `*locations.csv` files used to enrich city/state/country/display_name metadata.
+- `USHAHIDI_POSTS_API_URL`: optional override for the Ushahidi posts endpoint used by periodic sync (defaults to `https://globalactionmosaic.api.ushahidi.io/api/v5/posts/`).
+- `USHAHIDI_PAGE_SIZE`: optional page size for periodic sync (default `50`).
+- `USHAHIDI_MAX_PAGES`: optional max pages fetched per run (default `20`).
 - `VITE_USE_DB_API=false`: keep `false` until the API and DB are ready.
 - `VITE_API_BASE_URL`: optional separate API origin for Render deployments.
 
@@ -68,6 +71,31 @@ The importer is safe to re-run:
 - `result.form_id` is imported into `projects.form_id`
 - taxonomy values are imported with flexible `taxonomy_type` (e.g. `goal`, `category`, `tag`, `seeking_resources`, `providing_resources`)
 - location metadata (city/state/country/display_name) is enriched from repository `*locations.csv` rows matched by `post_id` and coordinate proximity
+
+### Periodic sync for new Ushahidi posts
+
+Use the periodic sync script to fetch newly created posts from the Ushahidi API, stage them as JSON payloads, and reuse the existing DB importer/upsert flow:
+
+```bash
+npm run sync:ushahidi
+```
+
+Useful options:
+
+```bash
+# parse and stage new posts, but do not commit DB rows
+npm run sync:ushahidi -- --dry-run
+
+# ignore stored cursor and backfill newest pages
+npm run sync:ushahidi -- --force-full
+
+# override page controls for one run
+npm run sync:ushahidi -- --page-size 100 --max-pages 40
+```
+
+The sync cursor is persisted in `project_sync_state` (`sync_key='ushahidi_posts'`) so periodic runs only import posts newer than the most recently synced `post_id`.
+
+GitHub Actions workflow `.github/workflows/sync-ushahidi-posts.yml` runs this sync every 30 minutes (and supports manual `workflow_dispatch` runs).
 
 If your database was created before `form_id` support was added, re-run either:
 

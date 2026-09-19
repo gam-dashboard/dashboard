@@ -59,3 +59,10 @@ CREATE INDEX IF NOT EXISTS idx_project_locations_country ON project_locations (c
 CREATE INDEX IF NOT EXISTS idx_project_locations_city ON project_locations (city);
 CREATE INDEX IF NOT EXISTS idx_project_taxonomy_post_id ON project_taxonomy (post_id);
 CREATE INDEX IF NOT EXISTS idx_project_taxonomy_type_value ON project_taxonomy (taxonomy_type, value);
+
+CREATE TABLE IF NOT EXISTS project_sync_state (
+  sync_key TEXT PRIMARY KEY,
+  last_post_id TEXT,
+  last_synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb
+);
