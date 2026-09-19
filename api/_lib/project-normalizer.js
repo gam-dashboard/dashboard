@@ -73,18 +73,34 @@ const textFromValue = (value) => {
   return [];
 };
 
-const parseGoalValues = (value) => {
-  const rawText = textFromValue(value).join(' ');
-  if (!rawText.trim()) return [];
-  const matches = Array.from(rawText.matchAll(GOAL_PATTERN)).map((match) => match[1].trim().replace(/[,;|]+$/, ''));
-  if (matches.length > 0) return uniqueStrings(matches);
-  return uniqueStrings(
-    rawText
-      .split(/[\n|;,]+/)
-      .map((item) => item.trim())
-      .filter((item) => /^goal\s*\d+/i.test(item))
-  );
-};
+const SDG_PARENT_LABEL = 'sustainable development goals (sdgs)';
+
+  const normalizeGoal = (value) => String(value || '')
+      .replace(/\s+sustainable development goals\s*\(sdgs\)\s*$/i, '')
+      .trim()
+      .replace(/[,;|]+$/, '');
+
+  const parseGoalValues = (value) => {
+    const rawText = textFromValue(value).join(' ');
+    if (!rawText.trim()) return [];
+    
+    const matches = Array.from(
+      rawText.matchAll(
+        /(Goal\s*\d+\s*:\s*.*?)(?=\s+Goal\s*\d+\s*:|\s+Sustainable Development Goals\s*\(SDGs\)|$)/gi
+      )
+    )
+    .map((match) => normalizeGoal(match[1]))
+    .filter((goal) => /^goal\s*\d+\s*:/i.test(goal));
+
+    if (matches.length > 0) return uniqueStrings(matches);
+
+    return uniqueStrings(
+      rawText
+        .split(/[\n|;,]+/)
+        .map(normalizeGoal)
+        .filter((item) => /^goal\s*\d+\s*:/i.test(item))
+    );
+  };
 
 const parseTaxonomyValues = (value) => uniqueStrings(
   textFromValue(value)
