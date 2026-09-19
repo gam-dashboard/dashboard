@@ -199,9 +199,13 @@ try {
     for (const post of posts) {
       const postId = derivePostId(post);
       if (!postId) continue;
-      if (!forceFull && lastPostId && postId === lastPostId) {
-        reachedCursor = true;
-        break;
+      if (!forceFull && lastPostId) {
+        const numericPostId = Number(postId);
+        const numericCursor = Number(lastPostId);
+        if (Number.isFinite(numericPostId) && Number.isFinite(numericCursor) && numericPostId <= numericCursor) {
+          reachedCursor = true;
+          break;
+        }
       }
       if (seen.has(postId)) continue;
       seen.add(postId);
