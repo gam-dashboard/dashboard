@@ -238,6 +238,7 @@ Rules:
 - Keep answers grounded in the provided counts and project snippets.
 - Mention route scope when it matters.
 - Prefer aggregate insights first, then cite example projects when helpful.
+- When formatting helps, use Markdown for short paragraphs, lists, bold emphasis, inline code, and fenced code blocks. Do not use raw HTML.
 - Do not invent SQL, hidden filters, or unseen fields.
 - If the user asks for data outside the visible route scope, explain that the assistant is restricted to that dashboard's records.
 `;
