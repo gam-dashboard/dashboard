@@ -176,7 +176,20 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
           >
             <div className="message-content">
               {message.role === 'assistant' ? (
-                <ReactMarkdown disallowedElements={['a']} unwrapDisallowed>
+                <ReactMarkdown
+                  components={{
+                    a: ({ children, href }) => (
+                      <span
+                        role="link"
+                        aria-disabled="true"
+                        className="markdown-link"
+                        title={href || undefined}
+                      >
+                        {children}
+                      </span>
+                    ),
+                  }}
+                >
                   {message.content}
                 </ReactMarkdown>
               ) : (
