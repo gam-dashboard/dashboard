@@ -95,25 +95,33 @@ export async function listProjects(options = {}) {
 
   const taxonomyByPostId = new Map();
   for (const row of taxonomyResult.rows) {
-    const bucket = taxonomyByPostId.get(row.post_id) || { goal: [], category: [], tag: [] };
-    bucket[row.taxonomy_type]?.push(row.value);
+    const bucket = taxonomyByPostId.get(row.post_id) || new Map();
+    const type = String(row.taxonomy_type || '').trim();
+    if (!type) continue;
+    const values = bucket.get(type) || [];
+    values.push(row.value);
+    bucket.set(type, values);
     taxonomyByPostId.set(row.post_id, bucket);
   }
 
   const rawByPostId = new Map(rawPayloadResult.rows.map((row) => [row.post_id, row.payload]));
 
   return projectsResult.rows.map((row) => {
-    const taxonomy = taxonomyByPostId.get(row.post_id) || { goal: [], category: [], tag: [] };
+    const taxonomy = taxonomyByPostId.get(row.post_id) || new Map();
     const locations = locationsByPostId.get(row.post_id) || [];
+    const taxonomyObject = Object.fromEntries(taxonomy.entries());
     return {
       postId: row.post_id,
       title: row.title || row.org_name || row.post_id,
       description: row.description || '',
       tagLine: row.tag_line || '',
       org: row.org_name || '',
-      goals: taxonomy.goal,
-      categories: taxonomy.category,
-      tags: taxonomy.tag,
+      goals: taxonomy.get('goal') || [],
+      categories: taxonomy.get('category') || [],
+      tags: taxonomy.get('tag') || [],
+      seekingResources: taxonomy.get('seeking_resources') || taxonomy.get('seeking_resource') || [],
+      providingResources: taxonomy.get('providing_resources') || taxonomy.get('providing_resource') || [],
+      taxonomy: taxonomyObject,
       searchText: row.search_text || '',
       postDate: row.post_date ? new Date(row.post_date).toISOString() : null,
       row: normalizeRowFallback(row.row_fallback),

@@ -52,7 +52,16 @@ const textFromValue = (value) => {
   }
   if (typeof value === 'object') {
     return [
-      ...textFromValue(firstDefined(value.value, value.label, value.name, value.title, value.text, value.url, value.description)),
+      ...textFromValue(firstDefined(
+        value.value,
+        value.label,
+        value.name,
+        value.title,
+        value.text,
+        value.tag,
+        value.url,
+        value.description
+      )),
     ];
   }
   return [];
@@ -77,6 +86,30 @@ const parseTaxonomyValues = (value) => uniqueStrings(
     .map((entry) => entry.trim())
     .filter(Boolean)
 );
+
+const normalizeTaxonomyType = (value) => String(value || '')
+  .trim()
+  .toLowerCase()
+  .replace(/&/g, ' and ')
+  .replace(/[^a-z0-9]+/g, '_')
+  .replace(/^_+|_+$/g, '');
+
+const taxonomyEntriesFromLookup = (lookup, taxonomyType, candidates, parser = parseTaxonomyValues) => {
+  const entries = [];
+  const seen = new Set();
+  const values = pickLookupValues(lookup, candidates);
+  for (const raw of values) {
+    for (const parsed of parser(raw)) {
+      const text = String(parsed || '').trim();
+      if (!text) continue;
+      const key = text.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      entries.push({ taxonomy_type: taxonomyType, value: text, raw_value: raw });
+    }
+  }
+  return entries;
+};
 
 const buildLookup = (payload) => {
   const lookup = new Map();
@@ -189,10 +222,13 @@ const collectLocations = (payload) => {
 
 export function normalizeProjectPayload(payload, options = {}) {
   const lookup = buildLookup(payload);
+  const result = payload && typeof payload === 'object' && payload.result && typeof payload.result === 'object'
+    ? payload.result
+    : null;
   const sourceFile = options.sourceFile || '';
   const postId = pickLookupValue(lookup, ['post id', 'postid', 'id']) || sourceFile.replace(/\.json$/i, '').split('/').pop() || '';
-  const title = pickLookupValue(lookup, ['project', 'project name', 'title', 'project title', 'name']) || postId;
-  const description = pickLookupValue(lookup, ['description', 'unstructured description', 'summary', 'abstract', 'content']);
+  const title = firstDefined(result?.title, pickLookupValue(lookup, ['project', 'project name', 'title', 'project title', 'name'])) || postId;
+  const description = firstDefined(result?.content, pickLookupValue(lookup, ['description', 'unstructured description', 'summary', 'abstract', 'content'])) || '';
   const tagLine = pickLookupValue(lookup, ['project tag line', 'tagline', 'tag line']);
   const orgName = pickLookupValue(lookup, ['organization name', 'organization', 'partner']);
   const orgWebsite = pickLookupValue(lookup, ['organization website', 'organization url', 'website', 'website url']);
@@ -205,9 +241,34 @@ export function normalizeProjectPayload(payload, options = {}) {
   const postDate = toIsoTimestamp(
     pickLookupValue(lookup, ['post date (utc)', 'post date', 'created (utc)', 'created', 'date'])
   );
-  const goals = uniqueStrings(pickLookupValues(lookup, ['sustainable development goals', 'sdg', 'goals']).flatMap(parseGoalValues));
-  const categories = uniqueStrings(pickLookupValues(lookup, ['categories', 'category']).flatMap(parseTaxonomyValues));
-  const tags = uniqueStrings(pickLookupValues(lookup, ['tags', 'tag']).flatMap(parseTaxonomyValues));
+  const goalsTaxonomy = taxonomyEntriesFromLookup(
+    lookup,
+    'goal',
+    ['sustainable development goals', 'sustainable development goal', 'sdg', 'goals'],
+    parseGoalValues
+  );
+  const categoriesTaxonomy = taxonomyEntriesFromLookup(lookup, 'category', ['categories', 'category']);
+  const tagsTaxonomy = taxonomyEntriesFromLookup(lookup, 'tag', ['tags', 'tag']);
+  const seekingResourcesTaxonomy = taxonomyEntriesFromLookup(
+    lookup,
+    normalizeTaxonomyType('seeking resources') || 'seeking_resources',
+    ['seeking resources']
+  );
+  const providingResourcesTaxonomy = taxonomyEntriesFromLookup(
+    lookup,
+    normalizeTaxonomyType('providing resources') || 'providing_resources',
+    ['providing resources']
+  );
+  const taxonomies = [
+    ...goalsTaxonomy,
+    ...categoriesTaxonomy,
+    ...tagsTaxonomy,
+    ...seekingResourcesTaxonomy,
+    ...providingResourcesTaxonomy,
+  ];
+  const goals = goalsTaxonomy.map((entry) => entry.value);
+  const categories = categoriesTaxonomy.map((entry) => entry.value);
+  const tags = tagsTaxonomy.map((entry) => entry.value);
   const locations = collectLocations(payload);
   const countries = uniqueStrings(locations.map((location) => location.country).filter(Boolean));
   const rowFallback = {
@@ -252,11 +313,7 @@ export function normalizeProjectPayload(payload, options = {}) {
     searchText,
     rowFallback,
     locations,
-    taxonomies: [
-      ...goals.map((value) => ({ taxonomy_type: 'goal', value, raw_value: value })),
-      ...categories.map((value) => ({ taxonomy_type: 'category', value, raw_value: value })),
-      ...tags.map((value) => ({ taxonomy_type: 'tag', value, raw_value: value })),
-    ],
+    taxonomies,
     rawPayload: payload,
   };
 }

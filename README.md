@@ -22,7 +22,7 @@ This repository still works with the existing CSV files by default. The new data
 
 ### What was added
 
-- `scripts/project-data-schema.sql` defines normalized Postgres tables for projects, locations, taxonomy values, and raw JSON payload storage.
+- `scripts/project-data-schema.sql` defines normalized Postgres tables for projects, locations, flexible taxonomy values, and raw JSON payload storage.
 - `scripts/import-json-to-postgres.mjs` reads per-post JSON files, normalizes them, and upserts by `post_id`.
 - `api/projects.js` and `api/locations.js` expose database-backed endpoints with safe stub responses when Postgres is not configured yet.
 - `src/utils/projectApi.ts` provides a frontend compatibility helper, and `MapView` can use it when `VITE_USE_DB_API=true`.
@@ -34,6 +34,7 @@ Copy `.env.local.example` to `.env.local` and fill in the values you need:
 - `DATABASE_URL`: Render Postgres connection string.
 - `PGSSLMODE=require`: recommended for Render-hosted Postgres.
 - `PROJECT_JSON_DATA_DIR`: absolute or repo-relative directory containing `{post_id}.json` files.
+- `PROJECT_LOCATIONS_CSV_DIR`: optional directory containing `*locations.csv` files used to enrich city/state/country/display_name metadata.
 - `VITE_USE_DB_API=false`: keep `false` until the API and DB are ready.
 - `VITE_API_BASE_URL`: optional separate API origin for Render deployments.
 
@@ -53,6 +54,9 @@ npm run import:projects -- --schema-only
 
 # parse files without committing rows
 npm run import:projects -- --dry-run --dir /absolute/path/to/json/files
+
+# override CSV metadata directory used to enrich project_locations
+npm run import:projects -- --dir /absolute/path/to/json/files --locations-dir /absolute/path/to/location-csv-dir
 ```
 
 The importer is safe to re-run:
@@ -60,6 +64,9 @@ The importer is safe to re-run:
 - `projects` are upserted by `post_id`
 - locations and taxonomy rows are replaced for the same `post_id`
 - the original raw JSON is preserved in `project_raw_payloads`
+- title/description are imported from canonical `result.title` and `result.content` when present
+- taxonomy values are imported with flexible `taxonomy_type` (e.g. `goal`, `category`, `tag`, `seeking_resources`, `providing_resources`)
+- location metadata (city/state/country/display_name) is enriched from repository `*locations.csv` rows matched by `post_id` and coordinate proximity
 
 ### API usage
 

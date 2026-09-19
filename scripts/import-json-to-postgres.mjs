@@ -3,6 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { Pool } from 'pg';
+import Papa from 'papaparse';
 import { normalizeProjectPayload } from '../api/_lib/project-normalizer.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,6 +22,10 @@ const hasFlag = (flag) => args.includes(flag);
 const dataDir = path.resolve(
   process.cwd(),
   getArgValue('--dir') || process.env.PROJECT_JSON_DATA_DIR || 'data/json'
+);
+const locationsDir = path.resolve(
+  process.cwd(),
+  getArgValue('--locations-dir') || process.env.PROJECT_LOCATIONS_CSV_DIR || 'src/data'
 );
 const dryRun = hasFlag('--dry-run');
 const schemaOnly = hasFlag('--schema-only');
@@ -52,6 +57,141 @@ const listJsonFiles = async (directory) => {
   return files.flat().sort();
 };
 
+const parseNumber = (value) => {
+  if (value == null || String(value).trim() === '') return null;
+  const parsed = Number(String(value).trim());
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const listLocationCsvFiles = async (directory) => {
+  let entries;
+  try {
+    entries = await fs.readdir(directory, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const files = await Promise.all(entries.map(async (entry) => {
+    const resolved = path.join(directory, entry.name);
+    if (entry.isDirectory()) return listLocationCsvFiles(resolved);
+    if (entry.isFile() && /locations\.csv$/i.test(entry.name)) return [resolved];
+    return [];
+  }));
+  return files.flat().sort();
+};
+
+const loadLocationMetadata = async (directory) => {
+  const files = await listLocationCsvFiles(directory);
+  const byPostId = new Map();
+  let rowsLoaded = 0;
+
+  for (const filePath of files) {
+    const sourceFile = path.relative(process.cwd(), filePath);
+    const csvText = await fs.readFile(filePath, 'utf8');
+    const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+    if (parsed.errors?.length) {
+      console.warn(`Location CSV parse warnings in ${sourceFile}:`, parsed.errors.map((e) => e.message).join('; '));
+    }
+    for (const row of parsed.data || []) {
+      const postId = String(row?.post_id || row?.postId || row?.['Post ID'] || '').trim();
+      if (!postId) continue;
+      const metadata = {
+        latitude: parseNumber(row?.lat ?? row?.latitude),
+        longitude: parseNumber(row?.lon ?? row?.lng ?? row?.longitude),
+        city: String(row?.city || '').trim(),
+        state: String(row?.state || '').trim(),
+        country: String(row?.country || '').trim(),
+        country_code: String(row?.country_code || row?.countryCode || '').trim(),
+        display_name: String(row?.display_name || row?.displayName || '').trim(),
+        source_file: sourceFile,
+      };
+      const bucket = byPostId.get(postId) || [];
+      bucket.push(metadata);
+      byPostId.set(postId, bucket);
+      rowsLoaded += 1;
+    }
+  }
+
+  return { byPostId, filesLoaded: files.length, rowsLoaded };
+};
+
+const locationDistance = (a, b) => {
+  if (a?.latitude == null || a?.longitude == null || b?.latitude == null || b?.longitude == null) return Infinity;
+  return Math.hypot(a.latitude - b.latitude, a.longitude - b.longitude);
+};
+
+const enrichLocationsWithCsvMetadata = (project, metadataByPostId) => {
+  const metadataRows = metadataByPostId.get(project.postId) || [];
+  if (metadataRows.length === 0) return project.locations;
+
+  const enriched = project.locations.map((location) => ({ ...location }));
+  const usedIndices = new Set();
+
+  const pickLocationIndex = (metadata) => {
+    if (enriched.length === 0) return -1;
+    let bestIndex = -1;
+    let bestDistance = Infinity;
+    for (let index = 0; index < enriched.length; index += 1) {
+      if (usedIndices.has(index)) continue;
+      const distance = locationDistance(enriched[index], metadata);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = index;
+      }
+    }
+    if (bestIndex !== -1) return bestIndex;
+    for (let index = 0; index < enriched.length; index += 1) {
+      const distance = locationDistance(enriched[index], metadata);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = index;
+      }
+    }
+    return bestIndex === -1 ? 0 : bestIndex;
+  };
+
+  for (const metadata of metadataRows) {
+    let targetIndex = pickLocationIndex(metadata);
+
+    if (targetIndex === -1 && metadata.latitude != null && metadata.longitude != null) {
+      enriched.push({
+        latitude: metadata.latitude,
+        longitude: metadata.longitude,
+        city: metadata.city || '',
+        state: metadata.state || '',
+        country: metadata.country || '',
+        country_code: metadata.country_code || '',
+        display_name: metadata.display_name || '',
+        raw_location: { source: 'locations.csv', source_file: metadata.source_file },
+      });
+      continue;
+    }
+
+    if (targetIndex === -1) continue;
+    usedIndices.add(targetIndex);
+    const target = enriched[targetIndex];
+    if (metadata.latitude != null) target.latitude = metadata.latitude;
+    if (metadata.longitude != null) target.longitude = metadata.longitude;
+    if (metadata.city) target.city = metadata.city;
+    if (metadata.state) target.state = metadata.state;
+    if (metadata.country) target.country = metadata.country;
+    if (metadata.country_code) target.country_code = metadata.country_code;
+    if (metadata.display_name) target.display_name = metadata.display_name;
+    target.raw_location = {
+      ...(target.raw_location && typeof target.raw_location === 'object' ? target.raw_location : {}),
+      csv_metadata: {
+        source_file: metadata.source_file,
+        city: metadata.city || null,
+        state: metadata.state || null,
+        country: metadata.country || null,
+        country_code: metadata.country_code || null,
+        display_name: metadata.display_name || null,
+      },
+    };
+  }
+
+  return enriched;
+};
+
 const schemaSql = await fs.readFile(schemaPath, 'utf8');
 const client = await pool.connect();
 
@@ -69,7 +209,11 @@ try {
     }
   } else {
     const files = await listJsonFiles(dataDir);
+    const locationMetadata = await loadLocationMetadata(locationsDir);
     console.log(`Found ${files.length} JSON file(s) in ${dataDir}`);
+    console.log(
+      `Loaded ${locationMetadata.rowsLoaded} location metadata row(s) from ${locationMetadata.filesLoaded} CSV file(s) in ${locationsDir}`
+    );
 
     let imported = 0;
     let skipped = 0;
@@ -96,6 +240,8 @@ try {
       imported += 1;
 
       if (dryRun) continue;
+
+      const mergedLocations = enrichLocationsWithCsvMetadata(project, locationMetadata.byPostId);
 
       await client.query(
         `INSERT INTO projects (
@@ -143,7 +289,7 @@ try {
       );
 
       await client.query('DELETE FROM project_locations WHERE post_id = $1', [project.postId]);
-      for (const [locationIndex, location] of project.locations.entries()) {
+      for (const [locationIndex, location] of mergedLocations.entries()) {
         await client.query(
           `INSERT INTO project_locations (
              post_id, location_index, latitude, longitude, city, state, country, country_code, display_name, raw_location, imported_at
