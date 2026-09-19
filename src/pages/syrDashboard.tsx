@@ -17,6 +17,7 @@ const altConfig: MapViewConfig = {
   goalsOpenLabel: 'Filter by SDG', // won't show because showGoals is false, but left as example
   goalsCloseLabel: 'Filter by SDG',
   clearLabel: 'Clear selection',
+  allowedFormIds: [7],
 };
 
 export default function AltDashboard(): JSX.Element {

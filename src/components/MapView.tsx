@@ -22,6 +22,7 @@ export type MapViewConfig = {
   goalsOpenLabel?: string;
   goalsCloseLabel?: string;
   clearLabel?: string;
+  allowedFormIds?: number[];
   // any other label/terminology overrides can be added here
 };
 
@@ -40,6 +41,7 @@ type ProjectLocation = {
 
 type Project = {
   postId: string;
+  formId?: number;
   title: string;
   description: string;
   tagLine: string;
@@ -189,6 +191,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   const unCivicUrl = config?.unCivicCsvUrl ?? unCivicCsvUrl;
   const categoriesUrl = config?.projectCategoriesCsvUrl ?? projectCategoriesCsvUrl;
   const locUrl = config?.locationsCsvUrl ?? locationsCsvUrl;
+  const allowedFormIds = config?.allowedFormIds;
+  const allowedFormIdsKey = Array.isArray(allowedFormIds) ? allowedFormIds.join(',') : '';
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -221,11 +225,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   const [activeGoals, setActiveGoals] = useState<string[]>([]);
   const [filterMinimized, setFilterMinimized] = useState<boolean>(true); // used as collapsed/expanded for goals
 
-  // new: categories
-  const [uniqueCategories, setUniqueCategories] = useState<string[]>([]);
-  const [activeCategories, setActiveCategories] = useState<string[]>([]);
-  const [categoriesMinimized, setCategoriesMinimized] = useState<boolean>(true);
-  const categoriesDropdownRef = useRef<HTMLDivElement | null>(null);
   const goalsDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -346,19 +345,16 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     });
 
     const allGoals = new Set<string>();
-    const allCategories = new Set<string>();
     const allCities = new Set<string>();
 
     byPostId.forEach((project) => {
       project.goals.forEach((goal) => allGoals.add(goal));
-      project.categories.forEach((category) => allCategories.add(category));
       project.locations.forEach((location) => {
         if (location.city) allCities.add(location.city);
       });
     });
 
     setUniqueGoals(Array.from(allGoals).sort(goalSort));
-    setUniqueCategories(Array.from(allCategories).sort((a, b) => String(a).localeCompare(b)));
     setUniqueCities(Array.from(allCities).sort((a, b) => a.localeCompare(b)));
     setProjects(byPostId);
   };
@@ -466,11 +462,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
           byPostId.forEach(p => p.goals.forEach(g => allGoals.add(g)));
           setUniqueGoals(Array.from(allGoals).sort(goalSort));
 
-          // unique categories
-          const allCategories = new Set<string>();
-          byPostId.forEach(p => p.categories.forEach(cg => allCategories.add(cg)));
-          setUniqueCategories(Array.from(allCategories).sort((a, b) => String(a).localeCompare(b)));
-
           console.group('SDG_projects.csv + un_civic_2024.csv + project_categories.csv → projects');
           console.log(`parsed rows: ${rows.length}`);
           console.log(`projects: ${byPostId.size}`);
@@ -533,8 +524,13 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
         fetchCompatibleProjectsFromApi()
           .then((apiProjects) => {
             if (apiProjects !== null) {
-              console.log(`MapView: loaded ${apiProjects.length} project(s) from /api/projects`);
-              applyLoadedProjects(apiProjects as Project[]);
+              const visibleApiProjects = Array.isArray(allowedFormIds)
+                ? apiProjects.filter((project) => (
+                    typeof project.formId === 'number' && allowedFormIds.includes(project.formId)
+                  ))
+                : apiProjects;
+              console.log(`MapView: loaded ${apiProjects.length} project(s) from /api/projects (${visibleApiProjects.length} visible on this route)`);
+              applyLoadedProjects(visibleApiProjects as Project[]);
               return;
             }
             console.warn('MapView: DB API unavailable, falling back to CSV data');
@@ -551,7 +547,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     }, 500);
 
     return () => clearTimeout(parseTimeout);
-  }, [categoriesUrl, locUrl, sdgUrl, unCivicUrl]);
+  }, [allowedFormIds, allowedFormIdsKey, categoriesUrl, locUrl, sdgUrl, unCivicUrl]);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(searchQuery.trim().toLowerCase()), 300);
@@ -622,14 +618,11 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
   const filteredProjects = useMemo(() => {
     const goalFilterActive = (config?.showGoals ?? true) && activeGoals.length > 0;
-    const categoryFilterActive = activeCategories.length > 0;
     const q = debouncedQuery.trim();
     const terms = q ? q.split(/\s+/).filter(Boolean) : [];
 
     return Array.from(projects.values()).filter((p) => {
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
-
-      if (categoryFilterActive && !p.categories.some(c => activeCategories.includes(c))) return false;
 
       if (selectedLocationFilters.length > 0) {
         const hasMatch = p.locations.some(l => {
@@ -656,7 +649,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       if (terms.length > 0 && !terms.every(t => p.searchText.includes(t))) return false;
       return true;
     });
-  }, [projects, activeGoals, activeCategories, debouncedQuery, activeCity, selectedLocationFilters]);
+  }, [projects, activeGoals, debouncedQuery, activeCity, selectedLocationFilters]);
 
   const filteredMarkers = useMemo((): ProjectMarker[] => {
     return filteredProjects.flatMap((project) => {
@@ -1045,15 +1038,11 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   }, [selected]);
 
   useEffect(() => {
-    if (categoriesMinimized && filterMinimized && !markerChooser) return;
+    if (filterMinimized && !markerChooser) return;
 
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target as Node | null;
       if (!target) return;
-
-      if (!categoriesMinimized && categoriesDropdownRef.current && !categoriesDropdownRef.current.contains(target)) {
-        setCategoriesMinimized(true);
-      }
 
       if (!filterMinimized && goalsDropdownRef.current && !goalsDropdownRef.current.contains(target)) {
         setFilterMinimized(true);
@@ -1068,7 +1057,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [categoriesMinimized, filterMinimized, markerChooser]);
+  }, [filterMinimized, markerChooser]);
 
   return (
     <div className="breakout">
@@ -1166,52 +1155,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               </div>
 
               <div className="mapview-toggle-group">
-                <div className="mapview-dropdown-wrapper" ref={categoriesDropdownRef}>
-                  <button
-                    onClick={() => setCategoriesMinimized(v => !v)}
-                    className="mapview-action-button"
-                    title="Open Categories"
-                  >
-                    {categoriesMinimized ? 'Filter by Category' : 'Filter by Category'}
-                  </button>
-
-                  {!categoriesMinimized && (
-                    <div className="mapview-dropdown">
-                      <div className="mapview-dropdown-panel">
-                        {uniqueCategories.length === 0 ? (
-                          <div style={{ fontSize: 12, color: '#666' }}>Loading categories…</div>
-                        ) : (
-                          uniqueCategories.map((c) => {
-                            const checked = activeCategories.includes(c);
-                            return (
-                              <label key={c} className="mapview-dropdown-option">
-                                <input
-                                  type="checkbox"
-                                  checked={checked}
-                                  onChange={() => {
-                                    setActiveCategories((prev) => {
-                                      if (prev.includes(c)) return prev.filter((x) => x !== c);
-                                      return [...prev, c];
-                                    });
-                                  }}
-                                />
-                                {c}
-                              </label>
-                            );
-                          })
-                        )}
-                        {uniqueCategories.length > 0 && (
-                          <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
-                            <button onClick={() => setActiveCategories([])} className="mapview-action-button">
-                              Clear
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
                 {(config?.showGoals ?? true) && (
                   <div className="mapview-dropdown-wrapper" ref={goalsDropdownRef}>
                     <button

@@ -17,6 +17,7 @@ const altConfig: MapViewConfig = {
   goalsOpenLabel: 'Open Targets', // won't show because showGoals is false, but left as example
   goalsCloseLabel: 'Close Targets',
   clearLabel: 'Clear selection',
+  allowedFormIds: [],
 };
 
 export default function AltDashboard(): JSX.Element {

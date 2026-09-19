@@ -245,13 +245,14 @@ try {
 
       await client.query(
         `INSERT INTO projects (
-           post_id, source_file, title, slug, status, description, tag_line, org_name, org_website,
+          post_id, form_id, source_file, title, slug, status, description, tag_line, org_name, org_website,
            supporting_sites, video, video_2, post_date, project_start_date, search_text, row_fallback, imported_at
          ) VALUES (
-           $1, $2, $3, $4, $5, $6, $7, $8, $9,
-           $10, $11, $12, NULLIF($13, '')::timestamptz, $14, $15, $16::jsonb, NOW()
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+          $11, $12, $13, NULLIF($14, '')::timestamptz, $15, $16, $17::jsonb, NOW()
          )
          ON CONFLICT (post_id) DO UPDATE SET
+           form_id = EXCLUDED.form_id,
            source_file = EXCLUDED.source_file,
            title = EXCLUDED.title,
            slug = EXCLUDED.slug,
@@ -270,6 +271,7 @@ try {
            imported_at = NOW()`,
         [
           project.postId,
+          project.formId ?? null,
           project.sourceFile,
           project.title,
           project.slug || null,

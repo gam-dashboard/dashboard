@@ -11,6 +11,7 @@ export type ApiProjectLocation = {
 
 export type ApiProject = {
   postId: string;
+  formId?: number;
   title: string;
   description: string;
   tagLine: string;
@@ -52,8 +53,16 @@ const normalizeLocation = (location: any): ApiProjectLocation | null => {
   };
 };
 
+const normalizeOptionalFormId = (value: unknown): number | undefined => {
+  if (value == null || value === '') return undefined;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) return undefined;
+  return parsed;
+};
+
 const normalizeProject = (project: any): ApiProject => ({
   postId: String(project.postId || ''),
+  formId: normalizeOptionalFormId(project.formId),
   title: String(project.title || project.org || project.postId || ''),
   description: String(project.description || ''),
   tagLine: String(project.tagLine || ''),
