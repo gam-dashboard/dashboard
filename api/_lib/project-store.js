@@ -49,7 +49,7 @@ export async function listProjects(options = {}) {
   params.push(limit);
 
   const projectsResult = await pool.query(
-    `SELECT post_id, source_file, title, slug, status, description, tag_line, org_name, org_website,
+    `SELECT post_id, form_id, source_file, title, slug, status, description, tag_line, org_name, org_website,
             supporting_sites, video, video_2, post_date, project_start_date, search_text, row_fallback
        FROM projects
        ${whereClause}
@@ -112,6 +112,7 @@ export async function listProjects(options = {}) {
     const taxonomyObject = Object.fromEntries(taxonomy.entries());
     return {
       postId: row.post_id,
+      formId: row.form_id == null ? null : Number(row.form_id),
       title: row.title || row.org_name || row.post_id,
       description: row.description || '',
       tagLine: row.tag_line || '',

@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS projects (
   post_id TEXT PRIMARY KEY,
+  form_id INTEGER,
   source_file TEXT,
   title TEXT NOT NULL DEFAULT '',
   slug TEXT,
@@ -17,6 +18,8 @@ CREATE TABLE IF NOT EXISTS projects (
   row_fallback JSONB NOT NULL DEFAULT '{}'::jsonb,
   imported_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS form_id INTEGER;
 
 CREATE TABLE IF NOT EXISTS project_locations (
   post_id TEXT NOT NULL REFERENCES projects(post_id) ON DELETE CASCADE,

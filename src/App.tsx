@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import MapView from './components/MapView';
+import MapView, { MapViewConfig } from './components/MapView';
 import AltDashboard from './pages/waDashboard';
 import SyrDashboard from './pages/syrDashboard';
 import DataChatbot from './components/DataChatbot';
@@ -12,6 +12,10 @@ import WA_TRACKER_URL from './data/WA_tracker_entries.csv?url';
 import WA_LOC_URL from './data/WA_locations.csv?url';
 import SY_CSV_URL from './data/SY_projects.csv?url';
 import SY_LOC_URL from './data/SY_locations.csv?url';
+
+const globalConfig: MapViewConfig = {
+  allowedFormIds: [3, 5],
+};
 
 export default function App() {
   const [route, setRoute] = useState<string>(() => window.location.hash || '#/');
@@ -61,7 +65,7 @@ export default function App() {
             <h1>Global Action Mosaic — Interactive Dashboard</h1>
           </header>
           <main>
-            <MapView />
+            <MapView config={globalConfig} />
           </main>
           
           {/* Global Projects Chatbot - analyzes cross-dataset patterns */}

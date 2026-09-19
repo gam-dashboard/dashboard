@@ -65,8 +65,17 @@ The importer is safe to re-run:
 - locations and taxonomy rows are replaced for the same `post_id`
 - the original raw JSON is preserved in `project_raw_payloads`
 - title/description are imported from canonical `result.title` and `result.content` when present
+- `result.form_id` is imported into `projects.form_id`
 - taxonomy values are imported with flexible `taxonomy_type` (e.g. `goal`, `category`, `tag`, `seeking_resources`, `providing_resources`)
 - location metadata (city/state/country/display_name) is enriched from repository `*locations.csv` rows matched by `post_id` and coordinate proximity
+
+If your database was created before `form_id` support was added, re-run either:
+
+```bash
+npm run import:projects -- --schema-only
+```
+
+or a full import command so the `projects.form_id` column is added (if missing) and populated.
 
 ### API usage
 

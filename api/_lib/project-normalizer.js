@@ -14,6 +14,12 @@ const parseNum = (value) => {
   return Number.isFinite(parsed) ? parsed : null;
 };
 
+const parseNullableInteger = (value) => {
+  if (value == null || String(value).trim() === '') return null;
+  const parsed = Number.parseInt(String(value).trim(), 10);
+  return Number.isInteger(parsed) ? parsed : null;
+};
+
 const toIsoTimestamp = (value) => {
   const text = String(value || '').trim();
   if (!text) return '';
@@ -225,6 +231,7 @@ export function normalizeProjectPayload(payload, options = {}) {
   const result = payload && typeof payload === 'object' && payload.result && typeof payload.result === 'object'
     ? payload.result
     : null;
+  const formId = parseNullableInteger(result?.form_id);
   const sourceFile = options.sourceFile || '';
   const postId = pickLookupValue(lookup, ['post id', 'postid', 'id']) || sourceFile.replace(/\.json$/i, '').split('/').pop() || '';
   const title = firstDefined(result?.title, pickLookupValue(lookup, ['project', 'project name', 'title', 'project title', 'name'])) || postId;
@@ -297,6 +304,7 @@ export function normalizeProjectPayload(payload, options = {}) {
 
   return {
     postId,
+    formId,
     sourceFile,
     title,
     slug,
