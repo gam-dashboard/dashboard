@@ -17,8 +17,14 @@ app.use(cors({
 }));
 
 const toExpressHandler = (handler) => async (req, res) => {
-  req.query = req.query || {};
-  await handler(req, res);
+  try {
+    await handler(req, res);
+  } catch (error) {
+    console.error('Unhandled API error:', error);
+    if (!res.headersSent) {
+      res.status(500).json({ ok: false, message: 'Internal server error' });
+    }
+  }
 };
 
 app.get('/api/projects', toExpressHandler(projectsHandler));
