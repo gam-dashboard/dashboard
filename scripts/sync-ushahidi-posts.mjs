@@ -5,6 +5,13 @@ import process from 'node:process';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { Pool } from 'pg';
+import { normalizeProjectPayload } from '../api/_lib/project-normalizer.js';
+import {
+  loadGeocodeCache,
+  reverseGeocodeWithCache,
+  toGeocodeCacheKey,
+  writeGeocodeCache,
+} from './geocode-cache.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,9 +34,17 @@ const pageSize = Number.isInteger(parsedPageSize) && parsedPageSize > 0 ? parsed
 const maxPages = Number.isInteger(parsedMaxPages) && parsedMaxPages > 0 ? parsedMaxPages : 20;
 const requestTimeoutMs = Number.parseInt(process.env.USHAHIDI_REQUEST_TIMEOUT_MS || '20000', 10);
 const maxAttempts = Number.parseInt(process.env.USHAHIDI_REQUEST_ATTEMPTS || '3', 10);
+const geocodeTimeoutMs = Number.parseInt(process.env.USHAHIDI_GEOCODE_TIMEOUT_MS || '15000', 10);
+const geocodeUserAgent = String(
+  process.env.USHAHIDI_GEOCODE_USER_AGENT || 'gam-dashboard-sync/1.0 (+https://github.com/gam-dashboard/dashboard)'
+).trim();
 const locationsDir = path.resolve(
   process.cwd(),
   getArgValue('--locations-dir') || process.env.PROJECT_LOCATIONS_CSV_DIR || 'src/data'
+);
+const geocodeCachePath = path.resolve(
+  process.cwd(),
+  getArgValue('--geocode-cache-path') || process.env.GEOCODE_CACHE_PATH || '.geocode_cache.json'
 );
 
 const apiBaseRaw = String(
@@ -138,8 +153,8 @@ const buildInitialUrl = () => {
 
 const sanitizeFileId = (postId) => String(postId).replace(/[^a-zA-Z0-9._-]/g, '_');
 
-const runImporter = (tempDir) => new Promise((resolve, reject) => {
-  const importerArgs = [importerScriptPath, '--dir', tempDir, '--locations-dir', locationsDir];
+const runImporter = (tempDir, importerLocationsDir) => new Promise((resolve, reject) => {
+  const importerArgs = [importerScriptPath, '--dir', tempDir, '--locations-dir', importerLocationsDir || locationsDir];
   if (dryRun) importerArgs.push('--dry-run');
   const child = spawn(process.execPath, importerArgs, {
     cwd: repoRoot,
@@ -152,6 +167,129 @@ const runImporter = (tempDir) => new Promise((resolve, reject) => {
     else reject(new Error(`Importer exited with code ${code}`));
   });
 });
+
+const listLocationCsvFiles = async (directory) => {
+  let entries;
+  try {
+    entries = await fs.readdir(directory, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const files = await Promise.all(entries.map(async (entry) => {
+    const resolved = path.join(directory, entry.name);
+    if (entry.isDirectory()) return listLocationCsvFiles(resolved);
+    if (entry.isFile() && /locations\.csv$/i.test(entry.name)) return [resolved];
+    return [];
+  }));
+  return files.flat().sort();
+};
+
+const csvValue = (value) => {
+  const text = String(value ?? '');
+  if (!/["\n,]/.test(text)) return text;
+  return `"${text.replace(/"/g, '""')}"`;
+};
+
+const writeLocationsCsv = async (rows, filePath) => {
+  const header = 'post_id,lat,lon,city,state,country,country_code,display_name';
+  const lines = rows.map((row) => [
+    csvValue(row.post_id),
+    csvValue(row.lat),
+    csvValue(row.lon),
+    csvValue(row.city),
+    csvValue(row.state),
+    csvValue(row.country),
+    csvValue(row.country_code),
+    csvValue(row.display_name),
+  ].join(','));
+  await fs.writeFile(filePath, `${[header, ...lines].join('\n')}\n`, 'utf8');
+};
+
+const buildSyncLocationMetadataRows = async (posts) => {
+  const byCoordinate = new Map();
+  const postCoordinatePairs = [];
+  const seenPostCoordinates = new Set();
+
+  for (const post of posts) {
+    const normalized = normalizeProjectPayload(post.payload, { sourceFile: `${sanitizeFileId(post.postId)}.json` });
+    for (const location of normalized.locations || []) {
+      const cacheKey = toGeocodeCacheKey(location.latitude, location.longitude);
+      if (!cacheKey) continue;
+      const postCoordKey = `${post.postId}::${cacheKey}`;
+      if (seenPostCoordinates.has(postCoordKey)) continue;
+      seenPostCoordinates.add(postCoordKey);
+      postCoordinatePairs.push({ postId: post.postId, cacheKey });
+      if (!byCoordinate.has(cacheKey)) {
+        byCoordinate.set(cacheKey, { latitude: location.latitude, longitude: location.longitude });
+      }
+    }
+  }
+
+  if (postCoordinatePairs.length === 0) {
+    return { rows: [], uniqueCoordinates: 0, cacheHits: 0, cacheMisses: 0, cacheWrites: 0 };
+  }
+
+  const geocodeCache = await loadGeocodeCache(geocodeCachePath);
+  const geocodedByKey = new Map();
+  let cacheHits = 0;
+  let cacheMisses = 0;
+
+  for (const [cacheKey, coordinate] of byCoordinate.entries()) {
+    try {
+      const geocoded = await reverseGeocodeWithCache({
+        latitude: coordinate.latitude,
+        longitude: coordinate.longitude,
+        cache: geocodeCache,
+        timeoutMs: geocodeTimeoutMs,
+        userAgent: geocodeUserAgent,
+      });
+      if (!geocoded.value) continue;
+      geocodedByKey.set(cacheKey, geocoded.value);
+      if (geocoded.fromCache) {
+        cacheHits += 1;
+      } else {
+        cacheMisses += 1;
+        await sleep(1100);
+      }
+    } catch (error) {
+      console.warn(`Reverse geocoding failed for ${cacheKey}:`, error instanceof Error ? error.message : error);
+    }
+  }
+
+  if (!dryRun && cacheMisses > 0) {
+    await writeGeocodeCache(geocodeCachePath, geocodeCache);
+  }
+
+  const rows = postCoordinatePairs.map(({ postId, cacheKey }) => {
+    const metadata = geocodedByKey.get(cacheKey) || {};
+    const [lat, lon] = cacheKey.split(',');
+    return {
+      post_id: postId,
+      lat,
+      lon,
+      city: metadata.city || '',
+      state: metadata.state || '',
+      country: metadata.country || '',
+      country_code: metadata.country_code || '',
+      display_name: metadata.display_name || '',
+    };
+  });
+
+  return { rows, uniqueCoordinates: byCoordinate.size, cacheHits, cacheMisses, cacheWrites: cacheMisses };
+};
+
+const stageLocationsDir = async (locationRows) => {
+  const tempLocationsDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ushahidi-location-metadata-'));
+  const existingLocationFiles = await listLocationCsvFiles(locationsDir);
+  for (const [index, filePath] of existingLocationFiles.entries()) {
+    const destination = path.join(tempLocationsDir, `${index}-${path.basename(filePath)}`);
+    await fs.copyFile(filePath, destination);
+  }
+  if (locationRows.length > 0) {
+    await writeLocationsCsv(locationRows, path.join(tempLocationsDir, 'sync-discovered-locations.csv'));
+  }
+  return { tempLocationsDir, existingFilesCopied: existingLocationFiles.length };
+};
 
 const client = await pool.connect();
 
@@ -234,15 +372,25 @@ try {
     const newestPostId = newPosts[0].postId;
     const importOrder = [...newPosts].reverse();
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ushahidi-post-sync-'));
+    const locationMetadata = await buildSyncLocationMetadataRows(importOrder);
+    const { tempLocationsDir, existingFilesCopied } = await stageLocationsDir(locationMetadata.rows);
 
     try {
       for (const post of importOrder) {
         const filePath = path.join(tempDir, `${sanitizeFileId(post.postId)}.json`);
         await fs.writeFile(filePath, `${JSON.stringify(post.payload, null, 2)}\n`, 'utf8');
       }
+      console.log(
+        `Prepared ${locationMetadata.rows.length} location metadata row(s) for ${locationMetadata.uniqueCoordinates} unique coordinate(s); `
+        + `cache hits: ${locationMetadata.cacheHits}, misses: ${locationMetadata.cacheMisses}`
+      );
+      console.log(
+        `Staged location metadata in ${tempLocationsDir} (copied ${existingFilesCopied} existing locations CSV file(s))`
+      );
       console.log(`Prepared ${importOrder.length} post payload(s) in ${tempDir}`);
-      await runImporter(tempDir);
+      await runImporter(tempDir, tempLocationsDir);
     } finally {
+      await fs.rm(tempLocationsDir, { recursive: true, force: true });
       await fs.rm(tempDir, { recursive: true, force: true });
     }
 

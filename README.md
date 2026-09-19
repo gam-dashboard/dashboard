@@ -38,6 +38,7 @@ Copy `.env.local.example` to `.env.local` and fill in the values you need:
 - `USHAHIDI_POSTS_API_URL`: optional override for the Ushahidi posts endpoint used by periodic sync (defaults to `https://globalactionmosaic.api.ushahidi.io/api/v5/posts/`).
 - `USHAHIDI_PAGE_SIZE`: optional page size for periodic sync (default `50`).
 - `USHAHIDI_MAX_PAGES`: optional max pages fetched per run (default `20`).
+- `GEOCODE_CACHE_PATH`: optional path to reverse-geocode cache JSON used during sync (defaults to repo-root `.geocode_cache.json`).
 - `VITE_USE_DB_API=false`: keep `false` until the API and DB are ready.
 - `VITE_API_BASE_URL`: optional separate API origin for Render deployments.
 
@@ -91,9 +92,13 @@ npm run sync:ushahidi -- --force-full
 
 # override page controls for one run
 npm run sync:ushahidi -- --page-size 100 --max-pages 40
+
+# override reverse-geocode cache path for one run
+npm run sync:ushahidi -- --geocode-cache-path /absolute/path/to/.geocode_cache.json
 ```
 
 The sync cursor is persisted in `project_sync_state` (`sync_key='ushahidi_posts'`) so periodic runs only import posts newer than the most recently synced `post_id`.
+Newly discovered posts are also reverse-geocoded during sync and staged into importer-compatible `post_id,lat,lon,city,state,country,country_code,display_name` rows so `project_locations` gets enriched metadata on import. Reverse-geocode lookups use the shared `.geocode_cache.json` key format (`"lat.toFixed(5),lon.toFixed(5)"`) and should point at the repository-root cache file (or a configured `GEOCODE_CACHE_PATH`) to preserve cache hits across runs.
 
 ### Render Cron Job (primary scheduler)
 
