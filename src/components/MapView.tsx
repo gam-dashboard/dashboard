@@ -1354,19 +1354,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                       <div style={{ marginTop: 12 }}>
                         <strong>Goals</strong>
                         <ul>
-                          {selected.goals.map((g) => (
+                          {selected.goals.slice().sort(goalSort).map((g) => (
                             <li key={g}>{g}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {selected.categories && selected.categories.length > 0 && (
-                      <div style={{ marginTop: 12 }}>
-                        <strong>Categories</strong>
-                        <ul>
-                          {selected.categories.map((c) => (
-                            <li key={c}>{c}</li>
                           ))}
                         </ul>
                       </div>
