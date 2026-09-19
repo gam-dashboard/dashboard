@@ -156,14 +156,15 @@
   padding: 12px;
   border-radius: 6px;
   background-color: #dfe4ea;
-  overflow-x: auto;
+  max-height: 320px;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .chatbot-message.assistant .message-content pre code {
   display: block;
-  white-space: pre;
-  word-break: normal;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .chatbot-message.user .message-content {
