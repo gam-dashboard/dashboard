@@ -176,7 +176,9 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
           >
             <div className="message-content">
               {message.role === 'assistant' ? (
-                <ReactMarkdown>{message.content}</ReactMarkdown>
+                <ReactMarkdown disallowedElements={['a']} unwrapDisallowed>
+                  {message.content}
+                </ReactMarkdown>
               ) : (
                 message.content
               )}

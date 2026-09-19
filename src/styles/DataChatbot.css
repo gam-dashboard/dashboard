@@ -141,7 +141,7 @@
 }
 
 .chatbot-message.assistant .message-content code {
-  font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
 }
 
 .chatbot-message.assistant .message-content :not(pre) > code {
