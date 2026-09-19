@@ -95,7 +95,34 @@ npm run sync:ushahidi -- --page-size 100 --max-pages 40
 
 The sync cursor is persisted in `project_sync_state` (`sync_key='ushahidi_posts'`) so periodic runs only import posts newer than the most recently synced `post_id`.
 
-GitHub Actions workflow `.github/workflows/sync-ushahidi-posts.yml` runs this sync every 30 minutes (and supports manual `workflow_dispatch` runs).
+### Render Cron Job (primary scheduler)
+
+`render.yaml` defines the supported scheduler for periodic Ushahidi sync:
+
+- service type: Render Cron Job (`ushahidi-post-sync`)
+- command: `npm run sync:ushahidi`
+- schedule: every 3 minutes (`*/3 * * * *`)
+
+Required environment variables in Render:
+
+- `DATABASE_URL` (secret; do not commit it). The Blueprint keeps this as `sync: false`, so set it in the Render dashboard when creating/importing the service.
+- `PGSSLMODE=require`
+- `USHAHIDI_POSTS_API_URL` (defaults to `https://globalactionmosaic.api.ushahidi.io/api/v5/posts/`)
+
+Deployment/import steps:
+
+1. In Render, choose **New +** → **Blueprint** and select this repository.
+2. Confirm the `ushahidi-post-sync` Cron Job from `render.yaml` is detected.
+3. Set `DATABASE_URL` in the Render dashboard (Environment) to your existing Render Postgres connection string.
+   - If your existing database is outside this Blueprint, keep this as a manual secret value; do not attempt to commit credentials.
+4. Ensure `PGSSLMODE` is set to `require`.
+5. Deploy the Blueprint and verify the Cron Job runs on the every-3-minutes schedule.
+
+Operational notes:
+
+- `project_sync_state` persists the cursor (`last_post_id`), so reruns continue from the last successful sync.
+- The sync script includes retry logic for transient API failures and is designed to be idempotent with importer upserts.
+- Avoid overlapping duplicate schedulers (for example, do not run a second periodic GitHub Actions cron for the same job).
 
 If your database was created before `form_id` support was added, re-run either:
 

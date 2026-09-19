@@ -1,0 +1,15 @@
+services:
+  - type: cron
+    name: ushahidi-post-sync
+    runtime: node
+    plan: starter
+    schedule: "*/3 * * * *"
+    buildCommand: npm ci
+    startCommand: npm run sync:ushahidi
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PGSSLMODE
+        value: require
+      - key: USHAHIDI_POSTS_API_URL
+        value: https://globalactionmosaic.api.ushahidi.io/api/v5/posts/
