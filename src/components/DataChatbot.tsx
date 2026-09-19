@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import '../styles/DataChatbot.css';
 
 type RouteKey = 'global' | 'wa' | 'syria';
@@ -173,7 +174,26 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
             key={`${message.role}-${index}`}
             className={`chatbot-message ${message.role === 'user' ? 'user' : 'assistant'}`}
           >
-            <div className="message-content">{message.content}</div>
+            <div className="message-content">
+              {message.role === 'assistant' ? (
+                <ReactMarkdown
+                  components={{
+                    a: ({ children, href }) => (
+                      <span
+                        className="markdown-link"
+                        title={href || undefined}
+                      >
+                        {children}
+                      </span>
+                    ),
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              ) : (
+                message.content
+              )}
+            </div>
           </div>
         ))}
 
