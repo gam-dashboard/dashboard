@@ -134,6 +134,25 @@ const tryParseDate = (s?: string | null): Date | null => {
   return null;
 };
 
+const formatStartDate = (value?: string): string => {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+
+  // Preserve the calendar date from ISO-style values without timezone conversion.
+  const datePart = raw.match(/^(\d{4}-\d{2}-\d{2})/)?.[1];
+  if (datePart) return datePart;
+
+  // Fallback for other date formats.
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return raw;
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
 const parseNum = (v?: string): number | undefined => {
   if (v == null) return undefined;
   const s = String(v).trim();
@@ -1457,7 +1476,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
                     {selected.projectStartDate && (
                       <p>
-                        <strong>Project Start Date:</strong> {selected.projectStartDate}
+                        <strong>Project Start Date:</strong> {formatStartDate(selected.projectStartDate)}
                       </p>
                     )}
                   </div>
