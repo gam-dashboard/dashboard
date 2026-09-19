@@ -132,7 +132,7 @@ const extractNextPageUrl = (payload, currentUrl, currentPage, fetchedCount) => {
 const buildInitialUrl = () => {
   const url = new URL(apiBaseRaw);
   url.searchParams.set('page', '1');
-  url.searchParams.set('limit', String(pageSize));
+  url.searchParams.set('per_page', String(pageSize));
   return url.toString();
 };
 
