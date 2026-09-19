@@ -4,10 +4,22 @@ Dashboard (Vite + React + TypeScript + Vega-Lite)
 
 ```bash
 npm install
+
+# terminal 1: frontend
 npm run dev
+
+# terminal 2: Express API for /api/projects, /api/locations, and /api/chat
+npm run api
 ```
 
 Open http://localhost:5173
+
+For local frontend/API split development, set:
+
+```bash
+VITE_API_BASE_URL=http://localhost:10000
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+```
 
 ## Build
 
@@ -33,6 +45,10 @@ Copy `.env.local.example` to `.env.local` and fill in the values you need:
 
 - `DATABASE_URL`: Render Postgres connection string.
 - `PGSSLMODE=require`: recommended for Render-hosted Postgres.
+- `OPENAI_API_KEY`: required server-side secret for `/api/chat`. Never expose it as a `VITE_` variable.
+- `OPENAI_MODEL`: optional chatbot model override (defaults to `gpt-4o-mini`).
+- `OPENAI_BASE_URL`: optional OpenAI-compatible provider/proxy base URL.
+- `CORS_ALLOWED_ORIGINS`: optional comma-separated origins allowed to call the Express API (useful when the frontend and API run on different hosts locally or in deployment).
 - `PROJECT_JSON_DATA_DIR`: absolute or repo-relative directory containing `{post_id}.json` files.
 - `PROJECT_LOCATIONS_CSV_DIR`: optional directory containing `*locations.csv` files used to enrich city/state/country/display_name metadata.
 - `USHAHIDI_POSTS_API_URL`: optional override for the Ushahidi posts endpoint used by periodic sync (defaults to `https://globalactionmosaic.api.ushahidi.io/api/v5/posts/`).
@@ -40,7 +56,7 @@ Copy `.env.local.example` to `.env.local` and fill in the values you need:
 - `USHAHIDI_MAX_PAGES`: optional max pages fetched per run (default `20`).
 - `GEOCODE_CACHE_PATH`: optional path to reverse-geocode cache JSON used during sync (defaults to repo-root `.geocode_cache.json`).
 - `VITE_USE_DB_API=false`: keep `false` until the API and DB are ready.
-- `VITE_API_BASE_URL`: optional separate API origin for Render deployments.
+- `VITE_API_BASE_URL`: optional separate API origin for Render deployments or local Express development.
 
 ### Importing JSON into Postgres
 
@@ -143,10 +159,14 @@ When the API is deployed with `DATABASE_URL` configured:
 
 - `GET /api/projects`
 - `GET /api/projects?postId=793`
+- `GET /api/projects?formId=3,5`
 - `GET /api/locations`
 - `GET /api/locations?country=Kenya&city=Nairobi`
+- `POST /api/chat` with `{ routeKey, question, messages? }` to query a route-scoped, DB-backed chatbot context server-side
 
 If the database is not configured yet, these endpoints return an empty, non-breaking stub payload so the frontend can fall back to CSV data.
+
+`/api/chat` does not expose raw SQL or entire tables to the model. It scopes requests to known dashboard routes (`global`, `syria`, `wa`), loads a bounded project set from Postgres, computes safe aggregates/top values, selects a small set of relevant project snippets, and then calls the configured server-side LLM provider. If a route has no DB-backed records yet (currently the WA dashboard scope), the endpoint returns a clear empty-data response instead of falling back to CSVs.
 
 ### Frontend compatibility mode
 
@@ -160,7 +180,7 @@ With that flag enabled, `MapView` first tries `/api/projects`. If the API is una
 
 ## Deployment notes
 
-The current static site deployment still works unchanged. If you deploy the API on Render or another serverless host, point `VITE_API_BASE_URL` at that service and keep the same fallback behavior during the migration.
+The current static site deployment still works for the map/dashboard UI, but the re-enabled chatbot now requires a live API host for `/api/chat`. If you deploy the frontend to GitHub Pages, also deploy the Express/serverless API (for example on Render or Vercel) and point `VITE_API_BASE_URL` at that service.
 
 The Vite base is set to `/dashboard/` so the site will work as a project site at:
 

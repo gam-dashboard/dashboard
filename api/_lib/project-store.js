@@ -16,6 +16,15 @@ const parseLimit = (value, fallback) => {
   return Math.min(parsed, 5000);
 };
 
+const parseFormIds = (value) => {
+  if (value == null) return null;
+  const ids = toArray(value)
+    .flatMap((entry) => Array.isArray(entry) ? entry : String(entry).split(','))
+    .map((entry) => Number.parseInt(String(entry).trim(), 10))
+    .filter((entry) => Number.isInteger(entry));
+  return Array.from(new Set(ids));
+};
+
 const normalizeRowFallback = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   return Object.fromEntries(
@@ -37,15 +46,23 @@ const mapLocationRow = (row) => ({
 export async function listProjects(options = {}) {
   const pool = getPool();
   const postIds = parsePostIds(options.postIds);
+  const formIds = parseFormIds(options.formIds);
   const includeRaw = options.includeRaw === true;
   const limit = parseLimit(options.limit, 500);
 
+  if (Array.isArray(formIds) && formIds.length === 0) return [];
+
   const params = [];
-  let whereClause = '';
+  const conditions = [];
   if (postIds.length > 0) {
     params.push(postIds);
-    whereClause = `WHERE post_id = ANY($${params.length}::text[])`;
+    conditions.push(`post_id = ANY($${params.length}::text[])`);
   }
+  if (Array.isArray(formIds) && formIds.length > 0) {
+    params.push(formIds);
+    conditions.push(`form_id = ANY($${params.length}::int[])`);
+  }
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   params.push(limit);
 
   const projectsResult = await pool.query(
