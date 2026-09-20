@@ -1562,6 +1562,28 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                       </div>
                     )}
 
+                    {selected.seekingResources?.length > 0 && (
+                      <div style={{ marginTop: 12 }}>
+                        <strong>Seeking Resources</strong>
+                        <ul>
+                          {selected.seekingResources.slice().sort((a, b) => a.localeCompare(b)).map((resource) => (
+                            <li key={resource}>{resource}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {selected.providingResources?.length > 0 && (
+                      <div style={{ marginTop: 12 }}>
+                        <strong>Providing Resources</strong>
+                        <ul>
+                          {selected.providingResources.slice().sort((a, b) => a.localeCompare(b)).map((resource) => (
+                            <li key={resource}>{resource}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
                     {selected.orgWebsite && (
                       <p>
                         <strong>Organization Website:</strong>{' '}
