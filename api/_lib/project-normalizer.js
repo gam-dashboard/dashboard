@@ -154,6 +154,30 @@ const parseTaxonomySelectionValues = (taxonomyType, value) => (
   taxonomyType === 'goal' ? parseGoalValues(value) : parseSelectedTaxonomyValues(value)
 );
 
+const SIMPLE_TAXONOMY_VALUE_KEYS = new Set(['tag', 'label', 'name', 'title', 'text', 'value']);
+
+const isSimpleSubmittedTaxonomyItem = (value) => {
+  if (isScalarValue(value)) return true;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+
+  const entries = Object.entries(value);
+  if (entries.length === 0) return false;
+
+  return entries.every(([key, entry]) => {
+    if (!SIMPLE_TAXONOMY_VALUE_KEYS.has(normalizeKey(key))) return false;
+    if (normalizeKey(key) === 'value' && Array.isArray(entry)) {
+      return entry.every((item) => isScalarValue(item));
+    }
+    return isScalarValue(entry);
+  });
+};
+
+const isDirectSubmittedTaxonomyValue = (value) => {
+  if (isScalarValue(value)) return true;
+  if (Array.isArray(value)) return value.length > 0 && value.every((item) => isSimpleSubmittedTaxonomyItem(item));
+  return isSimpleSubmittedTaxonomyItem(value);
+};
+
 const normalizeTaxonomyType = (value) => String(value || '')
   .trim()
   .toLowerCase()
@@ -421,6 +445,7 @@ const collectSelectedTaxonomies = (payload, result) => {
       const taxonomyType = taxonomyTypeFromDirectKey(key);
       if (
         taxonomyType
+        && isDirectSubmittedTaxonomyValue(value)
         && !(
           ['goal', 'category'].includes(taxonomyType)
           && authoritativeTypes.has(taxonomyType)

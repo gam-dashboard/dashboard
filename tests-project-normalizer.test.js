@@ -271,6 +271,9 @@ test('generic nested tags, descriptions, and option catalogs do not produce taxo
     nested: {
       tag: 'Arbitrary nested tag',
       description: 'Goal 12: Goal Label 12 hidden in description',
+      categories: [
+        { tag: 'Metadata Category', description: 'Catalog only' },
+      ],
       options: [
         { tag: 'Goal 14: Goal Label 14' },
       ],
