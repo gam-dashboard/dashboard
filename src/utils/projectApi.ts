@@ -28,6 +28,8 @@ export type ApiProject = {
   video2?: string;
   projectStartDate?: string;
   tags?: string[];
+  seekingResources?: string[];
+  providingResources?: string[];
   rawPayload?: unknown;
 };
 
@@ -83,6 +85,8 @@ const normalizeProject = (project: any): ApiProject => ({
   video2: project.video2 ? String(project.video2) : undefined,
   projectStartDate: project.projectStartDate ? String(project.projectStartDate) : undefined,
   tags: Array.isArray(project.tags) ? project.tags.map((value: unknown) => String(value)) : [],
+  seekingResources: Array.isArray(project.seekingResources) ? project.seekingResources.map((value: unknown) => String(value)) : [],
+  providingResources: Array.isArray(project.providingResources) ? project.providingResources.map((value: unknown) => String(value)) : [],
   rawPayload: project.rawPayload,
 });
 
