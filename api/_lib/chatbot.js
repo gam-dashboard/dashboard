@@ -84,6 +84,8 @@ const formatProjectForSearch = (project) => {
     .toLowerCase();
 };
 
+const compareProjectsByPostDateDesc = (left, right) => String(right.postDate || '').localeCompare(String(left.postDate || ''));
+
 const mapProjectForChat = (project) => {
   const description = String(project.description || '').trim().slice(0, MAX_DESCRIPTION_LENGTH);
   const descriptionSnippet = description.slice(0, 280);
@@ -212,14 +214,17 @@ export const selectRelevantProjects = (projects, question) => {
     .filter(Boolean)
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      return String(b.project.postDate || '').localeCompare(String(a.project.postDate || ''));
+      return compareProjectsByPostDateDesc(a.project, b.project);
     })
     .slice(0, MAX_RELEVANT_PROJECTS)
     .map(({ project }) => mapProjectForChat(project));
 
   if (scored.length > 0) return scored;
 
-  return projects.slice(0, MAX_RELEVANT_PROJECTS).map((project) => mapProjectForChat(project));
+  return [...projects]
+    .sort(compareProjectsByPostDateDesc)
+    .slice(0, MAX_RELEVANT_PROJECTS)
+    .map((project) => mapProjectForChat(project));
 };
 
 export const buildChatContext = ({ routeConfig, projects, question }) => ({

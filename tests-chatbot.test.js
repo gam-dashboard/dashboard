@@ -110,8 +110,9 @@ test('chat context summarizes and selects relevant projects', () => {
   assert.equal(relevant[0].descriptionSnippet, relevant[0].description.slice(0, 280));
 
   const fallback = selectRelevantProjects(sampleProjects, 'unmatched query terms');
-  assert.equal(fallback[0].orgWebsite, 'https://example.org');
-  assert.equal(fallback[1].orgWebsite, '');
+  assert.equal(fallback[0].postId, '101');
+  assert.equal(fallback[0].orgWebsite, '');
+  assert.equal(fallback[1].orgWebsite, 'https://example.org');
 
   const context = buildChatContext({
     routeConfig: getChatRouteConfig('global'),
