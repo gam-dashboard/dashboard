@@ -241,6 +241,14 @@ const TAXONOMY_FIELD_ALIASES = new Map([
   ['providing_resources', ['providing resources']],
 ]);
 
+const DIRECT_KEY_TAXONOMY_ALIASES = new Map([
+  ['goal', ['sustainable development goals', 'sustainable development goal', 'sdg', 'sdgs', 'goals']],
+  ['category', ['categories']],
+  ['tag', ['tags']],
+  ['seeking_resources', ['seeking resources']],
+  ['providing_resources', ['providing resources']],
+]);
+
 const taxonomyTypeFromField = (...labels) => {
   for (const label of labels) {
     const normalized = normalizeKey(label);
@@ -248,6 +256,15 @@ const taxonomyTypeFromField = (...labels) => {
     for (const [taxonomyType, aliases] of TAXONOMY_FIELD_ALIASES.entries()) {
       if (aliases.includes(normalized)) return taxonomyType;
     }
+  }
+  return '';
+};
+
+const taxonomyTypeFromDirectKey = (label) => {
+  const normalized = normalizeKey(label);
+  if (!normalized) return '';
+  for (const [taxonomyType, aliases] of DIRECT_KEY_TAXONOMY_ALIASES.entries()) {
+    if (aliases.includes(normalized)) return taxonomyType;
   }
   return '';
 };
@@ -367,7 +384,34 @@ const collectSelectedTaxonomies = (payload, result) => {
     }
 
     for (const [key, value] of Object.entries(node)) {
-      if (skipKeys.has(normalizeKey(key))) continue;
+      const normalizedKey = normalizeKey(key);
+      if (skipKeys.has(normalizedKey)) continue;
+      if (value === resultCategories) {
+        visit(value);
+        continue;
+      }
+
+      const taxonomyType = taxonomyTypeFromDirectKey(key);
+      if (
+        taxonomyType
+        && !(
+          ['goal', 'category'].includes(taxonomyType)
+          && authoritativeTypes.has(taxonomyType)
+        )
+      ) {
+        const values = taxonomyType === 'goal'
+          ? parseGoalValues(value)
+          : parseSelectedTaxonomyValues(value);
+        addParsedEntries(
+          taxonomyType,
+          {
+            source: 'field.key',
+            field_label: key,
+            submitted_value: value,
+          },
+          values
+        );
+      }
       visit(value);
     }
   };

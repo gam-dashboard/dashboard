@@ -193,6 +193,30 @@ test('field categories still import when result.categories only supplies SDGs', 
   assert.deepEqual(taxonomyValues(project, 'category'), ['UN Civil Society Conference 2024']);
 });
 
+test('recognized taxonomy keys still import from unlabeled wrapper objects', () => {
+  const payload = {
+    result: {
+      id: '782',
+      form_id: 3,
+      title: 'Project 782',
+      content: 'Wrapper taxonomy test',
+      wrapper: {
+        tags: 'Community-led Response',
+        'Seeking Resources': 'Funding, Partners',
+        metadata: {
+          tag: 'Nested metadata tag should not import',
+        },
+      },
+    },
+  };
+
+  const project = normalizeProjectPayload(payload, { sourceFile: '782.json' });
+
+  assert.deepEqual(taxonomyValues(project, 'tag'), ['Community-led Response']);
+  assert.deepEqual(taxonomyValues(project, 'seeking_resources'), ['Funding', 'Partners']);
+  assert.ok(!project.taxonomies.some((entry) => entry.value === 'Nested metadata tag should not import'));
+});
+
 test('generic nested tags, descriptions, and option catalogs do not produce taxonomy rows', () => {
   const payload = {
     result: {
