@@ -150,6 +150,10 @@ const parseSelectedTaxonomyValues = (value, { splitScalars = true } = {}) => {
   return [];
 };
 
+const parseTaxonomySelectionValues = (taxonomyType, value) => (
+  taxonomyType === 'goal' ? parseGoalValues(value) : parseSelectedTaxonomyValues(value)
+);
+
 const normalizeTaxonomyType = (value) => String(value || '')
   .trim()
   .toLowerCase()
@@ -308,6 +312,28 @@ const collectSelectedTaxonomies = (payload, result) => {
     values.forEach((value) => addEntry(taxonomyType, value, rawValue));
   };
 
+  const pickSubmittedFieldValue = (node, taxonomyType) => {
+    const candidates = [
+      node.values,
+      node.answers,
+      node.responses,
+      node.data,
+      node.value,
+      node.answer,
+      node.response,
+    ];
+
+    for (const candidate of candidates) {
+      if (candidate === undefined) continue;
+      const values = parseTaxonomySelectionValues(taxonomyType, candidate);
+      if (values.length > 0) {
+        return { submittedValue: candidate, values };
+      }
+    }
+
+    return { submittedValue: undefined, values: [] };
+  };
+
   const resultCategories = Array.isArray(result?.categories) ? result.categories : [];
   if (resultCategories.length > 0) {
     for (const selectedCategory of resultCategories) {
@@ -336,7 +362,7 @@ const collectSelectedTaxonomies = (payload, result) => {
     }
   }
 
-  const skipKeys = new Set(['options', 'children', 'description']);
+  const skipKeys = new Set(['options', 'description']);
   const seenNodes = new WeakSet();
 
   const visit = (node) => {
@@ -349,34 +375,31 @@ const collectSelectedTaxonomies = (payload, result) => {
       return;
     }
 
-    const fieldValue = firstDefined(node.value, node.values, node.answer, node.answers, node.response, node.responses, node.data);
-    if (fieldValue !== undefined) {
-      const taxonomyType = taxonomyTypeFromField(
-        node.key,
-        node.label,
-        node.name,
-        node.slug,
-        node.field_key,
-        node.field_label,
-        node.identifier
-      );
+    const taxonomyType = taxonomyTypeFromField(
+      node.key,
+      node.label,
+      node.name,
+      node.slug,
+      node.field_key,
+      node.field_label,
+      node.identifier
+    );
 
-      if (
-        taxonomyType
-        && !(
-          ['goal', 'category'].includes(taxonomyType)
-          && authoritativeTypes.has(taxonomyType)
-        )
-      ) {
-        const values = taxonomyType === 'goal'
-          ? parseGoalValues(fieldValue)
-          : parseSelectedTaxonomyValues(fieldValue);
+    if (
+      taxonomyType
+      && !(
+        ['goal', 'category'].includes(taxonomyType)
+        && authoritativeTypes.has(taxonomyType)
+      )
+    ) {
+      const { submittedValue, values } = pickSubmittedFieldValue(node, taxonomyType);
+      if (submittedValue !== undefined) {
         addParsedEntries(
           taxonomyType,
           {
             source: 'field.value',
             field_label: firstDefined(node.label, node.field_label, node.key, node.name, node.identifier) || '',
-            submitted_value: fieldValue,
+            submitted_value: submittedValue,
           },
           values
         );
@@ -385,6 +408,10 @@ const collectSelectedTaxonomies = (payload, result) => {
 
     for (const [key, value] of Object.entries(node)) {
       const normalizedKey = normalizeKey(key);
+      if (normalizedKey === 'children') {
+        visit(value);
+        continue;
+      }
       if (skipKeys.has(normalizedKey)) continue;
       if (value === resultCategories) {
         visit(value);
@@ -399,9 +426,7 @@ const collectSelectedTaxonomies = (payload, result) => {
           && authoritativeTypes.has(taxonomyType)
         )
       ) {
-        const values = taxonomyType === 'goal'
-          ? parseGoalValues(value)
-          : parseSelectedTaxonomyValues(value);
+        const values = parseTaxonomySelectionValues(taxonomyType, value);
         addParsedEntries(
           taxonomyType,
           {

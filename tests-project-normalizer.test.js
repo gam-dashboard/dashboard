@@ -217,6 +217,35 @@ test('recognized taxonomy keys still import from unlabeled wrapper objects', () 
   assert.ok(!project.taxonomies.some((entry) => entry.value === 'Nested metadata tag should not import'));
 });
 
+test('children-wrapped taxonomy fields prefer submitted collections over display-only value text', () => {
+  const payload = {
+    result: {
+      id: '783',
+      form_id: 3,
+      title: 'Project 783',
+      content: 'Children wrapper taxonomy test',
+      sections: [
+        {
+          children: [
+            {
+              label: 'Tags',
+              value: 'Display only label text',
+              values: [{ tag: 'Selected Tag' }],
+              options: [{ tag: 'Unselected Tag' }],
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  const project = normalizeProjectPayload(payload, { sourceFile: '783.json' });
+
+  assert.deepEqual(taxonomyValues(project, 'tag'), ['Selected Tag']);
+  assert.ok(!project.taxonomies.some((entry) => entry.value === 'Display only label text'));
+  assert.ok(!project.taxonomies.some((entry) => entry.value === 'Unselected Tag'));
+});
+
 test('generic nested tags, descriptions, and option catalogs do not produce taxonomy rows', () => {
   const payload = {
     result: {
