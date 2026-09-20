@@ -193,6 +193,81 @@ test('field categories still import when result.categories only supplies SDGs', 
   assert.deepEqual(taxonomyValues(project, 'category'), ['UN Civil Society Conference 2024']);
 });
 
+test('795-style payload classifies mixed result.categories resource selections by field type', () => {
+  const payload = {
+    result: {
+      id: '795',
+      form_id: 3,
+      title: 'Project 795',
+      content: 'Mixed categories/resources payload',
+      categories: [
+        { tag: 'Goal 4: Quality Education', parent: 'Sustainable Development Goals (SDGs)' },
+        { tag: 'Goal 6: Clean Water and Sanitation', parent: 'Sustainable Development Goals (SDGs)' },
+        { tag: 'Goal 13: Climate Action', parent: 'Sustainable Development Goals (SDGs)' },
+        { tag: 'Seeking Funding', parent: 'Seeking Resources' },
+        { tag: 'Seeking Leadership Training', parent: 'Seeking Resources' },
+        { tag: 'Seeking Mentorship', parent: 'Seeking Resources' },
+        { tag: 'Providing Volunteers', parent: 'Providing Resources' },
+        { tag: 'Providing Access to International Conferences & Venues', parent: 'Providing Resources' },
+      ],
+      values: [
+        {
+          label: 'Sustainable Development Goals',
+          value: [
+            { tag: 'Goal 4: Quality Education' },
+            { tag: 'Goal 6: Clean Water and Sanitation' },
+            { tag: 'Goal 13: Climate Action' },
+          ],
+          options: goalOptions,
+        },
+        {
+          label: 'Seeking Resources',
+          value: [
+            { tag: 'Seeking Funding' },
+            { tag: 'Seeking Leadership Training' },
+            { tag: 'Seeking Mentorship' },
+          ],
+          options: [{ tag: 'Seeking Advisory Support' }],
+        },
+        {
+          label: 'Providing Resources',
+          value: [
+            { tag: 'Providing Volunteers' },
+            { tag: 'Providing Access to International Conferences & Venues' },
+          ],
+          options: [{ tag: 'Providing Funding' }],
+        },
+        { label: 'Is your organization youth-led or for youth?', value: 'No' },
+        { label: 'Is your organization women-led?', value: 'Yes' },
+        { label: 'Government Entity Partnerships', value: 'Ministry of Health' },
+      ],
+    },
+  };
+
+  const project = normalizeProjectPayload(payload, { sourceFile: '795.json' });
+
+  assert.deepEqual(taxonomyValues(project, 'goal'), [
+    'Goal 13: Climate Action',
+    'Goal 4: Quality Education',
+    'Goal 6: Clean Water and Sanitation',
+  ]);
+  assert.deepEqual(taxonomyValues(project, 'seeking_resources'), [
+    'Seeking Funding',
+    'Seeking Leadership Training',
+    'Seeking Mentorship',
+  ]);
+  assert.deepEqual(taxonomyValues(project, 'providing_resources'), [
+    'Providing Access to International Conferences & Venues',
+    'Providing Volunteers',
+  ]);
+  assert.deepEqual(taxonomyValues(project, 'category'), []);
+  assert.ok(!project.taxonomies.some((entry) => (
+    entry.taxonomy_type === 'category'
+    && ['Seeking Funding', 'Seeking Leadership Training', 'Seeking Mentorship', 'Providing Volunteers', 'Providing Access to International Conferences & Venues'].includes(entry.value)
+  )));
+  assert.ok(!project.taxonomies.some((entry) => ['No', 'Yes', 'Ministry of Health'].includes(entry.value)));
+});
+
 test('recognized taxonomy keys still import from unlabeled wrapper objects', () => {
   const payload = {
     result: {

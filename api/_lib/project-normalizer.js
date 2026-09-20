@@ -314,6 +314,20 @@ const isSdgDefinitionValue = (value) => {
   return labels.some((label) => normalizeKey(label).includes(SDG_PARENT_LABEL));
 };
 
+const taxonomyTypeFromSelectionContext = (value) => {
+  if (!value || typeof value !== 'object') return '';
+  return taxonomyTypeFromField(
+    value.parent,
+    value.group,
+    value.group_label,
+    value.category,
+    value.category_label,
+    value.field,
+    value.field_label,
+    value.label
+  );
+};
+
 const collectSelectedTaxonomies = (payload, result) => {
   const entries = [];
   const seen = new Set();
@@ -369,6 +383,7 @@ const collectSelectedTaxonomies = (payload, result) => {
       }
 
       const categoryValues = parseSelectedTaxonomyValues(selectedCategory, { splitScalars: false });
+      const taxonomyType = taxonomyTypeFromSelectionContext(selectedCategory) || 'category';
       if (
         categoryValues.length === 0
         || isSdgDefinitionValue(selectedCategory)
@@ -378,11 +393,11 @@ const collectSelectedTaxonomies = (payload, result) => {
       }
 
       addParsedEntries(
-        'category',
+        taxonomyType,
         { source: 'result.categories', submitted_value: selectedCategory },
         categoryValues
       );
-      authoritativeTypes.add('category');
+      authoritativeTypes.add(taxonomyType);
     }
   }
 
