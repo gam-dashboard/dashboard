@@ -107,7 +107,7 @@ test('chat context summarizes and selects relevant projects', () => {
   assert.equal(relevant[0].projectStartDate, '2026-01-15');
   assert.ok(relevant[0].description.includes('Detailed implementation support.'));
   assert.ok(relevant[0].description.length > 280);
-  assert.equal(relevant[0].descriptionSnippet, relevant[0].description);
+  assert.equal(relevant[0].descriptionSnippet, relevant[0].description.slice(0, 280));
 
   const fallback = selectRelevantProjects(sampleProjects, 'unmatched query terms');
   assert.equal(fallback[0].orgWebsite, 'https://example.org');

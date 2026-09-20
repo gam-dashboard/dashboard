@@ -86,6 +86,7 @@ const formatProjectForSearch = (project) => {
 
 const mapProjectForChat = (project) => {
   const description = String(project.description || '').trim().slice(0, MAX_DESCRIPTION_LENGTH);
+  const descriptionSnippet = description.slice(0, 280);
 
   return {
     postId: project.postId,
@@ -100,7 +101,7 @@ const mapProjectForChat = (project) => {
       .filter(Boolean)
       .slice(0, 3),
     description,
-    descriptionSnippet: description,
+    descriptionSnippet,
     orgWebsite: project.orgWebsite || '',
     supportingSites: project.supportingSites || '',
     video: project.video || '',
