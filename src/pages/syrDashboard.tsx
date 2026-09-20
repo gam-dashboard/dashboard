@@ -13,9 +13,12 @@ const altConfig: MapViewConfig = {
   projectCategoriesCsvUrl: altCategoriesCsvUrl,
   locationsCsvUrl: altLocationsCsvUrl,
   showGoals: true,
+  showResourceFilters: true,
   pageTitle: 'Projects For Syria',
-  goalsOpenLabel: 'Filter by SDG', // won't show because showGoals is false, but left as example
+  goalsOpenLabel: 'Filter by SDG',
   goalsCloseLabel: 'Filter by SDG',
+  resourceFiltersOpenLabel: 'Filter by Resources',
+  resourceFiltersCloseLabel: 'Filter by Resources',
   clearLabel: 'Clear selection',
   allowedFormIds: [7],
 };

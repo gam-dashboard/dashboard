@@ -17,10 +17,13 @@ export type MapViewConfig = {
   projectCategoriesCsvUrl?: string;
   locationsCsvUrl?: string;
   showGoals?: boolean; // default true
+  showResourceFilters?: boolean;
   pageTitle?: string;
   // small label overrides (optional)
   goalsOpenLabel?: string;
   goalsCloseLabel?: string;
+  resourceFiltersOpenLabel?: string;
+  resourceFiltersCloseLabel?: string;
   clearLabel?: string;
   allowedFormIds?: number[];
   // any other label/terminology overrides can be added here
@@ -48,6 +51,8 @@ type Project = {
   org: string;
   goals: string[];
   categories: string[];
+  seekingResources: string[];
+  providingResources: string[];
   searchText: string;
   postDate: Date | null;
   row: CsvRow;
@@ -202,6 +207,23 @@ const makeFieldGetter = (row: CsvRow, headerNormToOrig: Map<string, string[]>) =
     return '';
   };
 
+const parseTaxonomyList = (raw: string | undefined): string[] => {
+  if (!raw) return [];
+  const seen = new Set<string>();
+  const values: string[] = [];
+  String(raw)
+    .split(/[\n|;,]+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .forEach((entry) => {
+      const normalizedEntry = entry.toLowerCase();
+      if (seen.has(normalizedEntry)) return;
+      seen.add(normalizedEntry);
+      values.push(entry);
+    });
+  return values;
+};
+
 const derivePlace = (l?: { city?: string; state?: string; display_name?: string; country?: string }): string | undefined =>
   l ? (l.city || l.state || l.display_name || l.country || undefined) : undefined;
 
@@ -243,8 +265,14 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   const [uniqueGoals, setUniqueGoals] = useState<string[]>([]);
   const [activeGoals, setActiveGoals] = useState<string[]>([]);
   const [filterMinimized, setFilterMinimized] = useState<boolean>(true); // used as collapsed/expanded for goals
+  const [uniqueSeekingResources, setUniqueSeekingResources] = useState<string[]>([]);
+  const [activeSeekingResources, setActiveSeekingResources] = useState<string[]>([]);
+  const [uniqueProvidingResources, setUniqueProvidingResources] = useState<string[]>([]);
+  const [activeProvidingResources, setActiveProvidingResources] = useState<string[]>([]);
+  const [resourceFilterMinimized, setResourceFilterMinimized] = useState<boolean>(true);
 
   const goalsDropdownRef = useRef<HTMLDivElement | null>(null);
+  const resourceFilterDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
@@ -360,20 +388,32 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   const applyLoadedProjects = (loadedProjects: Project[]) => {
     const byPostId = new Map<string, Project>();
     loadedProjects.forEach((project) => {
-      byPostId.set(project.postId, project);
+      byPostId.set(project.postId, {
+        ...project,
+        goals: Array.isArray(project.goals) ? project.goals : [],
+        categories: Array.isArray(project.categories) ? project.categories : [],
+        seekingResources: Array.isArray(project.seekingResources) ? project.seekingResources : [],
+        providingResources: Array.isArray(project.providingResources) ? project.providingResources : [],
+      });
     });
 
     const allGoals = new Set<string>();
     const allCities = new Set<string>();
+    const allSeekingResources = new Set<string>();
+    const allProvidingResources = new Set<string>();
 
     byPostId.forEach((project) => {
       project.goals.forEach((goal) => allGoals.add(goal));
+      project.seekingResources.forEach((resource) => allSeekingResources.add(resource));
+      project.providingResources.forEach((resource) => allProvidingResources.add(resource));
       project.locations.forEach((location) => {
         if (location.city) allCities.add(location.city);
       });
     });
 
     setUniqueGoals(Array.from(allGoals).sort(goalSort));
+    setUniqueSeekingResources(Array.from(allSeekingResources).sort((a, b) => a.localeCompare(b)));
+    setUniqueProvidingResources(Array.from(allProvidingResources).sort((a, b) => a.localeCompare(b)));
     setUniqueCities(Array.from(allCities).sort((a, b) => a.localeCompare(b)));
     setProjects(byPostId);
   };
@@ -398,6 +438,14 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             const n = normalize(h);
             return n.includes('sustainable development goal') || n.includes('sdg');
           });
+          const seekingResourceHeaders = allHeaders.filter((h) => normalize(h).includes('seeking resources'));
+          const providingResourceHeaders = allHeaders.filter((h) => normalize(h).includes('providing resources'));
+          const categoryHeaders = (c.headers || []).filter((h) => {
+            const n = normalize(h);
+            return n === 'categories' || n === 'category';
+          });
+          const categorySeekingResourceHeaders = (c.headers || []).filter((h) => normalize(h).includes('seeking resources'));
+          const categoryProvidingResourceHeaders = (c.headers || []).filter((h) => normalize(h).includes('providing resources'));
 
           const byPostId = new Map<string, Project>();
           const missingPostId: number[] = [];
@@ -421,6 +469,12 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               if (raw && String(raw).trim() !== '') goals.push(...parseGoals(raw));
             }
             goals = Array.from(new Set(goals));
+            const seekingResources = Array.from(new Set(
+              seekingResourceHeaders.flatMap((h) => parseTaxonomyList(r[h]))
+            ));
+            const providingResources = Array.from(new Set(
+              providingResourceHeaders.flatMap((h) => parseTaxonomyList(r[h]))
+            ));
 
             const dateStr = getField(['post date (utc)', 'post date', 'created (utc)', 'created', 'date']);
             const postDate = dateStr ? tryParseDate(dateStr) : null;
@@ -440,6 +494,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               org,
               goals,
               categories: [],
+              seekingResources,
+              providingResources,
               searchText,
               postDate,
               // Add new fields
@@ -461,14 +517,34 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
             if (!postId) { orphanCatRows.push(idx); return; }
             const project = byPostId.get(postId);
             if (!project) { orphanCatRows.push(idx); return; }
-            const raw = String(cr['Categories'] ?? cr['categories'] ?? cr['Category'] ?? '').trim();
-            if (!raw) return;
-            const parts = raw.split(/[,;|]+/).map(s => s.trim()).filter(Boolean);
-            const existing = new Set(project.categories.map(x => x.toLowerCase()));
-            for (const p of parts) {
-              if (!existing.has(p.toLowerCase())) {
-                project.categories.push(p);
-                existing.add(p.toLowerCase());
+            const rawCategoryParts = categoryHeaders.flatMap((header) => parseTaxonomyList(cr[header]));
+            if (rawCategoryParts.length > 0) {
+              const existing = new Set(project.categories.map(x => x.toLowerCase()));
+              for (const p of rawCategoryParts) {
+                if (!existing.has(p.toLowerCase())) {
+                  project.categories.push(p);
+                  existing.add(p.toLowerCase());
+                }
+              }
+            }
+            const seekingResourceParts = categorySeekingResourceHeaders.flatMap((header) => parseTaxonomyList(cr[header]));
+            if (seekingResourceParts.length > 0) {
+              const existing = new Set(project.seekingResources.map((value) => value.toLowerCase()));
+              for (const part of seekingResourceParts) {
+                if (!existing.has(part.toLowerCase())) {
+                  project.seekingResources.push(part);
+                  existing.add(part.toLowerCase());
+                }
+              }
+            }
+            const providingResourceParts = categoryProvidingResourceHeaders.flatMap((header) => parseTaxonomyList(cr[header]));
+            if (providingResourceParts.length > 0) {
+              const existing = new Set(project.providingResources.map((value) => value.toLowerCase()));
+              for (const part of providingResourceParts) {
+                if (!existing.has(part.toLowerCase())) {
+                  project.providingResources.push(part);
+                  existing.add(part.toLowerCase());
+                }
               }
             }
             // also add categories to searchText
@@ -476,10 +552,6 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
               project.searchText = [project.searchText, project.categories.join(' ')].filter(Boolean).join(' ').toLowerCase();
             }
           });
-
-          const allGoals = new Set<string>();
-          byPostId.forEach(p => p.goals.forEach(g => allGoals.add(g)));
-          setUniqueGoals(Array.from(allGoals).sort(goalSort));
 
           console.group('SDG_projects.csv + un_civic_2024.csv + project_categories.csv → projects');
           console.log(`parsed rows: ${rows.length}`);
@@ -651,11 +723,15 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
   const filteredProjects = useMemo(() => {
     const goalFilterActive = (config?.showGoals ?? true) && activeGoals.length > 0;
+    const seekingResourceFilterActive = (config?.showResourceFilters ?? false) && activeSeekingResources.length > 0;
+    const providingResourceFilterActive = (config?.showResourceFilters ?? false) && activeProvidingResources.length > 0;
     const q = debouncedQuery.trim();
     const terms = q ? q.split(/\s+/).filter(Boolean) : [];
 
     return Array.from(projects.values()).filter((p) => {
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
+      if (seekingResourceFilterActive && !p.seekingResources.some((resource) => activeSeekingResources.includes(resource))) return false;
+      if (providingResourceFilterActive && !p.providingResources.some((resource) => activeProvidingResources.includes(resource))) return false;
 
       if (selectedLocationFilters.length > 0) {
         const hasMatch = p.locations.some(l => {
@@ -682,7 +758,17 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
       if (terms.length > 0 && !terms.every(t => p.searchText.includes(t))) return false;
       return true;
     });
-  }, [projects, activeGoals, debouncedQuery, activeCity, selectedLocationFilters]);
+  }, [
+    projects,
+    activeGoals,
+    activeSeekingResources,
+    activeProvidingResources,
+    debouncedQuery,
+    activeCity,
+    selectedLocationFilters,
+    config?.showGoals,
+    config?.showResourceFilters,
+  ]);
 
   const filteredMarkers = useMemo((): ProjectMarker[] => {
     return filteredProjects.flatMap((project) => {
@@ -1071,7 +1157,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
   }, [selected]);
 
   useEffect(() => {
-    if (filterMinimized && !markerChooser) return;
+    if (filterMinimized && resourceFilterMinimized && !markerChooser) return;
 
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target as Node | null;
@@ -1079,6 +1165,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
       if (!filterMinimized && goalsDropdownRef.current && !goalsDropdownRef.current.contains(target)) {
         setFilterMinimized(true);
+      }
+      if (!resourceFilterMinimized && resourceFilterDropdownRef.current && !resourceFilterDropdownRef.current.contains(target)) {
+        setResourceFilterMinimized(true);
       }
 
       if (markerChooser) {
@@ -1090,7 +1179,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [filterMinimized, markerChooser]);
+  }, [filterMinimized, resourceFilterMinimized, markerChooser]);
 
   return (
     <div className="breakout">
@@ -1216,6 +1305,95 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                           {uniqueGoals.length > 0 && (
                             <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
                               <button onClick={() => setActiveGoals([])} className="mapview-action-button">
+                                {config?.clearLabel ?? 'Clear'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {(config?.showResourceFilters ?? false) && (
+                  <div className="mapview-dropdown-wrapper" ref={resourceFilterDropdownRef}>
+                    <button
+                      onClick={() => setResourceFilterMinimized((value) => !value)}
+                      className="mapview-action-button"
+                      title={resourceFilterMinimized ? (config?.resourceFiltersOpenLabel ?? 'Filter by Resources') : (config?.resourceFiltersCloseLabel ?? 'Filter by Resources')}
+                    >
+                      {resourceFilterMinimized ? (config?.resourceFiltersOpenLabel ?? 'Filter by Resources') : (config?.resourceFiltersCloseLabel ?? 'Filter by Resources')}
+                    </button>
+
+                    {!resourceFilterMinimized && (
+                      <div className="mapview-dropdown">
+                        <div className="mapview-dropdown-panel">
+                          {uniqueSeekingResources.length === 0 && uniqueProvidingResources.length === 0 ? (
+                            <div style={{ fontSize: 12, color: '#666' }}>
+                              {projects.size === 0 ? 'Loading resources…' : 'No resource tags available.'}
+                            </div>
+                          ) : (
+                            <>
+                              <div className="mapview-dropdown-section">
+                                <div className="mapview-dropdown-section-title">Seeking Resources</div>
+                                {uniqueSeekingResources.length === 0 ? (
+                                  <div style={{ fontSize: 12, color: '#666' }}>No seeking resource tags available.</div>
+                                ) : (
+                                  uniqueSeekingResources.map((resource) => {
+                                    const checked = activeSeekingResources.includes(resource);
+                                    return (
+                                      <label key={resource} className="mapview-dropdown-option">
+                                        <input
+                                          type="checkbox"
+                                          checked={checked}
+                                          onChange={() => {
+                                            setActiveSeekingResources((prev) => {
+                                              if (prev.includes(resource)) return prev.filter((value) => value !== resource);
+                                              return [...prev, resource];
+                                            });
+                                          }}
+                                        />
+                                        {resource}
+                                      </label>
+                                    );
+                                  })
+                                )}
+                              </div>
+                              <div className="mapview-dropdown-section">
+                                <div className="mapview-dropdown-section-title">Providing Resources</div>
+                                {uniqueProvidingResources.length === 0 ? (
+                                  <div style={{ fontSize: 12, color: '#666' }}>No providing resource tags available.</div>
+                                ) : (
+                                  uniqueProvidingResources.map((resource) => {
+                                    const checked = activeProvidingResources.includes(resource);
+                                    return (
+                                      <label key={resource} className="mapview-dropdown-option">
+                                        <input
+                                          type="checkbox"
+                                          checked={checked}
+                                          onChange={() => {
+                                            setActiveProvidingResources((prev) => {
+                                              if (prev.includes(resource)) return prev.filter((value) => value !== resource);
+                                              return [...prev, resource];
+                                            });
+                                          }}
+                                        />
+                                        {resource}
+                                      </label>
+                                    );
+                                  })
+                                )}
+                              </div>
+                            </>
+                          )}
+                          {(uniqueSeekingResources.length > 0 || uniqueProvidingResources.length > 0) && (
+                            <div style={{ marginTop: 8, display: 'flex', gap: 8, paddingTop: 8, borderTop: '1px solid #eee' }}>
+                              <button
+                                onClick={() => {
+                                  setActiveSeekingResources([]);
+                                  setActiveProvidingResources([]);
+                                }}
+                                className="mapview-action-button"
+                              >
                                 {config?.clearLabel ?? 'Clear'}
                               </button>
                             </div>
