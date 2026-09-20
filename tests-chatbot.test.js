@@ -4,7 +4,11 @@ import assert from 'node:assert/strict';
 import chatHandler from './api/chat.js';
 import {
   buildChatContext,
+  buildSystemPrompt,
   getChatRouteConfig,
+  getProjectQueryOptions,
+  MAX_CONTEXT_PROJECTS,
+  MAX_RELEVANT_PROJECTS,
   sanitizeChatMessages,
   sanitizeQuestion,
   selectRelevantProjects,
@@ -28,7 +32,7 @@ const sampleProjects = [
   {
     postId: '100',
     title: 'Kenya Food Security Project',
-    description: 'Supports Nairobi communities with food access and urban farming.',
+    description: `${'Supports Nairobi communities with food access and urban farming. '.repeat(6)}Detailed implementation support.`,
     tagLine: 'Community food resilience',
     org: 'Food Forward',
     searchText: 'kenya nairobi food security urban farming',
@@ -38,6 +42,12 @@ const sampleProjects = [
     locations: [{ country: 'Kenya', city: 'Nairobi', display_name: 'Nairobi, Kenya' }],
     postDate: '2026-08-01T00:00:00.000Z',
     orgWebsite: 'https://example.org',
+    supportingSites: 'https://partners.example.org',
+    video: 'https://video.example.org/food',
+    video2: 'https://video2.example.org/food',
+    status: 'Active',
+    slug: 'kenya-food-security-project',
+    projectStartDate: '2026-01-15',
   },
   {
     postId: '101',
@@ -52,6 +62,12 @@ const sampleProjects = [
     locations: [{ country: 'Jordan', city: 'Amman', display_name: 'Amman, Jordan' }],
     postDate: '2026-09-05T00:00:00.000Z',
     orgWebsite: '',
+    supportingSites: '',
+    video: '',
+    video2: '',
+    status: '',
+    slug: '',
+    projectStartDate: '',
   },
 ];
 
@@ -82,6 +98,19 @@ test('chat context summarizes and selects relevant projects', () => {
   assert.equal(summary.topCountries[0].label, 'Jordan');
   const relevant = selectRelevantProjects(sampleProjects, 'What is happening in Nairobi food programs?');
   assert.equal(relevant[0].postId, '100');
+  assert.equal(relevant[0].orgWebsite, 'https://example.org');
+  assert.equal(relevant[0].supportingSites, 'https://partners.example.org');
+  assert.equal(relevant[0].video, 'https://video.example.org/food');
+  assert.equal(relevant[0].video2, 'https://video2.example.org/food');
+  assert.equal(relevant[0].status, 'Active');
+  assert.equal(relevant[0].slug, 'kenya-food-security-project');
+  assert.equal(relevant[0].projectStartDate, '2026-01-15');
+  assert.ok(relevant[0].description.includes('Detailed implementation support.'));
+  assert.ok(relevant[0].description.length > 280);
+
+  const fallback = selectRelevantProjects(sampleProjects, 'unmatched query terms');
+  assert.equal(fallback[0].orgWebsite, 'https://example.org');
+  assert.equal(fallback[1].orgWebsite, '');
 
   const context = buildChatContext({
     routeConfig: getChatRouteConfig('global'),
@@ -91,6 +120,22 @@ test('chat context summarizes and selects relevant projects', () => {
   assert.equal(context.route.routeKey, 'global');
   assert.equal(context.summary.totalProjects, 2);
   assert.equal(context.relevantProjects[0].postId, '100');
+});
+
+test('chatbot exports updated context limits and prompt guidance', () => {
+  assert.equal(MAX_CONTEXT_PROJECTS, 1000);
+  assert.equal(MAX_RELEVANT_PROJECTS, 20);
+  assert.equal(getProjectQueryOptions(getChatRouteConfig('global')).limit, 1000);
+
+  const prompt = buildSystemPrompt(buildChatContext({
+    routeConfig: getChatRouteConfig('global'),
+    projects: sampleProjects,
+    question: 'website',
+  }));
+
+  assert.match(prompt, /provided counts and project records/);
+  assert.match(prompt, /If a provided project field is empty, you may say that no value is listed/);
+  assert.match(prompt, /Never claim access to records or metrics that are not present/);
 });
 
 test('chat handler rejects malformed requests before touching external services', async () => {

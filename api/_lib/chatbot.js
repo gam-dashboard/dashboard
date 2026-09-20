@@ -1,8 +1,9 @@
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_MESSAGE_LENGTH = 1200;
 const MAX_QUESTION_LENGTH = 600;
-const MAX_CONTEXT_PROJECTS = 150;
-const MAX_RELEVANT_PROJECTS = 10;
+const MAX_DESCRIPTION_LENGTH = 2000;
+export const MAX_CONTEXT_PROJECTS = 1000;
+export const MAX_RELEVANT_PROJECTS = 20;
 
 export const CHAT_ROUTE_CONFIGS = {
   global: {
@@ -82,6 +83,28 @@ const formatProjectForSearch = (project) => {
     .join(' ')
     .toLowerCase();
 };
+
+const mapProjectForChat = (project) => ({
+  postId: project.postId,
+  title: project.title,
+  org: project.org,
+  postDate: project.postDate,
+  goals: toArray(project.goals).slice(0, 5),
+  categories: toArray(project.categories).slice(0, 5),
+  tags: toArray(project.tags).slice(0, 5),
+  locationNames: toArray(project.locations)
+    .map((location) => location.display_name || location.city || location.state || location.country)
+    .filter(Boolean)
+    .slice(0, 3),
+  description: String(project.description || '').trim().slice(0, MAX_DESCRIPTION_LENGTH),
+  orgWebsite: project.orgWebsite || '',
+  supportingSites: project.supportingSites || '',
+  video: project.video || '',
+  video2: project.video2 || '',
+  status: project.status || '',
+  slug: project.slug || '',
+  projectStartDate: project.projectStartDate || '',
+});
 
 export const normalizeRouteKey = (value) => {
   const normalized = String(value || '').trim().toLowerCase();
@@ -186,37 +209,11 @@ export const selectRelevantProjects = (projects, question) => {
       return String(b.project.postDate || '').localeCompare(String(a.project.postDate || ''));
     })
     .slice(0, MAX_RELEVANT_PROJECTS)
-    .map(({ project }) => ({
-      postId: project.postId,
-      title: project.title,
-      org: project.org,
-      postDate: project.postDate,
-      goals: toArray(project.goals).slice(0, 5),
-      categories: toArray(project.categories).slice(0, 5),
-      tags: toArray(project.tags).slice(0, 5),
-      locationNames: toArray(project.locations)
-        .map((location) => location.display_name || location.city || location.state || location.country)
-        .filter(Boolean)
-        .slice(0, 3),
-      descriptionSnippet: String(project.description || '').trim().slice(0, 280),
-    }));
+    .map(({ project }) => mapProjectForChat(project));
 
   if (scored.length > 0) return scored;
 
-  return projects.slice(0, 5).map((project) => ({
-    postId: project.postId,
-    title: project.title,
-    org: project.org,
-    postDate: project.postDate,
-    goals: toArray(project.goals).slice(0, 5),
-    categories: toArray(project.categories).slice(0, 5),
-    tags: toArray(project.tags).slice(0, 5),
-    locationNames: toArray(project.locations)
-      .map((location) => location.display_name || location.city || location.state || location.country)
-      .filter(Boolean)
-      .slice(0, 3),
-    descriptionSnippet: String(project.description || '').trim().slice(0, 280),
-  }));
+  return projects.slice(0, 5).map((project) => mapProjectForChat(project));
 };
 
 export const buildChatContext = ({ routeConfig, projects, question }) => ({
@@ -235,9 +232,10 @@ export const buildSystemPrompt = (context) => `You are a concise data insights a
 Use only the structured route context that follows. Never claim access to records or metrics that are not present in the provided context. If the question cannot be answered from the available data, say that clearly and suggest a narrower follow-up question.
 
 Rules:
-- Keep answers grounded in the provided counts and project snippets.
+- Keep answers grounded in the provided counts and project records.
 - Mention route scope when it matters.
 - Prefer aggregate insights first, then cite example projects when helpful.
+- If a provided project field is empty, you may say that no value is listed in the available dashboard data for that field.
 - When formatting helps, use Markdown for short paragraphs, lists, bold emphasis, inline code, and fenced code blocks. Do not use raw HTML.
 - Do not invent SQL, hidden filters, or unseen fields.
 - If the user asks for data outside the visible route scope, explain that the assistant is restricted to that dashboard's records.
