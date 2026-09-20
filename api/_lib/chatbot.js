@@ -213,7 +213,7 @@ export const selectRelevantProjects = (projects, question) => {
 
   if (scored.length > 0) return scored;
 
-  return projects.slice(0, 5).map((project) => mapProjectForChat(project));
+  return projects.slice(0, MAX_RELEVANT_PROJECTS).map((project) => mapProjectForChat(project));
 };
 
 export const buildChatContext = ({ routeConfig, projects, question }) => ({
