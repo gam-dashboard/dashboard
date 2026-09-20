@@ -164,6 +164,35 @@ test('779-style payload keeps selected SDGs, selected category, and existing fie
   }]);
 });
 
+test('field categories still import when result.categories only supplies SDGs', () => {
+  const payload = {
+    result: {
+      id: '781',
+      form_id: 5,
+      title: 'Project 781',
+      content: 'Mixed source taxonomy test',
+      categories: [
+        { tag: 'Goal 6: Goal Label 6', parent: 'Sustainable Development Goals (SDGs)' },
+      ],
+      values: [
+        {
+          label: 'Categories',
+          value: [{ tag: 'UN Civil Society Conference 2024' }],
+          options: [
+            { tag: 'UN Civil Society Conference 2024' },
+            { tag: 'Another Conference Category' },
+          ],
+        },
+      ],
+    },
+  };
+
+  const project = normalizeProjectPayload(payload, { sourceFile: '781.json' });
+
+  assert.deepEqual(taxonomyValues(project, 'goal'), ['Goal 6: Goal Label 6']);
+  assert.deepEqual(taxonomyValues(project, 'category'), ['UN Civil Society Conference 2024']);
+});
+
 test('generic nested tags, descriptions, and option catalogs do not produce taxonomy rows', () => {
   const payload = {
     result: {

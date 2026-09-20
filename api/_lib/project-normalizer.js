@@ -272,6 +272,7 @@ const isSdgDefinitionValue = (value) => {
 const collectSelectedTaxonomies = (payload, result) => {
   const entries = [];
   const seen = new Set();
+  const authoritativeTypes = new Set();
 
   const addEntry = (taxonomyType, value, rawValue) => {
     const text = String(value || '').trim();
@@ -296,6 +297,7 @@ const collectSelectedTaxonomies = (payload, result) => {
       const goalValues = parseGoalValues(selectedCategory);
       if (goalValues.length > 0) {
         addParsedEntries('goal', { source: 'result.categories', submitted_value: selectedCategory }, goalValues);
+        authoritativeTypes.add('goal');
         continue;
       }
 
@@ -313,6 +315,7 @@ const collectSelectedTaxonomies = (payload, result) => {
         { source: 'result.categories', submitted_value: selectedCategory },
         categoryValues
       );
+      authoritativeTypes.add('category');
     }
   }
 
@@ -341,7 +344,13 @@ const collectSelectedTaxonomies = (payload, result) => {
         node.identifier
       );
 
-      if (taxonomyType && (resultCategories.length === 0 || !['goal', 'category'].includes(taxonomyType))) {
+      if (
+        taxonomyType
+        && !(
+          ['goal', 'category'].includes(taxonomyType)
+          && authoritativeTypes.has(taxonomyType)
+        )
+      ) {
         const values = taxonomyType === 'goal'
           ? parseGoalValues(fieldValue)
           : parseSelectedTaxonomyValues(fieldValue);
