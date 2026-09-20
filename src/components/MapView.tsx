@@ -620,6 +620,20 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     return out.map(o => ({ label: o.label, city: o.city, state: o.state, country: o.country }));
   }, [projects]);
 
+  const findMatchingLocationOption = (value: string) => {
+    const normalizedInput = normLabel(value);
+    // Try exact match first.
+    const exactMatch = uniqueLocationOptions.find(
+      o => normLabel(o.label) === normalizedInput
+    );
+    if (exactMatch) return exactMatch;
+  
+    // Otherwise use the first partial match.
+    return uniqueLocationOptions.find(o =>
+      normLabel(o.label).includes(normalizedInput)
+    );
+  };
+
   const addSelectedLocation = (value: string) => {
     const match = uniqueLocationOptions.find(o => normLabel(o.label) === normLabel(value));
     if (!match) return;
@@ -1105,22 +1119,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
-                        const normalizedInput = normLabel(locationInput);
-
-                        // Try exact match first
-                        let matchedOption = uniqueLocationOptions.find(o => normLabel(o.label) === normalizedInput);
-
-                        // If no exact match, filter suggestions and use first one
-                        if (!matchedOption) {
-                          const filteredSuggestions = uniqueLocationOptions.filter(o =>
-                            normLabel(o.label).includes(normalizedInput)
-                          );
-                          if (filteredSuggestions.length > 0) {
-                            matchedOption = filteredSuggestions[0];
-                          }
-                        }
-
-                        // Add the matched option if found
+                        const matchedOption = findMatchingLocationOption(locationInput);
                         if (matchedOption) {
                           addSelectedLocation(matchedOption.label);
                         }
@@ -1134,7 +1133,12 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                   </datalist>
 
                   <button
-                    onClick={() => addSelectedLocation(locationInput)}
+                    onClick={() => {
+                      const matchedOption = findMatchingLocationOption(locationInput);
+                      if (matchedOption) {
+                        addSelectedLocation(matchedOption.label);
+                      }
+                    }}
                     className="mapview-action-button"
                     title="Add location filter"
                   >
