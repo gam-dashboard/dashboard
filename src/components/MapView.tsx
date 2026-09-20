@@ -1333,8 +1333,8 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                             </div>
                           ) : (
                             <>
-                              <div className="mapview-dropdown-section">
-                                <div className="mapview-dropdown-section-title">Seeking Resources</div>
+                              <fieldset className="mapview-dropdown-section">
+                                <legend className="mapview-dropdown-section-title">Seeking Resources</legend>
                                 {uniqueSeekingResources.length === 0 ? (
                                   <div style={{ fontSize: 12, color: '#666' }}>No seeking resource tags available.</div>
                                 ) : (
@@ -1357,9 +1357,9 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                                     );
                                   })
                                 )}
-                              </div>
-                              <div className="mapview-dropdown-section">
-                                <div className="mapview-dropdown-section-title">Providing Resources</div>
+                              </fieldset>
+                              <fieldset className="mapview-dropdown-section">
+                                <legend className="mapview-dropdown-section-title">Providing Resources</legend>
                                 {uniqueProvidingResources.length === 0 ? (
                                   <div style={{ fontSize: 12, color: '#666' }}>No providing resource tags available.</div>
                                 ) : (
@@ -1382,7 +1382,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                                     );
                                   })
                                 )}
-                              </div>
+                              </fieldset>
                             </>
                           )}
                           {(uniqueSeekingResources.length > 0 || uniqueProvidingResources.length > 0) && (
