@@ -179,12 +179,14 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
                 <ReactMarkdown
                   components={{
                     a: ({ children, href }) => (
-                      <span
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="markdown-link"
-                        title={href || undefined}
                       >
                         {children}
-                      </span>
+                      </a>
                     ),
                   }}
                 >
