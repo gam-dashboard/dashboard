@@ -84,27 +84,32 @@ const formatProjectForSearch = (project) => {
     .toLowerCase();
 };
 
-const mapProjectForChat = (project) => ({
-  postId: project.postId,
-  title: project.title,
-  org: project.org,
-  postDate: project.postDate,
-  goals: toArray(project.goals).slice(0, 5),
-  categories: toArray(project.categories).slice(0, 5),
-  tags: toArray(project.tags).slice(0, 5),
-  locationNames: toArray(project.locations)
-    .map((location) => location.display_name || location.city || location.state || location.country)
-    .filter(Boolean)
-    .slice(0, 3),
-  description: String(project.description || '').trim().slice(0, MAX_DESCRIPTION_LENGTH),
-  orgWebsite: project.orgWebsite || '',
-  supportingSites: project.supportingSites || '',
-  video: project.video || '',
-  video2: project.video2 || '',
-  status: project.status || '',
-  slug: project.slug || '',
-  projectStartDate: project.projectStartDate || '',
-});
+const mapProjectForChat = (project) => {
+  const description = String(project.description || '').trim().slice(0, MAX_DESCRIPTION_LENGTH);
+
+  return {
+    postId: project.postId,
+    title: project.title,
+    org: project.org,
+    postDate: project.postDate,
+    goals: toArray(project.goals).slice(0, 5),
+    categories: toArray(project.categories).slice(0, 5),
+    tags: toArray(project.tags).slice(0, 5),
+    locationNames: toArray(project.locations)
+      .map((location) => location.display_name || location.city || location.state || location.country)
+      .filter(Boolean)
+      .slice(0, 3),
+    description,
+    descriptionSnippet: description,
+    orgWebsite: project.orgWebsite || '',
+    supportingSites: project.supportingSites || '',
+    video: project.video || '',
+    video2: project.video2 || '',
+    status: project.status || '',
+    slug: project.slug || '',
+    projectStartDate: project.projectStartDate || '',
+  };
+};
 
 export const normalizeRouteKey = (value) => {
   const normalized = String(value || '').trim().toLowerCase();
