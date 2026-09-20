@@ -48,6 +48,8 @@ const asArray = (value) => Array.isArray(value) ? value : value == null ? [] : [
 
 const firstDefined = (...values) => values.find((value) => value != null && String(value).trim() !== '');
 
+const isScalarValue = (value) => ['string', 'number', 'boolean'].includes(typeof value);
+
 const textFromValue = (value) => {
   if (value == null) return [];
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -108,6 +110,45 @@ const parseTaxonomyValues = (value) => uniqueStrings(
     .map((entry) => entry.trim())
     .filter(Boolean)
 );
+
+const splitKnownTaxonomyScalar = (value) => uniqueStrings(
+  String(value || '')
+    .split(/[\n|;,]+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+);
+
+const parseSelectedTaxonomyValues = (value, { splitScalars = true } = {}) => {
+  if (value == null) return [];
+  if (isScalarValue(value)) {
+    const text = String(value).trim();
+    if (!text) return [];
+    return splitScalars ? splitKnownTaxonomyScalar(text) : [text];
+  }
+  if (Array.isArray(value)) {
+    return uniqueStrings(
+      value.flatMap((item) => parseSelectedTaxonomyValues(item, { splitScalars: false }))
+    );
+  }
+  if (typeof value === 'object') {
+    const directValue = firstDefined(
+      value.tag,
+      value.label,
+      value.name,
+      value.title,
+      value.text,
+      isScalarValue(value.value) ? value.value : null
+    );
+    if (directValue != null) {
+      const text = String(directValue).trim();
+      return text ? [text] : [];
+    }
+    if (value.value !== undefined) {
+      return parseSelectedTaxonomyValues(value.value, { splitScalars });
+    }
+  }
+  return [];
+};
 
 const normalizeTaxonomyType = (value) => String(value || '')
   .trim()
@@ -192,6 +233,140 @@ const pickLookupValues = (lookup, candidates) => {
   return values;
 };
 
+const TAXONOMY_FIELD_ALIASES = new Map([
+  ['goal', ['sustainable development goals', 'sustainable development goal', 'sdg', 'sdgs']],
+  ['category', ['categories', 'category']],
+  ['tag', ['tags', 'tag']],
+  ['seeking_resources', ['seeking resources']],
+  ['providing_resources', ['providing resources']],
+]);
+
+const taxonomyTypeFromField = (...labels) => {
+  for (const label of labels) {
+    const normalized = normalizeKey(label);
+    if (!normalized) continue;
+    for (const [taxonomyType, aliases] of TAXONOMY_FIELD_ALIASES.entries()) {
+      if (aliases.includes(normalized)) return taxonomyType;
+    }
+  }
+  return '';
+};
+
+const isSdgDefinitionValue = (value) => {
+  const labels = value && typeof value === 'object'
+    ? [
+        value.parent,
+        value.group,
+        value.group_label,
+        value.category,
+        value.category_label,
+        value.field,
+        value.field_label,
+        value.label,
+      ]
+    : [value];
+
+  return labels.some((label) => normalizeKey(label).includes(SDG_PARENT_LABEL));
+};
+
+const collectSelectedTaxonomies = (payload, result) => {
+  const entries = [];
+  const seen = new Set();
+
+  const addEntry = (taxonomyType, value, rawValue) => {
+    const text = String(value || '').trim();
+    if (!taxonomyType || !text) return;
+    const key = `${taxonomyType}::${text.toLowerCase()}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    entries.push({
+      taxonomy_type: taxonomyType,
+      value: text,
+      raw_value: rawValue,
+    });
+  };
+
+  const addParsedEntries = (taxonomyType, rawValue, values) => {
+    values.forEach((value) => addEntry(taxonomyType, value, rawValue));
+  };
+
+  const resultCategories = Array.isArray(result?.categories) ? result.categories : [];
+  if (resultCategories.length > 0) {
+    for (const selectedCategory of resultCategories) {
+      const goalValues = parseGoalValues(selectedCategory);
+      if (goalValues.length > 0) {
+        addParsedEntries('goal', { source: 'result.categories', submitted_value: selectedCategory }, goalValues);
+        continue;
+      }
+
+      const categoryValues = parseSelectedTaxonomyValues(selectedCategory, { splitScalars: false });
+      if (
+        categoryValues.length === 0
+        || isSdgDefinitionValue(selectedCategory)
+        || categoryValues.some((value) => normalizeKey(value) === 'propose your own goal')
+      ) {
+        continue;
+      }
+
+      addParsedEntries(
+        'category',
+        { source: 'result.categories', submitted_value: selectedCategory },
+        categoryValues
+      );
+    }
+  }
+
+  const skipKeys = new Set(['options', 'children', 'description']);
+  const seenNodes = new WeakSet();
+
+  const visit = (node) => {
+    if (!node || typeof node !== 'object') return;
+    if (seenNodes.has(node)) return;
+    seenNodes.add(node);
+
+    if (Array.isArray(node)) {
+      node.forEach(visit);
+      return;
+    }
+
+    const fieldValue = firstDefined(node.value, node.values, node.answer, node.answers, node.response, node.responses, node.data);
+    if (fieldValue !== undefined) {
+      const taxonomyType = taxonomyTypeFromField(
+        node.key,
+        node.label,
+        node.name,
+        node.slug,
+        node.field_key,
+        node.field_label,
+        node.identifier
+      );
+
+      if (taxonomyType && (resultCategories.length === 0 || !['goal', 'category'].includes(taxonomyType))) {
+        const values = taxonomyType === 'goal'
+          ? parseGoalValues(fieldValue)
+          : parseSelectedTaxonomyValues(fieldValue);
+        addParsedEntries(
+          taxonomyType,
+          {
+            source: 'field.value',
+            field_label: firstDefined(node.label, node.field_label, node.key, node.name, node.identifier) || '',
+            submitted_value: fieldValue,
+          },
+          values
+        );
+      }
+    }
+
+    for (const [key, value] of Object.entries(node)) {
+      if (skipKeys.has(normalizeKey(key))) continue;
+      visit(value);
+    }
+  };
+
+  visit(payload);
+  return entries;
+};
+
 const collectLocations = (payload) => {
   const seen = new WeakSet();
   const locations = [];
@@ -264,31 +439,10 @@ export function normalizeProjectPayload(payload, options = {}) {
   const postDate = toIsoTimestamp(
     pickLookupValue(lookup, ['post date (utc)', 'post date', 'created (utc)', 'created', 'date'])
   );
-  const goalsTaxonomy = taxonomyEntriesFromLookup(
-    lookup,
-    'goal',
-    ['sustainable development goals', 'sustainable development goal', 'sdg', 'goals'],
-    parseGoalValues
-  );
-  const categoriesTaxonomy = taxonomyEntriesFromLookup(lookup, 'category', ['categories', 'category']);
-  const tagsTaxonomy = taxonomyEntriesFromLookup(lookup, 'tag', ['tags', 'tag']);
-  const seekingResourcesTaxonomy = taxonomyEntriesFromLookup(
-    lookup,
-    normalizeTaxonomyType('seeking resources') || 'seeking_resources',
-    ['seeking resources']
-  );
-  const providingResourcesTaxonomy = taxonomyEntriesFromLookup(
-    lookup,
-    normalizeTaxonomyType('providing resources') || 'providing_resources',
-    ['providing resources']
-  );
-  const taxonomies = [
-    ...goalsTaxonomy,
-    ...categoriesTaxonomy,
-    ...tagsTaxonomy,
-    ...seekingResourcesTaxonomy,
-    ...providingResourcesTaxonomy,
-  ];
+  const taxonomies = collectSelectedTaxonomies(payload, result);
+  const goalsTaxonomy = taxonomies.filter((entry) => entry.taxonomy_type === 'goal');
+  const categoriesTaxonomy = taxonomies.filter((entry) => entry.taxonomy_type === 'category');
+  const tagsTaxonomy = taxonomies.filter((entry) => entry.taxonomy_type === 'tag');
   const goals = goalsTaxonomy.map((entry) => entry.value);
   const categories = categoriesTaxonomy.map((entry) => entry.value);
   const tags = tagsTaxonomy.map((entry) => entry.value);
