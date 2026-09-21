@@ -8,7 +8,7 @@ export const MAX_RELEVANT_PROJECTS = 20;
 export const CHAT_ROUTE_CONFIGS = {
   global: {
     routeKey: 'global',
-    title: 'Global Projects Intelligence',
+    title: 'Global Action Mosaic Intelligence',
     description: 'Global Action Mosaic projects visible on the main dashboard.',
     allowedFormIds: [3, 5],
   },

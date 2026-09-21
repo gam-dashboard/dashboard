@@ -50,7 +50,7 @@ export default function App() {
             <MapView config={globalConfig} />
           </main>
           <section className="chatbot-section">
-            <DataChatbot routeKey="global" title="Global Projects Intelligence" />
+            <DataChatbot routeKey="global" title="Global Action Mosaic Intelligence" />
           </section>
         </div>
       )}
