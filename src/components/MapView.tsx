@@ -227,6 +227,27 @@ const parseTaxonomyList = (raw: string | undefined): string[] => {
 const derivePlace = (l?: { city?: string; state?: string; display_name?: string; country?: string }): string | undefined =>
   l ? (l.city || l.state || l.display_name || l.country || undefined) : undefined;
 
+const isPlaceholderLocation = (
+  lat: number | null | undefined,
+  lon: number | null | undefined
+): boolean => {
+  if (lat == null || lon == null) return false;
+
+  const latitude = Number(lat);
+  const longitude = Number(lon);
+  
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return false;
+  
+  const placeholderLatitude = 50.112313451247;
+  const placeholderLongitude = -116.71875;
+  const tolerance = 1e-9;
+  
+  return (
+    Math.abs(latitude - placeholderLatitude) < tolerance &&
+    Math.abs(longitude - placeholderLongitude) < tolerance
+  );
+};
+
 export default function MapView({ config }: { config?: MapViewConfig }): JSX.Element {
   const sdgUrl = config?.sdgProjectsCsvUrl ?? sdgProjectsCsvUrl;
   const unCivicUrl = config?.unCivicCsvUrl ?? unCivicCsvUrl;
@@ -580,6 +601,16 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 const lat = parseNum(lr['lat'] ?? lr['latitude'] ?? lr['Latitude']);
                 const lon = parseNum(lr['lon'] ?? lr['longitude'] ?? lr['Longitude']);
                 if (lat == null || lon == null) { badCoordRows.push(idx); return; }
+
+                if (isPlaceholderLocation(lat, lon)) {
+                  console.warn('Skipping placeholder location row', {
+                    rowIndex: idx,
+                    postId,
+                    lat,
+                    lon,
+                  });
+                  return;
+                }
 
                 project.locations.push({
                   id: `${postId}::${project.locations.length}`,

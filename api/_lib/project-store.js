@@ -43,6 +43,22 @@ const mapLocationRow = (row) => ({
   display_name: row.display_name || undefined,
 });
 
+const isPlaceholderLocation = (latitude, longitude) => {
+  const lat = Number(latitude);
+  const lon = Number(longitude);
+  
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+  
+  const placeholderLatitude = 50.112313451247;
+  const placeholderLongitude = -116.71875;
+  const tolerance = 1e-9;
+  
+  return (
+    Math.abs(lat - placeholderLatitude) < tolerance &&
+    Math.abs(lon - placeholderLongitude) < tolerance
+  );
+};
+
 export async function listProjects(options = {}) {
   const pool = getPool();
   const postIds = parsePostIds(options.postIds);
@@ -105,6 +121,8 @@ export async function listProjects(options = {}) {
 
   const locationsByPostId = new Map();
   for (const row of locationsResult.rows) {
+    if (isPlaceholderLocation(row.latitude, row.longitude)) continue;
+
     const bucket = locationsByPostId.get(row.post_id) || [];
     bucket.push(mapLocationRow(row));
     locationsByPostId.set(row.post_id, bucket);
@@ -190,5 +208,7 @@ export async function listLocations(options = {}) {
     params
   );
 
-  return result.rows.map(mapLocationRow);
+  return result.rows
+    .filter((row) => !isPlaceholderLocation(row.latitude, row.longitude))
+    .map(mapLocationRow);
 }
