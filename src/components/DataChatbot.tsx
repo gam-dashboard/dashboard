@@ -163,9 +163,12 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
       <div className="chatbot-messages">
         {messages.length === 0 && (
           <div className="chatbot-welcome">
-            <p>👋 Welcome! I can help summarize the external DB-backed data for this dashboard.</p>
+            <p>What would you like to discover?</p>
+            <p>
+              Ask about project locations, common goals, organizations, categories,
+              or recent activity across the {title} dashboard.
+            </p>
             <p>{routeNote}</p>
-            
           </div>
         )}
 
