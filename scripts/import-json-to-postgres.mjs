@@ -243,6 +243,25 @@ try {
 
       const mergedLocations = enrichLocationsWithCsvMetadata(project, locationMetadata.byPostId);
 
+      const locationSearchText = mergedLocations
+        .flatMap((location) => [
+          location.city,
+          location.state,
+          location.country,
+          location.country_code,
+          location.display_name,
+        ])
+        .filter(Boolean)
+        .join(' ');
+      
+      const searchableText = [
+        project.searchText,
+        locationSearchText,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
       await client.query(
         `INSERT INTO projects (
           post_id, form_id, source_file, title, slug, status, description, tag_line, org_name, org_website,
@@ -285,7 +304,7 @@ try {
           project.video2 || null,
           project.postDate || null,
           project.projectStartDate || null,
-          project.searchText || '',
+          searchableText,
           JSON.stringify(project.rowFallback || {}),
         ]
       );

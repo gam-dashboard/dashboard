@@ -566,6 +566,15 @@ export function normalizeProjectPayload(payload, options = {}) {
   const tags = tagsTaxonomy.map((entry) => entry.value);
   const locations = collectLocations(payload);
   const countries = uniqueStrings(locations.map((location) => location.country).filter(Boolean));
+  const locationSearchText = locations
+    .flatMap((location) => [
+      location.city,
+      location.state,
+      location.country,
+      location.country_code,
+      location.display_name,
+    ])
+    .filter(Boolean);
   const rowFallback = {
     'Post ID': postId,
     Title: title,
@@ -587,7 +596,7 @@ export function normalizeProjectPayload(payload, options = {}) {
     ...goals,
     ...categories,
     ...tags,
-    ...countries,
+    ...locationSearchText,
   ].filter(Boolean).join(' ').toLowerCase();
 
   return {

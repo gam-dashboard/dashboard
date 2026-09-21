@@ -624,6 +624,27 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
                 });
               });
 
+              byPostId.forEach((project) => {
+                const locationText = project.locations
+                  .flatMap((location) => [
+                    location.city,
+                    location.state,
+                    location.country,
+                    location.country_code,
+                    location.display_name,
+                  ])
+                  .filter(Boolean)
+                  .join(' ');
+
+                project.searchText = [
+                  project.searchText,
+                  locationText,
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+                  .toLowerCase();
+              });
+
               console.group('locations.csv → attached to projects');
               console.log(`parsed rows: ${locRows.length}`);
               if (orphanRows.length) console.warn(`rows with a post_id not found in projects CSVs: ${orphanRows.length}`, orphanRows);
@@ -760,6 +781,23 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
     const terms = q ? q.split(/\s+/).filter(Boolean) : [];
 
     return Array.from(projects.values()).filter((p) => {
+      const locationText = p.locations
+        .flatMap((location) => [
+          location.city,
+          location.state,
+          location.country,
+          location.country_code,
+          location.display_name,
+        ])
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      
+      const searchableText = [p.searchText, locationText]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
       if (goalFilterActive && !p.goals.some(g => activeGoals.includes(g))) return false;
       if (seekingResourceFilterActive && !p.seekingResources.some((resource) => activeSeekingResources.includes(resource))) return false;
       if (providingResourceFilterActive && !p.providingResources.some((resource) => activeProvidingResources.includes(resource))) return false;
@@ -786,7 +824,7 @@ export default function MapView({ config }: { config?: MapViewConfig }): JSX.Ele
 
       if (activeCity && !p.locations.some(l => l.city?.toLowerCase() === activeCity.toLowerCase())) return false;
 
-      if (terms.length > 0 && !terms.every(t => p.searchText.includes(t))) return false;
+      if (terms.length > 0 && !terms.every(term => searchableText.includes(term))) return false;
       return true;
     });
   }, [
