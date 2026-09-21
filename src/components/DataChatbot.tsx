@@ -168,7 +168,6 @@ export const DataChatbot: React.FC<DataChatbotProps> = ({ routeKey, title = 'Dat
               Ask about project locations, common goals, organizations, categories,
               or recent activity across the {title} dashboard.
             </p>
-            <p>{routeNote}</p>
           </div>
         )}
 
