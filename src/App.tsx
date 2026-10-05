@@ -21,7 +21,7 @@ export default function App() {
   return (
     <div>
       <nav className="app-nav">
-        <a href="#/">Global Action Mosaic</a>
+        <a href="#/">SDG Projects</a>
         <a href="#/WATracker">Washington State Tracker</a>
         <a href="#/SYProjects">Syria Projects</a>
         <a href="https://globalactionmosaic.ushahidi.io/map">Submit Your Project Here!</a>
@@ -31,7 +31,7 @@ export default function App() {
         <div>
           <AltDashboard />
           <section className="chatbot-section">
-            <DataChatbot routeKey="wa" title="WA State Health Data Assistant" />
+            <DataChatbot routeKey="wa" title="WA State Data Assistant" />
           </section>
         </div>
       ) : route === '#/SYProjects' ? (

@@ -13,7 +13,7 @@ const altConfig: MapViewConfig = {
   projectCategoriesCsvUrl: altCategoriesCsvUrl,
   locationsCsvUrl: altLocationsCsvUrl,
   showGoals: false,
-  pageTitle: 'WA Behavioral Health Tracker',
+  pageTitle: 'Projects for Washington',
   goalsOpenLabel: 'Open Targets', // won't show because showGoals is false, but left as example
   goalsCloseLabel: 'Close Targets',
   clearLabel: 'Clear selection',
