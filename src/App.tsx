@@ -7,6 +7,10 @@ import './styles.css';
 
 const globalConfig: MapViewConfig = {
   allowedFormIds: [3, 5],
+  showResourceFilters: true,
+  resourceFiltersOpenLabel: 'Filter by Resources',
+  resourceFiltersCloseLabel: 'Filter by Resources',
+  clearLabel: 'Clear selection',
 };
 
 export default function App() {
