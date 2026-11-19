@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MapView, { MapViewConfig } from './components/MapView';
 import AltDashboard from './pages/waDashboard';
 import SyrDashboard from './pages/syrDashboard';
+import CountriesList from './components/CountriesList';
 import DataChatbot from './components/DataChatbot';
 import './styles.css';
 
@@ -53,6 +54,9 @@ export default function App() {
           <main>
             <MapView config={globalConfig} />
           </main>
+          <section className="countries-section">
+            <CountriesList />
+          </section>
           <section className="chatbot-section">
             <DataChatbot routeKey="global" title="Global Action Mosaic Intelligence" />
           </section>

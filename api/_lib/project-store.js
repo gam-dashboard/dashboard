@@ -175,6 +175,51 @@ export async function listProjects(options = {}) {
   });
 }
 
+const cleanText = (value) => String(value ?? '').trim();
+
+export function aggregateCountries(rows) {
+  const byKey = new Map();
+
+  for (const row of rows) {
+    if (isPlaceholderLocation(row.latitude, row.longitude)) continue;
+
+    const name = cleanText(row.country);
+    const code = cleanText(row.country_code).toUpperCase();
+    if (!name && !code) continue;
+
+    const key = code || name.toLowerCase();
+    const entry = byKey.get(key) || {
+      country: name || code,
+      countryCode: code || undefined,
+      projectIds: new Set(),
+      locationCount: 0,
+    };
+    if (!entry.country && name) entry.country = name;
+    entry.projectIds.add(row.post_id);
+    entry.locationCount += 1;
+    byKey.set(key, entry);
+  }
+
+  return Array.from(byKey.values())
+    .map((entry) => ({
+      country: entry.country,
+      countryCode: entry.countryCode,
+      projectCount: entry.projectIds.size,
+      locationCount: entry.locationCount,
+    }))
+    .sort((a, b) => b.projectCount - a.projectCount || a.country.localeCompare(b.country));
+}
+
+export async function listCountries() {
+  const pool = getPool();
+  const result = await pool.query(
+    `SELECT post_id, latitude, longitude, country, country_code
+       FROM project_locations
+      WHERE COALESCE(TRIM(country), '') <> '' OR COALESCE(TRIM(country_code), '') <> ''`
+  );
+  return aggregateCountries(result.rows);
+}
+
 export async function listLocations(options = {}) {
   const pool = getPool();
   const postIds = parsePostIds(options.postIds);

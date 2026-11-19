@@ -89,6 +89,11 @@ The importer is safe to re-run:
 - taxonomy values are imported with flexible `taxonomy_type` (e.g. `goal`, `category`, `tag`, `seeking_resources`, `providing_resources`)
 - location metadata (city/state/country/display_name) is enriched from repository `*locations.csv` rows matched by `post_id` and coordinate proximity
 
+### Countries endpoint and page
+
+- `GET /api/countries` (served by `api/countries.js`) returns the distinct countries represented in `project_locations`, grouped by `country_code` (falling back to country name), with `projectCount` and `locationCount`. Placeholder coordinates are excluded.
+- `src/components/CountriesList.tsx` renders this list as a section on the main Global Action Mosaic page, below the map. It shows a notice instead when `DATABASE_URL` is not configured.
+
 ### Periodic sync for new Ushahidi posts
 
 Use the periodic sync script to fetch newly created posts from the Ushahidi API, stage them as JSON payloads, and reuse the existing DB importer/upsert flow:

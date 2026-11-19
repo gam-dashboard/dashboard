@@ -119,3 +119,42 @@ export async function fetchCompatibleLocationsFromApi(): Promise<ApiProjectLocat
   if (!Array.isArray(payload.locations)) return [];
   return payload.locations.map(normalizeLocation).filter(Boolean) as ApiProjectLocation[];
 }
+
+export type ApiCountry = {
+  country: string;
+  countryCode?: string;
+  projectCount: number;
+  locationCount: number;
+};
+
+export type CountriesResponse = {
+  configured: boolean;
+  message?: string;
+  countries: ApiCountry[];
+};
+
+export async function fetchCountriesFromApi(): Promise<CountriesResponse> {
+  const response = await fetch(`${getApiBaseUrl()}/api/countries`, {
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to load countries (HTTP ${response.status})`);
+  }
+
+  const payload = await response.json();
+  const countries = Array.isArray(payload?.countries)
+    ? payload.countries.map((entry: any): ApiCountry => ({
+        country: String(entry.country || entry.countryCode || ''),
+        countryCode: entry.countryCode ? String(entry.countryCode) : undefined,
+        projectCount: Number(entry.projectCount) || 0,
+        locationCount: Number(entry.locationCount) || 0,
+      }))
+    : [];
+
+  return {
+    configured: Boolean(payload?.configured),
+    message: payload?.message ? String(payload.message) : undefined,
+    countries,
+  };
+}
