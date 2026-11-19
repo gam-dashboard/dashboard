@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import projectsHandler from './api/projects.js';
 import locationsHandler from './api/locations.js';
+import countriesHandler from './api/countries.js';
 import chatHandler from './api/chat.js';
 
 const app = express();
@@ -30,6 +31,7 @@ const toExpressHandler = (handler) => async (req, res) => {
 
 app.get('/api/projects', toExpressHandler(projectsHandler));
 app.get('/api/locations', toExpressHandler(locationsHandler));
+app.get('/api/countries', toExpressHandler(countriesHandler));
 app.post('/api/chat', toExpressHandler(chatHandler));
 
 app.get('/health', (_req, res) => res.status(200).json({ ok: true }));

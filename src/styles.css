@@ -120,3 +120,21 @@ header h1 { font-size: 1.25rem; margin-bottom: 1rem; }
     font-size: 1.1rem;
   }
 }
+.countries-section {
+  padding: clamp(12px, 3vw, 20px);
+  width: min(100%, 1200px);
+  box-sizing: border-box;
+  margin: 20px auto;
+}
+
+.countries-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.countries-list th,
+.countries-list td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
