@@ -27,8 +27,10 @@ export default function CountriesList(): JSX.Element {
   }, []);
 
   return (
-    <div className="countries-list">
-      <h2>Countries Represented</h2>
+    <details className="countries-list">
+      <summary>
+        <h2>Countries Represented</h2>
+      </summary>
         {loading && <p>Loading countries…</p>}
         {error && <p role="alert">{error}</p>}
         {message && <p>{message}</p>}
@@ -39,7 +41,6 @@ export default function CountriesList(): JSX.Element {
               <thead>
                 <tr>
                   <th scope="col">Country</th>
-                  <th scope="col">Code</th>
                   <th scope="col">Projects</th>
                   <th scope="col">Locations</th>
                 </tr>
@@ -48,7 +49,6 @@ export default function CountriesList(): JSX.Element {
                 {countries.map((entry) => (
                   <tr key={entry.countryCode || entry.country}>
                     <td>{entry.country}</td>
-                    <td>{entry.countryCode || '—'}</td>
                     <td>{entry.projectCount}</td>
                     <td>{entry.locationCount}</td>
                   </tr>
@@ -57,6 +57,6 @@ export default function CountriesList(): JSX.Element {
             </table>
           </>
         )}
-    </div>
+    </details>
   );
 }

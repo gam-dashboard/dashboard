@@ -138,3 +138,14 @@ header h1 { font-size: 1.25rem; margin-bottom: 1rem; }
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
+
+.countries-list summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.countries-list summary h2 {
+  margin: 0;
+}
